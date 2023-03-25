@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/game_graph"
+    app:startDestination="@id/userRegistration">
+
+    <fragment
+        android:id="@+id/userRegistration"
+        android:name="com.itsfrz.tictactoe.userregistration.UserRegistrationFragment"
+        android:label="fragment_user_registration"
+        tools:layout="@layout/fragment_user_registration" >
+        <action
+            android:id="@+id/action_userRegistration_to_homePage"
+            app:destination="@id/homePage" />
+    </fragment>
+    <fragment
+        android:id="@+id/homePage"
+        android:name="com.itsfrz.tictactoe.homepage.HomePageFragment"
+        android:label="fragment_home_page"
+        tools:layout="@layout/fragment_home_page" >
+        <action
+            android:id="@+id/action_homePage_to_onlineModeFragment"
+            app:destination="@id/onlineModeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/onlineModeFragment"
+        android:name="com.itsfrz.tictactoe.online.OnlineModeFragment"
+        android:label="OnlineModeFragment" />
+</navigation>
