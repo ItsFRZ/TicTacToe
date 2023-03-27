@@ -26,5 +26,13 @@
     <fragment
         android:id="@+id/onlineModeFragment"
         android:name="com.itsfrz.tictactoe.online.OnlineModeFragment"
-        android:label="OnlineModeFragment" />
+        android:label="OnlineModeFragment" >
+        <action
+            android:id="@+id/action_onlineModeFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameFragment"
+        android:name="com.itsfrz.tictactoe.game.GameFragment"
+        android:label="GameFragment" />
 </navigation>

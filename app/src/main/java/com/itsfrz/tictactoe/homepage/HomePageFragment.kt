@@ -60,7 +60,9 @@ class HomePageFragment : Fragment() {
                         .height(78.dp)
                         .fillMaxWidth())
                     CustomOutlinedButton(
-                        buttonClick = {},
+                        buttonClick = {
+
+                        },
                         buttonText = "AI"
                     )
                     Spacer(modifier = Modifier
@@ -76,7 +78,9 @@ class HomePageFragment : Fragment() {
                         .height(20.dp)
                         .fillMaxWidth())
                     CustomOutlinedButton(
-                        buttonClick = {},
+                        buttonClick = {
+                            findNavController().navigate(R.id.gameFragment)
+                        },
                         buttonText = "2 Player"
                     )
                     Spacer(modifier = Modifier
