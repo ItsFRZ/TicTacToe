@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.online
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,20 +16,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
-import com.itsfrz.tictactoe.common.components.CustomCircleIconButton
+import androidx.navigation.fragment.findNavController
+import com.itsfrz.tictactoe.MainActivity
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
-import com.itsfrz.tictactoe.homepage.viewmodel.HomePageViewModel
-import com.itsfrz.tictactoe.homepage.viewmodel.HomePageViewModelFactory
 import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.headerTitle
-import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModel
 import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModelFactory
 import com.itsfrz.tictactoe.ui.theme.headerSubTitle
 
 class OnlineModeFragment : Fragment() {
     private lateinit var viewModel: OnlineModeViewModel
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

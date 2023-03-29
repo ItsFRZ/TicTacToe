@@ -7,11 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itsfrz.tictactoe.common.enums.GameMode
+import com.itsfrz.tictactoe.common.enums.GameResult
 import com.itsfrz.tictactoe.game.usecase.GameUsecase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class GameViewModel : ViewModel() {
 
@@ -34,14 +36,31 @@ class GameViewModel : ViewModel() {
     private val _playerOneIndex : MutableState<ArrayList<Int>> = mutableStateOf(arrayListOf())
     val playerOneIndex = _playerOneIndex
 
+    // Player two is also robot
     private val _playerTwoIndex : MutableState<ArrayList<Int>> = mutableStateOf(arrayListOf())
     val playerTwoIndex = _playerTwoIndex
 
-    private val _isWinner : MutableState<Boolean> = mutableStateOf(false)
-    val isWinner : State<Boolean> = _isWinner
+    private val _gameResult : MutableState<GameResult> = mutableStateOf(GameResult.NONE)
+    val gameResult : State<GameResult> = _gameResult
+
+    private val _onBackPress : MutableState<Boolean> = mutableStateOf(false)
+    val onBackPress = _onBackPress
 
     init {
+        getRandomTurnGenerator()
         timeLimitStart()
+    }
+
+    private fun getRandomTurnGenerator() {
+        _isUserTurnsComplete.value = Random.nextBoolean()
+    }
+
+
+    private fun switchUserOnTimeOut() {
+        if (_userTimer.value == 0F){
+            setUserTurn()
+            resetTimeLimit()
+        }
     }
 
 
@@ -55,13 +74,28 @@ class GameViewModel : ViewModel() {
                         _playerTwoIndex.value.add(event.index)
                     }
                 }
+
+                if (gameMode == GameMode.AI){
+                    if (_isUserTurnsComplete.value){
+                        _playerOneIndex.value.add(event.index)
+                    }else{
+                        robotMove()
+                    }
+                }
                 setGameMap(event.index)
                 playGame()
             }
             is GameUsecase.OnGameRetry -> {
                 resetGameBoard()
             }
+            is GameUsecase.OnBackPress -> {
+                _onBackPress.value = event.backPressState
+            }
         }
+    }
+
+    private fun robotMove() {
+
     }
 
 
@@ -70,10 +104,14 @@ class GameViewModel : ViewModel() {
             GameMode.TWO_PLAYER -> {
                 setUserTurn()
                 resetTimeLimit()
-                checkWinner()
+                checkGameWinner()
+                checkDraw()
             }
             GameMode.AI -> {
-
+                setUserTurn()
+                resetTimeLimit()
+                checkGameWinner()
+                checkDraw()
             }
             GameMode.FRIEND -> {
 
@@ -84,14 +122,28 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    private fun checkWinner() {
+    private fun checkDraw() {
+        var isDraw : Boolean = true
+        gameMap.forEach { row ->
+            row.forEach {
+                if (it == 0) {
+                    isDraw = false
+                }
+            }
+        }
+        if (isDraw){
+            _gameResult.value = GameResult.DRAW
+        }
+    }
+
+    private fun checkGameWinner() {
         if (checkDiagonalPossibility() || checkVerticalPossibility() || checkHorizontalPossibility()){
             if (_isUserTurnsComplete.value){
                 Log.i("WINNER", "checkWinner: Player 1 is WIN")
             }else{
                 Log.i("WINNER", "checkWinner: Player 2 is WIN")
             }
-            _isWinner.value = true
+            _gameResult.value = GameResult.WIN
         }
     }
 
@@ -190,14 +242,16 @@ class GameViewModel : ViewModel() {
 
     private fun timeLimitStart(){
         job = viewModelScope.launch(Dispatchers.Default) {
-            var timeBound = 15
+            var timeBound = 10
             while (timeBound != 0) {
                 delay(1000)
-                _userTimer.value = (timeBound / 15F)
+                _userTimer.value = (timeBound / 10F)
                 timeBound--
 
             }
             _userTimer.value = 0F
+
+            switchUserOnTimeOut()
         }
     }
 
@@ -224,11 +278,11 @@ class GameViewModel : ViewModel() {
             arrayListOf(0,0,0),
             arrayListOf(0,0,0),
         )
-        _isUserTurnsComplete.value = false
+        getRandomTurnGenerator()
         _playerOneIndex.value = arrayListOf()
         _playerTwoIndex.value = arrayListOf()
         _userTimer.value = 0F
-        _isWinner.value = false
+        _gameResult.value = GameResult.NONE
         job?.cancel()
         timeLimitStart()
 

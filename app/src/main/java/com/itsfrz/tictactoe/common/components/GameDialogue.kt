@@ -1,61 +1,327 @@
 package com.itsfrz.tictactoe.common.components
 
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.core.EaseInBounce
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.itsfrz.tictactoe.R
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
-import com.itsfrz.tictactoe.ui.theme.headerSubTitle
-import com.itsfrz.tictactoe.ui.theme.headerTitle
+import com.itsfrz.tictactoe.common.enums.GameResult
+import com.itsfrz.tictactoe.ui.theme.*
+import kotlinx.coroutines.delay
 
+object GameDialogue{
 
-
-@Composable
-fun GameWinDialogue(
-    winnerUsername : String,
-    onRetryButtonClick : () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(7f)
-            .wrapContentHeight(),
-        shape = RoundedCornerShape(2.dp),
-        elevation = 10.dp
+    @Composable
+    fun GameDrawLoseDialogue(
+        gameResult : GameResult,
+        onCloseEvent : () -> Unit,
+        onDialogueButtonClick : () -> Unit,
     ) {
-        Column(
-            modifier = Modifier.wrapContentSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(7f)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(2.dp),
+            elevation = 10.dp
         ) {
-            Spacer(modifier = Modifier
-                .wrapContentWidth()
-                .height(5.dp))
-            Text(text = "WIN", style = headerTitle.copy(color = ThemeBlue))
-            Spacer(modifier = Modifier
-                .wrapContentWidth()
-                .height(12.dp))
-            Image(
-                contentScale = ContentScale.Fit,
-                painter = painterResource(id = R.drawable.ic_trophy), contentDescription = "Trophy Image")
-            Spacer(modifier = Modifier
-                .wrapContentWidth()
-                .height(2.dp))
-            Text(text = winnerUsername, style = headerSubTitle.copy(color = ThemeBlue))
-            Spacer(modifier = Modifier
-                .wrapContentWidth()
-                .height(5.dp))
-            CustomButton(
-                onButtonClick = { onRetryButtonClick() },
-                buttonText = "Retry"
-            )
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(PrimaryLight),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(2.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 7.dp, end = 7.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        modifier = Modifier
+                            .size(25.dp)
+                            .border(
+                                border = BorderStroke(width = 0.8.dp, color = ThemeBlue),
+                                shape = RoundedCornerShape(100)
+                            )
+                            .padding(8.dp),
+                        onClick = {
+                            onCloseEvent()
+                        }
+                    ){
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_cross),
+                            contentDescription = "Back Icon",
+                            tint = ThemeBlue
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+                Text(text = if (gameResult == GameResult.DRAW) "DRAW" else "You Lose!", style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(12.dp))
+                when(gameResult){
+                    GameResult.DRAW -> {
+                        Text(text = "Better Luck Next Time!", style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Italic, color = ThemeBlue))
+                    }
+                    GameResult.LOSE -> {
+                        Icon(modifier = Modifier.size(50.dp), painter = painterResource(id = R.drawable.ic_game_retry), contentDescription = "Game Retry", tint = ThemeBlue)
+                    }
+                    else ->{}
+                }
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+                CustomButton(
+                    onButtonClick = { onDialogueButtonClick() },
+                    buttonText = if (gameResult == GameResult.DRAW) "Play Again" else "Retry"
+                )
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+            }
+        }
+
+    }
+
+    @Composable
+    fun GameWinDialogue(
+        winnerUsername: String,
+        dialogueButtonText : String,
+        onCloseEvent : () -> Unit,
+        onDialogueButtonClick : () -> Unit,
+    ){
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(7f)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(2.dp),
+            elevation = 10.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(PrimaryLight),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(2.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 7.dp, end = 7.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        modifier = Modifier
+                            .size(25.dp)
+                            .border(
+                                border = BorderStroke(width = 0.8.dp, color = ThemeBlue),
+                                shape = RoundedCornerShape(100)
+                            )
+                            .padding(8.dp),
+                        onClick = {
+                            onCloseEvent()
+                        }
+                    ){
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_cross),
+                            contentDescription = "Back Icon",
+                            tint = ThemeBlue
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+                Text(text = "WINNER", style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(12.dp))
+                AnimatedStarLayout(starLayoutBackground = PrimaryLight, starInactiveColor = PrimaryDark)
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(2.dp))
+                Text(text = winnerUsername, style = headerSubTitle.copy(color = ThemeBlue, fontSize = 14.sp))
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+                CustomButton(
+                    onButtonClick = { onDialogueButtonClick() },
+                    buttonText = dialogueButtonText
+                )
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+            }
+        }
+    }
+
+    private @Composable
+    fun AnimatedStarLayout(
+        starLayoutBackground : Color,
+        starInactiveColor : Color
+    ) {
+        val starOneColor = remember {
+            Animatable(starInactiveColor)
+        }
+        val starTwoColor = remember {
+            Animatable(starInactiveColor)
+        }
+        val starThreeColor = remember {
+            Animatable(starInactiveColor)
+        }
+        
+        LaunchedEffect(Unit){
+            starOneColor.animateTo(targetValue = ThemeBlue, animationSpec = tween(durationMillis = 200, delayMillis = 30, easing = EaseInBounce))
+            delay(60)
+            starTwoColor.animateTo(targetValue = ThemeBlue, animationSpec = tween(durationMillis = 200, delayMillis = 30, easing = EaseInBounce))
+            delay(60)
+            starThreeColor.animateTo(targetValue = ThemeBlue, animationSpec = tween(durationMillis = 200, delayMillis = 30, easing = EaseInBounce))
+        }
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(starLayoutBackground),
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .background(starLayoutBackground)
+                    .height(100.dp)
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(painter = painterResource(id = R.drawable.ic_star), contentDescription = "Winning Star", tint = starOneColor.value)
+            }
+
+
+            Column(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .background(starLayoutBackground)
+                    .height(100.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Icon(painter = painterResource(id = R.drawable.ic_star), contentDescription = "Winning Star", tint = starTwoColor.value)
+            }
+
+
+            Column(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .background(starLayoutBackground)
+                    .height(100.dp)
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(painter = painterResource(id = R.drawable.ic_star), contentDescription = "Winning Star", tint = starThreeColor.value)
+            }
+        }
+    }
+
+    @Composable
+    fun GameExitDialogue(
+        onExitEvent : () -> Unit,
+        onContinueEvent : () -> Unit,
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(7f)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(2.dp),
+            elevation = 10.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(PrimaryLight),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(2.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 7.dp, end = 7.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        modifier = Modifier
+                            .size(25.dp)
+                            .border(
+                                border = BorderStroke(width = 0.8.dp, color = ThemeBlue),
+                                shape = RoundedCornerShape(100)
+                            )
+                            .padding(8.dp),
+                        onClick = {
+                            onContinueEvent()
+                        }
+                    ){
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_cross),
+                            contentDescription = "Back Icon",
+                            tint = ThemeBlue
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+                Text(text ="EXIT", style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(12.dp))
+                Text(text = "Do you really want to exit ?", style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Normal, color = ThemeBlue))
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(10.dp))
+                CustomButton(
+                    onButtonClick = { onExitEvent() },
+                    buttonText = "Agree"
+                )
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+            }
         }
     }
 }
+
+
+

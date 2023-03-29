@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.userregistration
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import com.itsfrz.tictactoe.MainActivity
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.CustomButton
 import com.itsfrz.tictactoe.common.components.TextFieldWithValidation
@@ -29,6 +31,11 @@ import com.itsfrz.tictactoe.userregistration.viewmodel.UserRegistrationViewModel
 
 class UserRegistrationFragment : Fragment() {
     private lateinit var viewModel : UserRegistrationViewModel
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModelFactory = UserRegistrationViewModelFactory()

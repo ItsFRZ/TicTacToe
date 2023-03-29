@@ -8,8 +8,7 @@
     <fragment
         android:id="@+id/userRegistration"
         android:name="com.itsfrz.tictactoe.userregistration.UserRegistrationFragment"
-        android:label="fragment_user_registration"
-        tools:layout="@layout/fragment_user_registration" >
+        android:label="fragment_user_registration">
         <action
             android:id="@+id/action_userRegistration_to_homePage"
             app:destination="@id/homePage" />
@@ -17,11 +16,14 @@
     <fragment
         android:id="@+id/homePage"
         android:name="com.itsfrz.tictactoe.homepage.HomePageFragment"
-        android:label="fragment_home_page"
-        tools:layout="@layout/fragment_home_page" >
+        android:label="fragment_home_page">
+
         <action
             android:id="@+id/action_homePage_to_onlineModeFragment"
             app:destination="@id/onlineModeFragment" />
+        <argument
+            android:name="gameMode"
+            app:argType="com.itsfrz.tictactoe.common.enums.GameMode" />
     </fragment>
     <fragment
         android:id="@+id/onlineModeFragment"

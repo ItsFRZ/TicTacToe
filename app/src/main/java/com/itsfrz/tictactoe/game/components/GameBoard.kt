@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 
@@ -22,7 +23,9 @@ import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 fun GameBoard(
     crossList : List<Int>,
     rightList : List<Int>,
-    onMove : (index : Int) -> Unit
+    gameMode : GameMode,
+    isPlayerMoved : Boolean,
+    onMove : (index : Int) -> Unit,
 ) {
     val gameItemList = (1..9).toList()
     LazyVerticalGrid(
@@ -36,7 +39,13 @@ fun GameBoard(
                         .fillMaxWidth(9F)
                         .background(color = PrimaryLight)
                         .clickable {
-                            onMove(index)
+                            if (gameMode == GameMode.TWO_PLAYER){
+                                if (!(index in crossList) && !(index in rightList))
+                                    onMove(index)
+                            }else if(gameMode == GameMode.AI){
+                                  if (!isPlayerMoved)
+                                      onMove(index)
+                            }
                         }
                         .border(width = 1.dp, color = ThemeBlue)
                         .padding(vertical = 15.dp),

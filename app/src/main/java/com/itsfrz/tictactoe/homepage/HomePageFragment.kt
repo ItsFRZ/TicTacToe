@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.homepage
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,8 +15,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import com.itsfrz.tictactoe.MainActivity
 import com.itsfrz.tictactoe.common.components.CustomCircleIconButton
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
 import com.itsfrz.tictactoe.homepage.viewmodel.HomePageViewModel
@@ -24,9 +28,15 @@ import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.enums.GameMode
 
 class HomePageFragment : Fragment() {
     private lateinit var viewModel: HomePageViewModel
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,6 +51,7 @@ class HomePageFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
+                val gameBundle = bundleOf()
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .background(color = PrimaryLight),
@@ -61,7 +72,8 @@ class HomePageFragment : Fragment() {
                         .fillMaxWidth())
                     CustomOutlinedButton(
                         buttonClick = {
-
+                            gameBundle.putSerializable("GameMode",GameMode.AI)
+                            findNavController().navigate(R.id.gameFragment,gameBundle)
                         },
                         buttonText = "AI"
                     )
@@ -79,7 +91,11 @@ class HomePageFragment : Fragment() {
                         .fillMaxWidth())
                     CustomOutlinedButton(
                         buttonClick = {
-                            findNavController().navigate(R.id.gameFragment)
+                            gameBundle.putSerializable("GameMode",GameMode.TWO_PLAYER)
+                            findNavController().navigate(
+                                resId = R.id.gameFragment,
+                                args = gameBundle
+                            )
                         },
                         buttonText = "2 Player"
                     )
