@@ -1,5 +1,9 @@
 package com.itsfrz.tictactoe.game.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -9,6 +13,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -24,12 +30,23 @@ fun GameBoard(
     crossList : List<Int>,
     rightList : List<Int>,
     gameMode : GameMode,
+    isWinner : Boolean,
+    winnerIndexList : List<Int>,
     isPlayerMoved : Boolean,
     onMove : (index : Int) -> Unit,
+    onAIMove : () -> Unit
 ) {
+
+    val color by animateColorAsState(
+        targetValue = ThemeBlue,
+        animationSpec = tween(durationMillis = 3000, delayMillis = 250, easing = LinearOutSlowInEasing)
+    )
+
     val gameItemList = (1..9).toList()
     LazyVerticalGrid(
-        modifier = Modifier.padding(horizontal = 12.dp).border(border = BorderStroke(width = 1.dp, color = PrimaryLight)),
+        modifier = Modifier
+            .padding(horizontal = 12.dp)
+            .border(border = BorderStroke(width = 1.dp, color = PrimaryLight)),
         columns = GridCells.Fixed(3),
         content = {
             itemsIndexed(items = gameItemList){ index: Int, item: Int ->
@@ -37,14 +54,18 @@ fun GameBoard(
                     modifier = Modifier
                         .height(100.dp)
                         .fillMaxWidth(9F)
-                        .background(color = PrimaryLight)
+                        .background(color = if (isWinner && index in winnerIndexList) color else PrimaryLight)
                         .clickable {
-                            if (gameMode == GameMode.TWO_PLAYER){
-                                if (!(index in crossList) && !(index in rightList))
-                                    onMove(index)
-                            }else if(gameMode == GameMode.AI){
-                                  if (!isPlayerMoved)
-                                      onMove(index)
+                            if (!isWinner){
+                                if (gameMode == GameMode.TWO_PLAYER) {
+                                    if (!(index in crossList) && !(index in rightList))
+                                        onMove(index)
+                                } else if (gameMode == GameMode.AI) {
+                                    if (!(index in crossList) && !(index in rightList) && !isPlayerMoved) {
+                                        onMove(index)
+                                        onAIMove()
+                                    }
+                                }
                             }
                         }
                         .border(width = 1.dp, color = ThemeBlue)

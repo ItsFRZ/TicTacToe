@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
+import androidx.compose.animation.animateContentSize
 import androidx.fragment.app.Fragment
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -13,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,9 +36,11 @@ import com.itsfrz.tictactoe.game.usecase.GameUsecase
 import com.itsfrz.tictactoe.game.viewmodel.GameViewModel
 import com.itsfrz.tictactoe.game.viewmodel.GameViewModelFactory
 import com.itsfrz.tictactoe.homepage.HomePageFragment
+import com.itsfrz.tictactoe.ui.theme.PrimaryDark
 import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.ThemeBlueLight
+import kotlinx.coroutines.*
 import java.io.Serializable
 
 class GameFragment : Fragment(){
@@ -63,6 +67,7 @@ class GameFragment : Fragment(){
         gameMode = requireArguments().getSerializable("GameMode") as GameMode
         Log.i("GAME_MODE", "onCreate: Game Mode ${gameMode}")
         viewModel.setGameMode(gameMode)
+        viewModel.setAITurn()
     }
 
     override fun onCreateView(
@@ -75,14 +80,23 @@ class GameFragment : Fragment(){
 
                 val playerOneData = viewModel.playerOneIndex.value
                 val playerTwoData = viewModel.playerTwoIndex.value
+                val winnerIndexList = viewModel.winnerIndexList.value
                 val playerTurns = viewModel.isUserTurnsComplete.value
                 val userTimeLimit = viewModel.userTimer.value
+                val userTimeOutWarning = viewModel.userWarning.value
+                val userTimeOutPulsatingWarning by rememberInfiniteTransition().animateFloat(
+                    initialValue = if (userTimeOutWarning) 20F else 23F,
+                    targetValue = 23F,
+                    animationSpec = infiniteRepeatable(tween(200),RepeatMode.Reverse)
+                )
                 val timeLimitAnimation by animateFloatAsState(
                     targetValue = userTimeLimit,
                     animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
                 )
                 val gameResult = viewModel.gameResult.value
                 val onBackPress = viewModel.onBackPress.value
+                val isDelayed = viewModel.isDelayed.value
+
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .background(color = PrimaryLight),
@@ -93,10 +107,11 @@ class GameFragment : Fragment(){
                         .height(40.dp))
                     Row(modifier = Modifier
                         .padding(horizontal = 30.dp)
+                        .height(30.dp)
                         .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(painter = painterResource(id = R.drawable.ic_timer), contentDescription = "Game Timer", tint = ThemeBlue)
+                        Icon(modifier = Modifier.size(userTimeOutPulsatingWarning.dp), painter = painterResource(id = R.drawable.ic_timer), contentDescription = "Game Timer", tint = ThemeBlue)
                         Spacer(modifier = Modifier.width(8.dp))
                         LinearProgressIndicator(modifier = Modifier
                             .height(6.dp)
@@ -113,10 +128,14 @@ class GameFragment : Fragment(){
                         crossList = playerOneData,
                         rightList = playerTwoData,
                         gameMode = gameMode,
+                        winnerIndexList = winnerIndexList,
+                        isWinner = gameResult != GameResult.NONE,
                         isPlayerMoved = !playerTurns,
-                        onMove = { index ->
-                        viewModel.onEvent(GameUsecase.OnUserTick(index))
-                    })
+                        onMove = { index -> viewModel.onEvent(GameUsecase.OnUserTick(index)) },
+                        onAIMove = {
+                            viewModel.onEvent(GameUsecase.OnAIMove)
+                        }
+                    )
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(80.dp))
@@ -127,6 +146,14 @@ class GameFragment : Fragment(){
                     UserMove(username = if (playerTurns) "Player 2" else "Player 1", isCross = playerTurns)
                 }
                 if (gameResult != GameResult.NONE){
+                    LaunchedEffect(Unit){
+                        if (gameResult == GameResult.DRAW || gameResult == GameResult.WIN)
+                            delay(1000)
+                        else delay(2000)
+                        viewModel.onEvent(GameUsecase.OnDelayLaunch(true))
+                    }
+                }
+                if (gameResult != GameResult.NONE && isDelayed){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
