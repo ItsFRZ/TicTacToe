@@ -12,7 +12,7 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/game_graph">
+        >
     </androidx.fragment.app.FragmentContainerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

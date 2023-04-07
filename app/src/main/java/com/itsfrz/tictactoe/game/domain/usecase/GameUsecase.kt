@@ -1,4 +1,4 @@
-package com.itsfrz.tictactoe.game.usecase
+package com.itsfrz.tictactoe.game.domain.usecase
 
 sealed class GameUsecase{
     data class OnUserTick(val index : Int) : GameUsecase()

@@ -28,8 +28,8 @@ import com.itsfrz.tictactoe.ui.theme.errorMessage
 fun TextFieldWithValidation(
     fieldValue : String,
     onUsernameChange : (inputData : String) -> Unit,
-    isUsernameExist : Boolean,
-    validationMessage : String = "Username already exists !",
+    isValidationTriggered : Boolean,
+    validationMessage : String = "Username field should not be empty!",
     @DrawableRes leadingIcon : Int = R.drawable.ic_username,
     label : String = "Username"
 ) {
@@ -50,28 +50,28 @@ fun TextFieldWithValidation(
             value = fieldValue,
             onValueChange = {inputData -> onUsernameChange(inputData)},
             leadingIcon = {
-                Image(colorFilter = ColorFilter.tint(color = if (isFocussed.value && !isUsernameExist) ThemeBlue else if (isUsernameExist) Color.Red else PrimaryDark), painter = painterResource(id = leadingIcon), contentDescription = "Username")
+                Image(colorFilter = ColorFilter.tint(color = if (isFocussed.value && !isValidationTriggered) ThemeBlue else if (isValidationTriggered) Color.Red else PrimaryDark), painter = painterResource(id = leadingIcon), contentDescription = "Username")
             },
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.textFieldColors(
-                textColor = if(isUsernameExist) Color.Red else ThemeBlue,
+                textColor = if(isValidationTriggered) Color.Red else ThemeBlue,
                 cursorColor = ThemeBlue,
                 backgroundColor = PrimaryLight,
                 focusedLabelColor = ThemeBlue,
                 focusedIndicatorColor = ThemeBlue,
                 leadingIconColor = ThemeBlue,
-                errorLabelColor = if (isUsernameExist) Color.Red else ThemeBlue,
-                errorLeadingIconColor = if (isUsernameExist) Color.Red else ThemeBlue,
-                errorIndicatorColor = if (isUsernameExist) Color.Red else ThemeBlue
+                errorLabelColor = if (isValidationTriggered) Color.Red else ThemeBlue,
+                errorLeadingIconColor = if (isValidationTriggered) Color.Red else ThemeBlue,
+                errorIndicatorColor = if (isValidationTriggered) Color.Red else ThemeBlue
             ),
-            isError = isUsernameExist,
+            isError = isValidationTriggered,
             singleLine = true
         )
         Spacer(modifier = Modifier
             .height(8.dp)
             .fillMaxWidth())
 
-        if (isUsernameExist){
+        if (isValidationTriggered){
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

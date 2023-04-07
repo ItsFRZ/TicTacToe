@@ -1,4 +1,4 @@
-package com.itsfrz.tictactoe.game.viewmodel
+package com.itsfrz.tictactoe.game.presentation.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -8,12 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.GameResult
-import com.itsfrz.tictactoe.game.usecase.GameUsecase
+import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.minimax.GameBrain
 import com.itsfrz.tictactoe.minimax.IGameBrain
 import com.itsfrz.tictactoe.minimax.Move
 import kotlinx.coroutines.*
-import kotlin.random.Random
 
 class GameViewModel : ViewModel() {
 
@@ -63,7 +62,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun getRandomTurnGenerator() {
-        _isUserTurnsComplete.value = Random.nextBoolean()
+        _isUserTurnsComplete.value = _isUserTurnsComplete.value
     }
 
     private fun switchUserOnTimeOut() {

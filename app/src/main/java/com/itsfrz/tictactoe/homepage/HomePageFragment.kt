@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -29,10 +30,18 @@ import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.enums.GameMode
+import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
+import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
+import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
+import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class HomePageFragment : Fragment() {
     private lateinit var viewModel: HomePageViewModel
-
+    private lateinit var cloudRepository: CloudRepository
+    private lateinit var dataStoreRepository  : GameStoreRepository
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
@@ -40,9 +49,21 @@ class HomePageFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModelFactory = HomePageViewModelFactory()
+        setUpOnlineConfig()
+        val viewModelFactory = HomePageViewModelFactory(cloudRepository,dataStoreRepository)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[HomePageViewModel::class.java]
+    }
 
+
+    private fun setUpOnlineConfig() {
+        val database = FirebaseDB
+        val gameStore =  GameDataStore.getDataStore(requireContext())
+        dataStoreRepository = IGameStoreRepository(gameStore)
+        cloudRepository = CloudRepository(
+            database = database,
+            dataStoreRepository = dataStoreRepository,
+            scope = CoroutineScope(Dispatchers.IO)
+        )
     }
 
     override fun onCreateView(

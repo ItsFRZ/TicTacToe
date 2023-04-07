@@ -3,24 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/game_graph"
-    app:startDestination="@id/userRegistration">
+    app:startDestination="@id/homePage">
 
     <fragment
         android:id="@+id/userRegistration"
         android:name="com.itsfrz.tictactoe.userregistration.UserRegistrationFragment"
-        android:label="fragment_user_registration">
-        <action
-            android:id="@+id/action_userRegistration_to_homePage"
-            app:destination="@id/homePage" />
-    </fragment>
+        android:label="fragment_user_registration"/>
     <fragment
         android:id="@+id/homePage"
         android:name="com.itsfrz.tictactoe.homepage.HomePageFragment"
         android:label="fragment_home_page">
 
-        <action
-            android:id="@+id/action_homePage_to_onlineModeFragment"
-            app:destination="@id/onlineModeFragment" />
         <argument
             android:name="gameMode"
             app:argType="com.itsfrz.tictactoe.common.enums.GameMode" />
@@ -28,13 +21,9 @@
     <fragment
         android:id="@+id/onlineModeFragment"
         android:name="com.itsfrz.tictactoe.online.OnlineModeFragment"
-        android:label="OnlineModeFragment" >
-        <action
-            android:id="@+id/action_onlineModeFragment_to_gameFragment"
-            app:destination="@id/gameFragment" />
-    </fragment>
+        android:label="OnlineModeFragment" />
     <fragment
         android:id="@+id/gameFragment"
-        android:name="com.itsfrz.tictactoe.game.GameFragment"
+        android:name="com.itsfrz.tictactoe.game.presentation.GameFragment"
         android:label="GameFragment" />
 </navigation>

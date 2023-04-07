@@ -1,12 +1,10 @@
-package com.itsfrz.tictactoe.game
+package com.itsfrz.tictactoe.game.presentation
 
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
-import androidx.compose.animation.animateContentSize
 import androidx.fragment.app.Fragment
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -22,26 +20,21 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavArgs
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.GameResult
-import com.itsfrz.tictactoe.game.components.GameBoard
-import com.itsfrz.tictactoe.game.components.GameDivider
-import com.itsfrz.tictactoe.game.components.UserMove
-import com.itsfrz.tictactoe.game.usecase.GameUsecase
-import com.itsfrz.tictactoe.game.viewmodel.GameViewModel
-import com.itsfrz.tictactoe.game.viewmodel.GameViewModelFactory
-import com.itsfrz.tictactoe.homepage.HomePageFragment
-import com.itsfrz.tictactoe.ui.theme.PrimaryDark
+import com.itsfrz.tictactoe.game.presentation.components.GameBoard
+import com.itsfrz.tictactoe.game.presentation.components.GameDivider
+import com.itsfrz.tictactoe.game.presentation.components.UserMove
+import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
+import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModel
+import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModelFactory
 import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.ThemeBlueLight
 import kotlinx.coroutines.*
-import java.io.Serializable
 
 class GameFragment : Fragment(){
 

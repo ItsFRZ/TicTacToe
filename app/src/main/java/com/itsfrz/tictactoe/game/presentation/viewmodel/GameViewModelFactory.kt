@@ -1,4 +1,4 @@
-package com.itsfrz.tictactoe.game.viewmodel
+package com.itsfrz.tictactoe.game.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

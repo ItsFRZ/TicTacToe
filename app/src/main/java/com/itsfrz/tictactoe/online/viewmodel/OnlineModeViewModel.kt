@@ -23,6 +23,7 @@ class OnlineModeViewModel : ViewModel(){
                 _usernameValue.value = event.userInput
                 _isUsernameExists.value = _usernameValue.value.equals("Faraz")
             }
+            else -> {}
         }
     }
 
