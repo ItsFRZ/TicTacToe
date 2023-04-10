@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.game.presentation.components
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -31,9 +32,13 @@ fun GameBoard(
     winnerIndexList : List<Int>,
     isPlayerMoved : Boolean,
     onMove : (index : Int) -> Unit,
-    onAIMove : () -> Unit
+    onAIMove : () -> Unit,
+    userId : String,
+    currentUserId : String,
 ) {
 
+    Log.i("USER_ID", "GameBoard: Current UserId ${currentUserId}")
+    Log.i("USER_ID", "GameBoard: UserId ${userId}")
     val color by animateColorAsState(
         targetValue = ThemeBlue,
         animationSpec = tween(durationMillis = 3000, delayMillis = 250, easing = LinearOutSlowInEasing)
@@ -53,7 +58,7 @@ fun GameBoard(
                         .fillMaxWidth(9F)
                         .background(color = if (isWinner && index in winnerIndexList) color else PrimaryLight)
                         .clickable {
-                            if (!isWinner){
+                            if (!isWinner) {
                                 if (gameMode == GameMode.TWO_PLAYER) {
                                     if (!(index in crossList) && !(index in rightList))
                                         onMove(index)
@@ -61,6 +66,10 @@ fun GameBoard(
                                     if (!(index in crossList) && !(index in rightList) && !isPlayerMoved) {
                                         onMove(index)
                                         onAIMove()
+                                    }
+                                } else if (gameMode == GameMode.FRIEND) {
+                                    if (!(index in crossList) && !(index in rightList) && (userId == currentUserId)) {
+                                        onMove(index)
                                     }
                                 }
                             }

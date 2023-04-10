@@ -20,4 +20,9 @@ object FirebaseDB {
     fun getPlayGroundReference(path : String) : DatabaseReference{
         return getInstance().getReference(path)
     }
+
+    fun getReference(path : String) : DatabaseReference{
+        return getInstance().getReference(path)
+    }
+
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.Keep
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
+import com.itsfrz.tictactoe.goonline.data.models.BoardState
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import kotlinx.serialization.SerialName
@@ -14,6 +15,7 @@ import kotlinx.serialization.Serializable
 data class GameDataStore(
     @SerialName("userProfile")val userProfile : UserProfile? = null,
     @SerialName("playGround")val playGround: Playground? = null,
+    @SerialName("boardState")val boardState: BoardState? = null,
     @SerialName("userId")val userId : String = userProfile?.userId ?: "",
 ){
     @Keep

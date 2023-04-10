@@ -25,6 +25,7 @@ import com.itsfrz.tictactoe.ui.theme.headerTitle
 import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModel
 import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModelFactory
 import com.itsfrz.tictactoe.ui.theme.headerSubTitle
+import com.itsfrz.tictactoe.R
 
 class OnlineModeFragment : Fragment() {
     private lateinit var viewModel: OnlineModeViewModel
@@ -83,7 +84,7 @@ class OnlineModeFragment : Fragment() {
                         .height(20.dp)
                         .fillMaxWidth())
                     CustomOutlinedButton(
-                        buttonClick = {},
+                        buttonClick = {findNavController().navigate(R.id.friendFragment)},
                         buttonText = "Friend"
                     )
                 }

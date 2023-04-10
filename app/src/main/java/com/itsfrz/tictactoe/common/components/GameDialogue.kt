@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.itsfrz.tictactoe.R
@@ -321,6 +322,105 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
+            }
+        }
+    }
+
+
+    @Composable
+    fun CommonLoadingScreen() {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(.6f)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(2.dp),
+            elevation = 10.dp,
+            backgroundColor = PrimaryLight
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp, vertical = 25.dp)
+                    .background(PrimaryLight),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+                CircularProgressIndicator(modifier = Modifier.size(30.dp), color = ThemeBlue)
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(12.dp))
+                Text(text = "Please wait ...", style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Normal, color = ThemeBlue))
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(10.dp))
+            }
+        }
+    }
+
+    @Composable
+    fun PlayRequestBox(
+        onCloseClick : () -> Unit
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(.7f)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(2.dp),
+            elevation = 10.dp,
+            backgroundColor = PrimaryLight
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp, vertical = 22.dp)
+                    .background(PrimaryLight),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 1.dp, end = 7.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        modifier = Modifier
+                            .size(22.dp)
+                            .border(
+                                border = BorderStroke(width = 0.8.dp, color = ThemeBlue),
+                                shape = RoundedCornerShape(100)
+                            )
+                            .padding(8.dp),
+                        onClick = {
+                            onCloseClick()
+                        }
+                    ){
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_cross),
+                            contentDescription = "Back Icon",
+                            tint = ThemeBlue
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(4.dp))
+                Text(text = "WAIT", style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(12.dp))
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+                CircularProgressIndicator(modifier = Modifier.size(40.dp), color = ThemeBlue)
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(12.dp))
+                Text(text = "Please wait for your opponent\nto connect ...", style = headerSubTitle.copy(fontSize = 12.sp, fontStyle = FontStyle.Italic, color = ThemeBlue, fontWeight = FontWeight.Light))
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(10.dp))
             }
         }
     }

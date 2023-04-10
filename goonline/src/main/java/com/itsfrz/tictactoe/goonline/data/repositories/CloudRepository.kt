@@ -2,26 +2,29 @@ package com.itsfrz.tictactoe.goonline.data.repositories
 
 import android.util.Log
 import com.google.firebase.FirebaseException
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.itsfrz.tictactoe.goonline.common.Constants
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
+import com.itsfrz.tictactoe.goonline.data.models.BoardState
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
+import com.itsfrz.tictactoe.goonline.data.service.GameSessionService
 import com.itsfrz.tictactoe.goonline.data.service.PlaygroundService
 import com.itsfrz.tictactoe.goonline.data.service.UserProfileService
 import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class CloudRepository(
     private val database: FirebaseDB,
     private val dataStoreRepository: GameStoreRepository,
-    private val scope : CoroutineScope
-    ) : PlaygroundService, UserProfileService {
+    private val scope : CoroutineScope) : PlaygroundService, UserProfileService, GameSessionService {
 
     private val TAG : String = "CLOUD_REPO"
 
@@ -41,15 +44,19 @@ class CloudRepository(
 
     override suspend fun fetchPlaygroundInfoAndStore(userId: String?){
         try {
+            Log.i(TAG, "fetchPlaygroundInfoAndStore: ${userId}")
             if (userId.isNullOrEmpty())
                 throw Exception("UserId should not be null or empty")
+            Log.i(TAG, "fetchPlaygroundInfoAndStore: ${userId}")
             database.getPlayGroundReference("${Constants.USER_PLAYGROUND}/${userId}")
                 .addValueEventListener(object : ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val userPlayground = snapshot.getValue<Playground>()
-                            ?: throw Exception("User Playground Got Null From Firebase")
-                        scope.launch(Dispatchers.IO) {
-                            dataStoreRepository.updatePlayground(userPlayground)
+                        Log.i(TAG, "fetchPlaygroundInfoAndStore: ${userPlayground}")
+                        if(userPlayground!=null){
+                            scope.launch(Dispatchers.IO) {
+                                dataStoreRepository.updatePlayground(userPlayground)
+                            }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
@@ -96,4 +103,274 @@ class CloudRepository(
             Log.e(TAG, "fetchUserProfileInfo: ${e.message}")
         }
     }
+
+    suspend fun searchAndStoreFriend(userId : String,friendUserId : String?){
+        try {
+            Log.i(TAG, "searchAndStoreFriend: Search Started")
+            if (friendUserId.isNullOrEmpty())
+                throw Exception("Friend UserId should not be null or empty")
+            database.getProfileReference(Constants.USER_PROFILE)
+                .orderByChild("userId")
+                .equalTo(friendUserId)
+                .limitToFirst(1)
+                .addChildEventListener(object : ChildEventListener{
+                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                        Log.i(TAG, "searchAndStoreFriend: Search Snapshot ${snapshot.value}")
+                        val userProfile : UserProfile? = snapshot.getValue(UserProfile::class.java)
+                        userProfile?.let {
+                            scope.launch(Dispatchers.IO) {
+                                dataStoreRepository.updateFriendData(userProfile)
+                                updateFriendDataInServer(userId,userProfile)
+                            }
+                        }
+                    }
+
+                    override fun onChildChanged(
+                        snapshot: DataSnapshot,
+                        previousChildName: String?
+                    ) {
+                        Log.i(TAG, "searchAndStoreFriend: Search Snapshot ${snapshot.value}")
+                        val userProfile : UserProfile? = snapshot.getValue(UserProfile::class.java)
+                        userProfile?.let {
+                            scope.launch(Dispatchers.IO) {
+                                dataStoreRepository.updateFriendData(userProfile)
+                                updateFriendDataInServer(userId,userProfile)
+                            }
+                        }
+                    }
+
+                    override fun onChildRemoved(snapshot: DataSnapshot) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.i(TAG, "searchAndStoreFriend: Search Result Not Found")
+                    }
+                })
+        }catch (e : FirebaseException){
+            Log.e(TAG, "fetchUserProfileInfo: ${e.message}")
+        }
+    }
+
+    private suspend fun updateFriendDataInServer(userId : String,userProfile: UserProfile) {
+        val dataStore = dataStoreRepository.fetchPreference().firstOrNull()
+        dataStore?.let {
+            var playground : Playground? = null
+            if (it.playGround == null){
+                playground = Playground()
+            } else playground = it.playGround
+            val friendList = mutableListOf<Playground.Friend>()
+            if (!playground.friendList.isNullOrEmpty()){
+                friendList.addAll(playground.friendList!!)
+            }
+            friendList.let{
+                val index = it.indexOfFirst { it.userId == userProfile.userId  }
+                if (index != -1) {
+                    friendList.removeAt(index)
+                }
+                val friend = Playground.Friend(
+                    userId = userProfile.userId,
+                    online = userProfile.online,
+                    username = userProfile.username,
+                    profileImage = userProfile.profileImage,
+                    playRequest = false
+                )
+                friendList.add(friend)
+            }
+            playground = playground.copy(userId = userId,friendList = friendList)
+            updatePlayground(playground)
+        }
+    }
+
+    // request the friend to play + create separate game session
+    suspend fun requestFriendToPlay(userProfile: UserProfile?,friendUserid : String){
+        userProfile?.let { currentUser ->
+            val activeRequest = Playground.ActiveRequest(
+                friendUserId = userProfile.userId,
+                requesterUsername = userProfile.username,
+                online = true,
+                playResponse = false
+            )
+            database.getPlayGroundReference("${Constants.USER_PLAYGROUND}").child("${friendUserid}")
+                .addListenerForSingleValueEvent(object : ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        Log.i(TAG, "requestFriendToPlay: ${snapshot}")
+                        var friendPlayground = snapshot.getValue(Playground::class.java)
+                        friendPlayground?.let {
+                            val activeRequestList = it.activeRequest.toMutableList()
+                            activeRequestList.add(0,activeRequest)
+                            friendPlayground = it.copy(
+                                activeRequest = activeRequestList
+                            )
+                            scope.launch {
+                                database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(friendUserid)
+                                    .setValue(friendPlayground)
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                })
+        }
+    }
+
+    suspend fun cancelFriendPlayRequest(friendUserId: String,userId : String) {
+        database.getPlayGroundReference("${Constants.USER_PLAYGROUND}").child("${friendUserId}")
+            .addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.i(TAG, "cancelFriendPlayRequest: ${snapshot}")
+                    var friendPlayground = snapshot.getValue(Playground::class.java)
+                    Log.i(TAG, "cancelFriendPlayRequest: Friend User Id ${friendUserId}")
+                    friendPlayground?.let {
+                        var activeRequestList = it.activeRequest.toMutableList()
+                        Log.i(TAG, "onDataChange: ${activeRequestList}")
+                        if (activeRequestList.isNotEmpty()){
+                            activeRequestList = activeRequestList.filter { it.friendUserId != userId }.toMutableList()
+                        }
+                        friendPlayground = it.copy(
+                            activeRequest = activeRequestList,
+                            inGame = false
+                        )
+                        scope.launch {
+                            database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(friendUserId)
+                                .setValue(friendPlayground)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
+    }
+
+    fun acceptFriendRequest(userId: String, requesterUserId: String) {
+        database.getPlayGroundReference("${Constants.USER_PLAYGROUND}").child("${requesterUserId}")
+            .addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.i(TAG, "cancelFriendPlayRequest: ${snapshot}")
+                    var friendPlayground = snapshot.getValue(Playground::class.java)
+                    Log.i(TAG, "cancelFriendPlayRequest: Friend User Id ${requesterUserId}")
+                    // set ingame true
+                    friendPlayground?.let {
+                        friendPlayground = it.copy(
+                            inGame = true
+                        )
+                        scope.launch {
+                            database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(requesterUserId)
+                                .setValue(friendPlayground)
+                        }
+                    }
+
+                    // remove current play request from my db
+                    scope.launch(Dispatchers.IO) {
+                        removeUserRequest(userId,requesterUserId)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
+    }
+
+    private suspend fun removeUserRequest(userId: String, requesterUserId: String) {
+        database.getPlayGroundReference("${Constants.USER_PLAYGROUND}").child("${userId}")
+            .addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var myPlayground = snapshot.getValue(Playground::class.java)
+                Log.i(TAG, "cancelFriendPlayRequest: Friend User Id ${requesterUserId}")
+                // set ingame true
+                myPlayground?.let {
+                    var activeRequest = mutableListOf<Playground.ActiveRequest>()
+                    if (it.activeRequest != null){
+                        activeRequest = activeRequest.filter { it.friendUserId != requesterUserId }.toMutableList()
+                    }
+                    myPlayground = it.copy(
+                        inGame = true,
+                        activeRequest = activeRequest
+                    )
+                    scope.launch {
+                        database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(userId)
+                            .setValue(myPlayground)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    override suspend fun createGameSession(sessionId: String,friendUserId : String) {
+        try { // create common game session
+            scope.launch(Dispatchers.IO) {
+                val playerOneState = BoardState.Player(userId = sessionId, indexes = emptyList())
+                val playerTwoState = BoardState.Player(userId = friendUserId, indexes = emptyList())
+                val gameBoard = BoardState(
+                    currentUserTurnId = sessionId,
+                    playerOneState = playerOneState,
+                    playerTwoState = playerTwoState
+                )
+                database.getReference("${Constants.GAME_SESSION}").child(sessionId).setValue(gameBoard)
+            }
+        }catch (e : FirebaseException){
+            Log.e(TAG, "createGameSession: ${e.message}")
+        }
+    }
+
+    override suspend fun updateGameBoard(sessionId : String,gameBoardState: BoardState) {
+        try {
+            scope.launch(Dispatchers.IO) {
+                database.getReference(Constants.GAME_SESSION).child(sessionId).setValue(gameBoardState)
+            }
+        }catch (e : FirebaseException){
+            Log.e(TAG, "updateGameBoard: ${e.message}")
+        }
+    }
+
+    override suspend fun fetchGameBoardInfoAndStore(sessionId: String) {
+        database.getReference(Constants.GAME_SESSION)
+            .child(sessionId)
+            .addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                   try {
+                       val boardState = snapshot.getValue(BoardState::class.java)
+                           ?: throw Exception("Game Board is Null")
+                       boardState?.let {
+                           scope.launch(Dispatchers.IO) {
+                               dataStoreRepository.updateBoardState(it)
+                           }
+                       }
+                   }catch (e : java.lang.Exception){
+                       Log.e(TAG, "fetchGameBoardInfoAndStore: ${e.message}")
+                   }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
+    }
+
+    override suspend fun removeGameBoard(sessionId: String) {
+        try { // remove game session
+            scope.launch(Dispatchers.IO) {
+                database.getReference("${Constants.GAME_SESSION}").child(sessionId).removeValue()
+            }
+            scope.launch(Dispatchers.IO) {
+                dataStoreRepository.clearGameBoard()
+            }
+        }catch (e : FirebaseException){
+            Log.e(TAG, "createGameSession: ${e.message}")
+        }
+    }
+
 }

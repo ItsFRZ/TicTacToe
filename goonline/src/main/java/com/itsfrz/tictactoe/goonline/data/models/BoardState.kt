@@ -7,11 +7,12 @@ import kotlinx.serialization.Serializable
 data class BoardState(
     @SerialName("playerOneState")val playerOneState : Player? = null,
     @SerialName("playerTwoState")val playerTwoState : Player? = null,
-    @SerialName("currentUserTurnId")val currentUserTurnId : String? = ""
+    @SerialName("currentUserTurnId")val currentUserTurnId : String = "",
+    @SerialName("gameWinnerId") val gameWinnerId : String = ""
 ){
     @Serializable
     data class Player(
-        @SerialName("userId")val userId : String? = null,
-        @SerialName("indexes")val indexes : List<Int>? = null
+        @SerialName("userId")val userId : String = "",
+        @SerialName("indexes")val indexes : List<Int> = emptyList()
     )
 }

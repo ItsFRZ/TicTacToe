@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
@@ -46,8 +47,11 @@ class UserRegistrationViewModel(
                 cloudRepository.updateUserProfile(userProfile)
             }
             launch(Dispatchers.IO) {
-                gameStoreRepository.updateUserInfo(_usernameValue.value)
+                gameStoreRepository.updateUserInfo(secret.lowercase())
                 gameStoreRepository.updateUserProfile(userProfile)
+            }
+            launch(Dispatchers.IO) {
+                gameStoreRepository.updatePlayground(Playground(userId = secret.lowercase()))
             }
         }
     }

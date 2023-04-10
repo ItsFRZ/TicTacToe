@@ -19,27 +19,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.GameResult
+import com.itsfrz.tictactoe.friend.viewmodel.FriendPageViewModel
 import com.itsfrz.tictactoe.game.presentation.components.GameBoard
 import com.itsfrz.tictactoe.game.presentation.components.GameDivider
 import com.itsfrz.tictactoe.game.presentation.components.UserMove
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModel
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModelFactory
+import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
+import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
+import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
+import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
 import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.ThemeBlueLight
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
 
 class GameFragment : Fragment(){
 
+    private var job : Job? = null
     private lateinit var viewModel: GameViewModel
     private lateinit var gameMode : GameMode
+    private lateinit var cloudRepository: CloudRepository
+    private lateinit var dataStoreRepository  : GameStoreRepository
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -55,12 +67,57 @@ class GameFragment : Fragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModelFactory = GameViewModelFactory()
+        setUpOnlineConfig()
+        val viewModelFactory = GameViewModelFactory(cloudRepository,dataStoreRepository)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[GameViewModel::class.java]
         gameMode = requireArguments().getSerializable("GameMode") as GameMode
         Log.i("GAME_MODE", "onCreate: Game Mode ${gameMode}")
         viewModel.setGameMode(gameMode)
         viewModel.setAITurn()
+        setUpNavArgs()
+        job = CoroutineScope(Dispatchers.IO).launch {
+            dataStoreRepository.fetchPreference().collectLatest {
+                viewModel.onEvent(GameUsecase.UpdateUserId(it.userProfile?.userId ?: ""))
+                cloudRepository.fetchGameBoardInfoAndStore(viewModel.gameSessionId.value)
+                it.boardState?.let {
+                    viewModel.gameBoardUpdate(it)
+                }
+                it.playGround?.let {
+                    viewModel.playGroundUpdate(it)
+                }
+            }
+        }
+    }
+
+    private fun setUpNavArgs() {
+        val friendUserId = requireArguments().getString("friendId")
+        friendUserId?.let {
+            if (it.isNotEmpty())
+                viewModel.onEvent(GameUsecase.UpdateFriendUserId(it))
+        }
+        val userId = requireArguments().getString("userId")
+        userId?.let {
+            if (it.isNotEmpty())
+                viewModel.onEvent(GameUsecase.UpdateUserId(it))
+        }
+        val gameSessionId = requireArguments().getString("sessionId")
+        gameSessionId?.let {
+            if (it.isNotEmpty()) {
+                viewModel.onEvent(GameUsecase.OnUpdateGameSessionId(it))
+                viewModel.onEvent(GameUsecase.OnUpdateCurrentUserId(it))
+            }
+        }
+    }
+
+    private fun setUpOnlineConfig() {
+        val database = FirebaseDB
+        val gameStore =  GameDataStore.getDataStore(requireContext())
+        dataStoreRepository = IGameStoreRepository(gameStore)
+        cloudRepository = CloudRepository(
+            database = database,
+            dataStoreRepository = dataStoreRepository,
+            scope = CoroutineScope(Dispatchers.IO)
+        )
     }
 
     override fun onCreateView(
@@ -89,7 +146,8 @@ class GameFragment : Fragment(){
                 val gameResult = viewModel.gameResult.value
                 val onBackPress = viewModel.onBackPress.value
                 val isDelayed = viewModel.isDelayed.value
-
+                val userId = viewModel.userId.value
+                val currentUserId = viewModel.currentUserId.value
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .background(color = PrimaryLight),
@@ -118,8 +176,10 @@ class GameFragment : Fragment(){
                         .fillMaxWidth()
                         .height(80.dp))
                     GameBoard(
-                        crossList = playerOneData,
-                        rightList = playerTwoData,
+                        crossList = if (gameMode == GameMode.FRIEND) playerTwoData else playerOneData,
+                        rightList = if (gameMode == GameMode.FRIEND) playerOneData else playerTwoData,
+                        userId = userId,
+                        currentUserId = currentUserId,
                         gameMode = gameMode,
                         winnerIndexList = winnerIndexList,
                         isWinner = gameResult != GameResult.NONE,
@@ -136,7 +196,11 @@ class GameFragment : Fragment(){
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(20.dp))
-                    UserMove(username = if (playerTurns) "Player 2" else "Player 1", isCross = playerTurns)
+                    if (gameMode == GameMode.FRIEND){
+                        UserMove(username = if (currentUserId == userId) "Your Turn" else "Opponent's Turn", isCross = currentUserId == userId)
+                    }else{
+                        UserMove(username = if (playerTurns) "Player 2" else "Player 1", isCross = playerTurns)
+                    }
                 }
                 if (gameResult != GameResult.NONE){
                     LaunchedEffect(Unit){
@@ -171,6 +235,7 @@ class GameFragment : Fragment(){
                                     ) {
                                         view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                                         viewModel.onEvent(GameUsecase.OnGameRetry)
+                                        viewModel.onEvent(GameUsecase.OnClearGameBoard)
 //                                Toast.makeText(requireContext(), "${if (playerTurns) "Player 2" else "Player 1"} has Won \t\uD83E\uDD29", Toast.LENGTH_SHORT).show()
                                     }
                                 }
@@ -183,6 +248,7 @@ class GameFragment : Fragment(){
                                     ) {
                                         view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                                         viewModel.onEvent(GameUsecase.OnGameRetry)
+                                        viewModel.onEvent(GameUsecase.OnClearGameBoard)
                                     }
                                 }
                                 else -> {}
@@ -206,7 +272,10 @@ class GameFragment : Fragment(){
                             verticalArrangement = Arrangement.Center
                         ) {
                             GameDialogue.GameExitDialogue(
-                                onExitEvent = { findNavController().navigateUp() },
+                                onExitEvent = {
+                                    viewModel.onEvent(GameUsecase.GameExitEvent)
+                                    findNavController().navigateUp()
+                                              },
                                 onContinueEvent = {
                                     viewModel.onEvent(GameUsecase.OnBackPress(false))
                                 }
@@ -223,10 +292,9 @@ class GameFragment : Fragment(){
 
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        job?.cancel()
     }
-
 
 }

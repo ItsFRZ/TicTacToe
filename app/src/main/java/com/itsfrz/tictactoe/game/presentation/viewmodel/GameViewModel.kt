@@ -9,12 +9,19 @@ import androidx.lifecycle.viewModelScope
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.GameResult
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
+import com.itsfrz.tictactoe.goonline.data.models.BoardState
+import com.itsfrz.tictactoe.goonline.data.models.Playground
+import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
+import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
 import com.itsfrz.tictactoe.minimax.GameBrain
 import com.itsfrz.tictactoe.minimax.IGameBrain
 import com.itsfrz.tictactoe.minimax.Move
 import kotlinx.coroutines.*
 
-class GameViewModel : ViewModel() {
+class GameViewModel(
+    private val cloudRepository: CloudRepository,
+    private val gameStoreRepository: GameStoreRepository
+) : ViewModel() {
 
     private val TAG = "GVM"
 
@@ -56,6 +63,25 @@ class GameViewModel : ViewModel() {
     private val _isDelayed: MutableState<Boolean> = mutableStateOf(false)
     val isDelayed = _isDelayed
 
+
+    // Online Config
+    private val _friendUserId: MutableState<String> = mutableStateOf("")
+    val friendUserId = _friendUserId
+
+    private val _userId: MutableState<String> = mutableStateOf("")
+    val userId = _userId
+
+    private val _currentUserId: MutableState<String> = mutableStateOf("")
+    val currentUserId = _currentUserId
+
+    private val _gameSessionId : MutableState<String> = mutableStateOf("")
+    val gameSessionId = _gameSessionId
+
+    private val _gameBoardState : MutableState<BoardState> = mutableStateOf(BoardState())
+    val gameBoardState = _gameBoardState
+
+    private val _playGround : MutableState<Playground> = mutableStateOf(Playground())
+
     init {
         getRandomTurnGenerator()
         timeLimitStart()
@@ -93,6 +119,10 @@ class GameViewModel : ViewModel() {
                     setGameMap(event.index)
                     playGame()
                 }
+
+                if (gameMode == GameMode.FRIEND){
+                    updatePlayerData(event.index)
+                }
             }
             is GameUsecase.OnAIMove -> {
                 viewModelScope.launch {
@@ -110,6 +140,26 @@ class GameViewModel : ViewModel() {
             }
             is GameUsecase.OnDelayLaunch -> {
                 _isDelayed.value = event.delayValue
+            }
+            is GameUsecase.UpdateUserId -> {
+                _userId.value = event.userId
+            }
+            is GameUsecase.UpdateFriendUserId -> {
+                _friendUserId.value = event.userId
+            }
+            is GameUsecase.GameExitEvent -> {
+                removeGameBoard()
+                updatePlayGround()
+            }
+            is GameUsecase.OnUpdateGameSessionId -> {
+                _gameSessionId.value = event.sessionId
+            }
+            is GameUsecase.OnClearGameBoard -> {
+                removeGameBoard()
+                updatePlayGround()
+            }
+            is GameUsecase.OnUpdateCurrentUserId -> {
+                _currentUserId.value = event.currentUserId
             }
         }
     }
@@ -141,7 +191,9 @@ class GameViewModel : ViewModel() {
                 checkDraw()
             }
             GameMode.FRIEND -> {
-
+                resetTimeLimit()
+                checkGameWinner()
+                checkDraw()
             }
             GameMode.RANDOM -> {
 
@@ -388,4 +440,82 @@ class GameViewModel : ViewModel() {
                 onEvent(GameUsecase.OnAIMove)
         }
     }
+
+    // Set user to play its move
+    fun gameBoardUpdate(gameBoard: BoardState) {
+        _currentUserId.value = gameBoard.currentUserTurnId
+        _friendUserId.value = if (_userId.value == _gameSessionId.value) gameBoard.playerTwoState?.userId ?: ""
+            else gameBoard.playerOneState?.userId ?: ""
+        if (_gameSessionId.value == _userId.value){ // Player 1
+            _playerOneIndex.value = ArrayList(gameBoard.playerOneState?.indexes ?: emptyList())
+            _playerTwoIndex.value = ArrayList(gameBoard.playerTwoState?.indexes ?: emptyList())
+        }else{
+            _playerOneIndex.value = ArrayList(gameBoard.playerTwoState?.indexes ?: emptyList())
+            _playerTwoIndex.value = ArrayList(gameBoard.playerOneState?.indexes ?: emptyList())
+        }
+        _gameBoardState.value = gameBoard
+        updateGameMapIndexes(_playerOneIndex.value)
+        updateGameMapIndexes(_playerTwoIndex.value)
+    }
+
+    private fun updateGameMapIndexes(indexes: ArrayList<Int>) {
+        indexes.forEach {
+            setGameMap(it)
+        }
+    }
+
+    private fun updatePlayerData(index : Int) {
+        var boardState = _gameBoardState.value
+        if (_gameSessionId.value == _userId.value){ // Player 1
+            var playerOneState : BoardState.Player = boardState?.playerOneState ?: BoardState.Player(userId = _gameSessionId.value, indexes = emptyList())
+
+            var indexList = ArrayList(boardState.playerOneState?.indexes ?: emptyList())
+            indexList.add(index)
+            playerOneState = playerOneState.copy(
+                indexes = indexList
+            )
+
+            boardState = boardState.copy(
+                currentUserTurnId = _friendUserId.value,
+                playerOneState = playerOneState,
+                playerTwoState = _gameBoardState.value.playerTwoState
+            )
+        }else{
+            var playerTwoState : BoardState.Player = boardState?.playerTwoState ?: BoardState.Player(userId = _userId.value, indexes = emptyList())
+
+            var indexList = ArrayList(boardState.playerTwoState?.indexes ?: emptyList())
+            indexList.add(index)
+            playerTwoState = playerTwoState.copy(
+                indexes = indexList
+            )
+
+            boardState = boardState.copy(
+                currentUserTurnId = _friendUserId.value,
+                playerOneState = _gameBoardState.value.playerOneState,
+                playerTwoState = playerTwoState
+            )
+        }
+        Log.i("CURRENT_USER_ID", "updatePlayerData: Current UserId ${_currentUserId.value}")
+        Log.i("CURRENT_USER_ID", "updatePlayerData: Updated Friend UserId ${_friendUserId.value}")
+        viewModelScope.launch(Dispatchers.IO) {
+            cloudRepository.updateGameBoard(_gameSessionId.value,boardState)
+        }
+    }
+
+    private fun removeGameBoard(){
+        viewModelScope.launch(Dispatchers.IO) {
+            cloudRepository.removeGameBoard(_gameSessionId.value)
+        }
+    }
+
+    fun playGroundUpdate(playground: Playground) {
+        _playGround.value = playground
+    }
+
+    private fun updatePlayGround() {
+        viewModelScope.launch(Dispatchers.IO) {
+            cloudRepository.updatePlayground(_playGround.value.copy(inGame = false))
+        }
+    }
+
 }

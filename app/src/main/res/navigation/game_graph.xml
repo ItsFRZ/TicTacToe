@@ -26,4 +26,8 @@
         android:id="@+id/gameFragment"
         android:name="com.itsfrz.tictactoe.game.presentation.GameFragment"
         android:label="GameFragment" />
+    <fragment
+        android:id="@+id/friendFragment"
+        android:name="com.itsfrz.tictactoe.friend.FriendFragment"
+        android:label="FriendFragment" />
 </navigation>
