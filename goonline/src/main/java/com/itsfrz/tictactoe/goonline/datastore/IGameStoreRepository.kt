@@ -24,6 +24,10 @@ class IGameStoreRepository(private val dataStore : DataStore<GameDataStore>) : G
         }
     }
 
+    override suspend fun fetchUserInfo() : String {
+        return dataStore.data.firstOrNull()?.userId ?: ""
+    }
+
     override suspend fun updateUserProfile(userProfile: UserProfile) {
         try{
             Log.i(TAG, "updateUserProfile: ${userProfile}")

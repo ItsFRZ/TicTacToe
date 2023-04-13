@@ -12,11 +12,8 @@ import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 class FriendPageViewModel(
     private val cloudRepository: CloudRepository,
@@ -55,8 +52,26 @@ class FriendPageViewModel(
     private val _gameSessionId : MutableState<String> = mutableStateOf("")
     val gameSessionId = _gameSessionId
 
+    private val _inGameState : MutableState<Boolean> = mutableStateOf(false)
+    val inGameState : State<Boolean> = _inGameState
+
     private var job : Job? = null
 
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            gameStoreRepository.fetchPreference().collectLatest{
+                it.let {
+                    if (it.userId.isNotEmpty()) {
+                        it.playGround?.let {
+                            _inGameState.value = it.inGame
+                        }
+                        cloudRepository.fetchPlaygroundInfoAndStore(it.userId)
+                    }
+                }
+            }
+        }
+    }
 
     fun onEvent(event : FriendPageUseCase){
         when(event){
@@ -131,7 +146,7 @@ class FriendPageViewModel(
     fun updateFriendList(friendList: List<Playground.Friend>?) {
         friendList?.let {
             Log.i(TAG, "updateFriendList: ${friendList}")
-            _friendList.value = friendList.sortedWith(compareBy<Playground.Friend>({!it.online}).thenBy { it.username }).toSet().toList()
+            _friendList.value = friendList.sortedWith(compareBy<Playground.Friend>({!it.online}).thenBy { it.username }).toSet().toList().filter { it.userId != userId.value }
         }
     }
 

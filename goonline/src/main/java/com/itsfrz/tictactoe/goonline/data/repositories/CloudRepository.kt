@@ -122,6 +122,8 @@ class CloudRepository(
                                 dataStoreRepository.updateFriendData(userProfile)
                                 updateFriendDataInServer(userId,userProfile)
                             }
+                            scope.launch {
+                            }
                         }
                     }
 
@@ -151,8 +153,42 @@ class CloudRepository(
                         Log.i(TAG, "searchAndStoreFriend: Search Result Not Found")
                     }
                 })
+
+            updateMyIdInFriendsPlayground(friendUserId)
         }catch (e : FirebaseException){
             Log.e(TAG, "fetchUserProfileInfo: ${e.message}")
+        }
+    }
+
+    private suspend fun updateMyIdInFriendsPlayground(friendId : String) {
+        val myProfile = dataStoreRepository.fetchPreference().firstOrNull()
+        myProfile?.let { myProfile ->
+            database.getReference(Constants.USER_PLAYGROUND).child(friendId)
+                .addValueEventListener(object : ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        var userPlayground = snapshot.getValue<Playground>()
+                        userPlayground?.let {
+                            val friendList = arrayListOf<Playground.Friend>()
+                            if (it.friendList.isNotEmpty())
+                                friendList.addAll(it.friendList)
+
+                            friendList.forEach {
+                                if (it.userId == myProfile.userId)
+                                    return
+                            }
+                            myProfile.also {
+                                friendList.add(Playground.Friend(userId = it.userId,online = true, username = it.userProfile?.username ?: "",))
+                            }
+                            userPlayground = it.copy(friendList = friendList)
+                            database.getReference(Constants.USER_PLAYGROUND).child(friendId)
+                                .setValue(userPlayground)
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                })
         }
     }
 
@@ -364,6 +400,12 @@ class CloudRepository(
         try { // remove game session
             scope.launch(Dispatchers.IO) {
                 database.getReference("${Constants.GAME_SESSION}").child(sessionId).removeValue()
+                val data = dataStoreRepository.fetchPreference().firstOrNull()
+                data?.let { it ->
+                    it.playGround?.let {
+                        updatePlayground(it.copy(inGame = false))
+                    }
+                }
             }
             scope.launch(Dispatchers.IO) {
                 dataStoreRepository.clearGameBoard()

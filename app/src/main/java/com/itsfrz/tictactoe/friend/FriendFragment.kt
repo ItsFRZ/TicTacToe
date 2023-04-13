@@ -64,26 +64,13 @@ class FriendFragment : Fragment() {
 
     }
 
+
     fun setupGameEngine(){
         job = CoroutineScope(Dispatchers.IO).launch {
             dataStoreRepository.fetchPreference().collectLatest {
-                if (!it.userId.isNullOrEmpty()) {
-                    cloudRepository.fetchPlaygroundInfoAndStore(it.userId)
-                }
                 viewModel.setupUserDetail(it.userProfile)
                 viewModel.updateFriendList(it.playGround?.friendList)
                 viewModel.updateActiveRequestList(it.playGround?.activeRequest)
-                withContext(Dispatchers.Main){
-                    if (it.playGround?.inGame == true){
-                        val gameBundle = bundleOf()
-                        gameBundle.putSerializable("GameMode", GameMode.FRIEND)
-                        gameBundle.putString("userId",viewModel.userId.value)
-                        gameBundle.putString("friendId",viewModel.friendRequestId.value)
-                        gameBundle.putString("sessionId",viewModel.gameSessionId.value)
-                        findNavController().navigate(R.id.gameFragment,gameBundle)
-                        viewModel.onEvent(FriendPageUseCase.OnRequestLoaderVisibilityToggle(false))
-                    }
-                }
             }
         }
     }
@@ -110,6 +97,16 @@ class FriendFragment : Fragment() {
                 val requestList = viewModel.playRequestList.value
                 val isLoaderActive = viewModel.loaderState.value
                 val playRequestLoader = viewModel.playRequestLoader.value
+                val inGame = viewModel.inGameState.value
+                if (inGame){
+                    val gameBundle = bundleOf()
+                    gameBundle.putSerializable("GameMode", GameMode.FRIEND)
+                    gameBundle.putString("userId",viewModel.userId.value)
+                    gameBundle.putString("friendId",viewModel.friendRequestId.value)
+                    gameBundle.putString("sessionId",viewModel.gameSessionId.value)
+                    findNavController().navigate(R.id.gameFragment,gameBundle)
+                    viewModel.onEvent(FriendPageUseCase.OnRequestLoaderVisibilityToggle(false))
+                }
 
                 Box(
                     modifier = Modifier.fillMaxSize(),

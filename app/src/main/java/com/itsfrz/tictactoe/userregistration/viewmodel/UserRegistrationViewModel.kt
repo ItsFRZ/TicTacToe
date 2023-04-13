@@ -43,12 +43,14 @@ class UserRegistrationViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val secret = "${(0..10000).random()}${_usernameValue.value.hashCode()}${System.currentTimeMillis()}"
             val userProfile = UserProfile(userId = secret.lowercase(), username = _usernameValue.value)
-            launch(Dispatchers.IO) {
-                cloudRepository.updateUserProfile(userProfile)
-            }
+            val userPlayground = Playground().copy(userId = secret.lowercase(), online = true)
             launch(Dispatchers.IO) {
                 gameStoreRepository.updateUserInfo(secret.lowercase())
                 gameStoreRepository.updateUserProfile(userProfile)
+            }
+            launch(Dispatchers.IO) {
+                cloudRepository.updateUserProfile(userProfile)
+                cloudRepository.updatePlayground(userPlayground)
             }
             launch(Dispatchers.IO) {
                 gameStoreRepository.updatePlayground(Playground(userId = secret.lowercase()))

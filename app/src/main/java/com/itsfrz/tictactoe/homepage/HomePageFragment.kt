@@ -1,11 +1,15 @@
 package com.itsfrz.tictactoe.homepage
 
+import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -35,8 +39,10 @@ import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
 import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
+import com.itsfrz.tictactoe.homepage.usecase.HomePageUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class HomePageFragment : Fragment() {
     private lateinit var viewModel: HomePageViewModel
@@ -66,6 +72,7 @@ class HomePageFragment : Fragment() {
         )
     }
 
+    @SuppressLint("ServiceCast")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,6 +80,7 @@ class HomePageFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val gameBundle = bundleOf()
+                val userId = viewModel.userId.value
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .background(color = PrimaryLight),
@@ -128,10 +136,20 @@ class HomePageFragment : Fragment() {
                         .height(10.dp)
                         .fillMaxWidth())
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 80.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 80.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        CustomCircleIconButton(iconButtonClick = { /*TODO*/ }, buttonIcon = R.drawable.ic_share)
+                        CustomCircleIconButton(iconButtonClick = {
+                             viewModel.onEvent(HomePageUseCase.OnCopyUserIdEvent)
+                             CoroutineScope(Dispatchers.IO).launch {
+                                 val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                 val clipData = ClipData.newPlainText("User Id Copied",userId)
+                                 clipboard.setPrimaryClip(clipData)
+                             }
+                             Toast.makeText(requireContext(), "User Id Copied ${if (userId.length >= 8) userId.substring(0,8) else userId}...", Toast.LENGTH_SHORT).show()
+                        }, buttonIcon = R.drawable.ic_share)
                         CustomCircleIconButton(iconButtonClick = { /*TODO*/ }, buttonIcon = R.drawable.ic_settings)
                     }
 

@@ -82,6 +82,12 @@ class GameViewModel(
 
     private val _playGround : MutableState<Playground> = mutableStateOf(Playground())
 
+    private val _onlineGameWinner : MutableState<String> = mutableStateOf("")
+    val onlineGameWinner = _onlineGameWinner
+
+    private val _isGameDraw: MutableState<Boolean> = mutableStateOf(false)
+    val isGameDraw = _isGameDraw
+
     init {
         getRandomTurnGenerator()
         timeLimitStart()
@@ -221,6 +227,10 @@ class GameViewModel(
                     _gameResult.value = GameResult.DRAW
                 }
             }
+            GameMode.FRIEND -> {
+                if (isDraw)
+                    _gameResult.value = GameResult.DRAW
+            }
             else -> {}
         }
     }
@@ -243,7 +253,18 @@ class GameViewModel(
                         _gameResult.value = GameResult.WIN
                     }
                 }
-                else -> {}
+                GameMode.FRIEND -> {
+                    if (_currentUserId.value == _userId.value){
+                        _onlineGameWinner.value = _friendUserId.value
+                        _gameResult.value = GameResult.LOSE
+                    }else {
+                        _onlineGameWinner.value = _userId.value
+                        _gameResult.value = GameResult.WIN
+                    }
+                    initiateExitGameRequest()
+                }
+                else -> {
+                }
             }
         }
     }
@@ -362,6 +383,18 @@ class GameViewModel(
         Log.i(TAG, "setWinnerList: ${winIndexes}")
     }
 
+
+    private fun setGameMap(index: Int,inputData : Int) {
+        if (index in 0..2){
+            gameMap.get(0).set(index,inputData)
+        }else if (index in 3..5){
+            gameMap.get(1).set(index-3,inputData)
+        }else if(index in 6..8){
+            gameMap.get(2).set(index-6,inputData)
+        }
+        Log.i("GameMap", "setGameMap: ${gameMap.toString()}")
+    }
+
     private fun setGameMap(index: Int) {
         val inputData = if (_isUserTurnsComplete.value) 1 else 2
         if (index in 0..2){
@@ -443,9 +476,14 @@ class GameViewModel(
 
     // Set user to play its move
     fun gameBoardUpdate(gameBoard: BoardState) {
+        if (gameBoard.resetTimer)
+            resetTimeLimit()
+        if (_onlineGameWinner.value.isNotEmpty() || isGameDraw.value){
+            return
+        }
         _currentUserId.value = gameBoard.currentUserTurnId
         _friendUserId.value = if (_userId.value == _gameSessionId.value) gameBoard.playerTwoState?.userId ?: ""
-            else gameBoard.playerOneState?.userId ?: ""
+        else gameBoard.playerOneState?.userId ?: ""
         if (_gameSessionId.value == _userId.value){ // Player 1
             _playerOneIndex.value = ArrayList(gameBoard.playerOneState?.indexes ?: emptyList())
             _playerTwoIndex.value = ArrayList(gameBoard.playerTwoState?.indexes ?: emptyList())
@@ -454,13 +492,25 @@ class GameViewModel(
             _playerTwoIndex.value = ArrayList(gameBoard.playerOneState?.indexes ?: emptyList())
         }
         _gameBoardState.value = gameBoard
-        updateGameMapIndexes(_playerOneIndex.value)
-        updateGameMapIndexes(_playerTwoIndex.value)
+        updateGameMapIndexes(_playerOneIndex.value,1)
+        updateGameMapIndexes(_playerTwoIndex.value,2)
+        checkGameWinner()
+        checkDraw()
     }
 
-    private fun updateGameMapIndexes(indexes: ArrayList<Int>) {
+    private fun initiateExitGameRequest() {
+        viewModelScope.launch(Dispatchers.IO) {
+//            val playerOneData = _gameBoardState.value.playerOneState?.copy(indexes = emptyList())
+//            val playerTwoData = _gameBoardState.value.playerTwoState?.copy(indexes = emptyList())
+//            val currentUserTurn = if (_currentUserId.value == _userId.value) _friendUserId.value else _userId.value
+            _gameBoardState.value = _gameBoardState.value.copy(gameWinnerId = _onlineGameWinner.value, resetTimer = false, currentUserTurnId = "")
+            cloudRepository.updateGameBoard(_gameSessionId.value, gameBoardState = _gameBoardState.value)
+        }
+    }
+
+    private fun updateGameMapIndexes(indexes: ArrayList<Int>,playerMoveValue : Int) {
         indexes.forEach {
-            setGameMap(it)
+            setGameMap(it,playerMoveValue)
         }
     }
 
@@ -497,6 +547,7 @@ class GameViewModel(
         }
         Log.i("CURRENT_USER_ID", "updatePlayerData: Current UserId ${_currentUserId.value}")
         Log.i("CURRENT_USER_ID", "updatePlayerData: Updated Friend UserId ${_friendUserId.value}")
+        boardState = boardState.copy(resetTimer = true, gameWinnerId = _onlineGameWinner.value, gameDraw = _isGameDraw.value)
         viewModelScope.launch(Dispatchers.IO) {
             cloudRepository.updateGameBoard(_gameSessionId.value,boardState)
         }

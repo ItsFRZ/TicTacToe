@@ -75,19 +75,8 @@ class GameFragment : Fragment(){
         viewModel.setGameMode(gameMode)
         viewModel.setAITurn()
         setUpNavArgs()
-        job = CoroutineScope(Dispatchers.IO).launch {
-            dataStoreRepository.fetchPreference().collectLatest {
-                viewModel.onEvent(GameUsecase.UpdateUserId(it.userProfile?.userId ?: ""))
-                cloudRepository.fetchGameBoardInfoAndStore(viewModel.gameSessionId.value)
-                it.boardState?.let {
-                    viewModel.gameBoardUpdate(it)
-                }
-                it.playGround?.let {
-                    viewModel.playGroundUpdate(it)
-                }
-            }
-        }
     }
+
 
     private fun setUpNavArgs() {
         val friendUserId = requireArguments().getString("friendId")
@@ -148,14 +137,13 @@ class GameFragment : Fragment(){
                 val isDelayed = viewModel.isDelayed.value
                 val userId = viewModel.userId.value
                 val currentUserId = viewModel.currentUserId.value
+                val friendUserId = viewModel.friendUserId.value
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .background(color = PrimaryLight),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp))
+                    Spacer(modifier = Modifier.fillMaxWidth().height(20.dp))
                     Row(modifier = Modifier
                         .padding(horizontal = 30.dp)
                         .height(30.dp)
@@ -174,7 +162,7 @@ class GameFragment : Fragment(){
                     GameDivider()
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
-                        .height(80.dp))
+                        .height(40.dp))
                     GameBoard(
                         crossList = if (gameMode == GameMode.FRIEND) playerTwoData else playerOneData,
                         rightList = if (gameMode == GameMode.FRIEND) playerOneData else playerTwoData,
@@ -191,13 +179,13 @@ class GameFragment : Fragment(){
                     )
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
-                        .height(80.dp))
+                        .height(40.dp))
                     GameDivider()
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(20.dp))
                     if (gameMode == GameMode.FRIEND){
-                        UserMove(username = if (currentUserId == userId) "Your Turn" else "Opponent's Turn", isCross = currentUserId == userId)
+                        UserMove(username = if (currentUserId == userId) "Your " else "Opponent's Turn", isCross = currentUserId == friendUserId)
                     }else{
                         UserMove(username = if (playerTurns) "Player 2" else "Player 1", isCross = playerTurns)
                     }
@@ -230,19 +218,20 @@ class GameFragment : Fragment(){
                                         winnerUsername = if (playerTurns) "Player 1" else "Player 2",
                                         dialogueButtonText = "Play Again",
                                         onCloseEvent = {
+                                            viewModel.onEvent(GameUsecase.GameExitEvent)
                                             findNavController().navigateUp()
                                         }
                                     ) {
                                         view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                                         viewModel.onEvent(GameUsecase.OnGameRetry)
                                         viewModel.onEvent(GameUsecase.OnClearGameBoard)
-//                                Toast.makeText(requireContext(), "${if (playerTurns) "Player 2" else "Player 1"} has Won \t\uD83E\uDD29", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                                 GameResult.DRAW,GameResult.LOSE -> {
                                     GameDialogue.GameDrawLoseDialogue(
                                         gameResult = gameResult,
                                         onCloseEvent = {
+                                            viewModel.onEvent(GameUsecase.GameExitEvent)
                                             findNavController().navigateUp()
                                         }
                                     ) {
@@ -289,11 +278,24 @@ class GameFragment : Fragment(){
 
     override fun onResume() {
         super.onResume()
-
+        job = CoroutineScope(Dispatchers.IO).launch {
+            dataStoreRepository.fetchPreference().collectLatest {
+                viewModel.onEvent(GameUsecase.UpdateUserId(it.userProfile?.userId ?: ""))
+                cloudRepository.fetchPlaygroundInfoAndStore(viewModel.userId.value)
+                cloudRepository.fetchGameBoardInfoAndStore(viewModel.gameSessionId.value)
+                it.boardState?.let {
+                    viewModel.gameBoardUpdate(it)
+                }
+                it.playGround?.let {
+                    viewModel.playGroundUpdate(it)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.onEvent(GameUsecase.GameExitEvent)
         job?.cancel()
     }
 

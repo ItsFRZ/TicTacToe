@@ -8,7 +8,9 @@ data class BoardState(
     @SerialName("playerOneState")val playerOneState : Player? = null,
     @SerialName("playerTwoState")val playerTwoState : Player? = null,
     @SerialName("currentUserTurnId")val currentUserTurnId : String = "",
-    @SerialName("gameWinnerId") val gameWinnerId : String = ""
+    @SerialName("gameWinnerId") val gameWinnerId : String = "",
+    @SerialName("resetTimer") val resetTimer : Boolean = false,
+    @SerialName("gameDraw") val gameDraw : Boolean = false,
 ){
     @Serializable
     data class Player(
