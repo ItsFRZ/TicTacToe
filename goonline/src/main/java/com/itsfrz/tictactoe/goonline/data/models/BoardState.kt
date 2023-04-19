@@ -11,10 +11,19 @@ data class BoardState(
     @SerialName("gameWinnerId") val gameWinnerId : String = "",
     @SerialName("resetTimer") val resetTimer : Boolean = false,
     @SerialName("gameDraw") val gameDraw : Boolean = false,
+    @SerialName("playAgain") val playAgain : PlayRequest? = null,
+
 ){
     @Serializable
     data class Player(
         @SerialName("userId")val userId : String = "",
         @SerialName("indexes")val indexes : List<Int> = emptyList()
+    )
+
+    @Serializable
+    data class PlayRequest(
+        @SerialName("requesterId")val requesterId : String = "",
+        @SerialName("retryRequest")val retryRequest : Boolean = false,
+        @SerialName("acceptRequest") val acceptRequest : Boolean = false
     )
 }

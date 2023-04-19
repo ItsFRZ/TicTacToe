@@ -258,9 +258,12 @@ object GameDialogue{
     }
 
     @Composable
-    fun GameExitDialogue(
+    fun GameDialog(
         onExitEvent : () -> Unit,
         onContinueEvent : () -> Unit,
+        headerText : String = "EXIT",
+        titleText : String = "Do you really want to exit ?",
+        buttonText : String = "Agree"
     ) {
         Card(
             modifier = Modifier
@@ -307,17 +310,17 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
-                Text(text ="EXIT", style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
+                Text(text =headerText, style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
-                Text(text = "Do you really want to exit ?", style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Normal, color = ThemeBlue))
+                Text(text = titleText, style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Normal, color = ThemeBlue))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(10.dp))
                 CustomButton(
                     onButtonClick = { onExitEvent() },
-                    buttonText = "Agree"
+                    buttonText = buttonText
                 )
                 Spacer(modifier = Modifier
                     .wrapContentWidth()

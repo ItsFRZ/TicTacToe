@@ -223,24 +223,55 @@ class CloudRepository(
     }
 
     // request the friend to play + create separate game session
+//    suspend fun requestFriendToPlay(userProfile: UserProfile?,friendUserid : String){
+//        userProfile?.let { currentUser ->
+//            val activeRequest = Playground.ActiveRequest(
+//                friendUserId = userProfile.userId,
+//                requesterUsername = userProfile.username,
+//                online = true,
+//                playResponse = false
+//            )
+//            database.getPlayGroundReference("${Constants.USER_PLAYGROUND}").child("${friendUserid}")
+//                .addListenerForSingleValueEvent(object : ValueEventListener{
+//                    override fun onDataChange(snapshot: DataSnapshot) {
+//                        Log.i(TAG, "requestFriendToPlay: ${snapshot}")
+//                        var friendPlayground = snapshot.getValue(Playground::class.java)
+//                        friendPlayground?.let {
+//                            val activeRequestList = it.fr.toMutableList()
+//                            activeRequestList.add(0,activeRequest)
+//                            friendPlayground = it.copy(
+//                                activeRequest = activeRequestList
+//                            )
+//                            scope.launch {
+//                                database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(friendUserid)
+//                                    .setValue(friendPlayground)
+//                            }
+//                        }
+//                    }
+//
+//                    override fun onCancelled(error: DatabaseError) {
+//                        TODO("Not yet implemented")
+//                    }
+//                })
+//        }
+//    }
+
     suspend fun requestFriendToPlay(userProfile: UserProfile?,friendUserid : String){
         userProfile?.let { currentUser ->
-            val activeRequest = Playground.ActiveRequest(
-                friendUserId = userProfile.userId,
-                requesterUsername = userProfile.username,
-                online = true,
-                playResponse = false
-            )
-            database.getPlayGroundReference("${Constants.USER_PLAYGROUND}").child("${friendUserid}")
+            val userId = userProfile.userId
+            database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(friendUserid)
                 .addListenerForSingleValueEvent(object : ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         Log.i(TAG, "requestFriendToPlay: ${snapshot}")
                         var friendPlayground = snapshot.getValue(Playground::class.java)
                         friendPlayground?.let {
-                            val activeRequestList = it.activeRequest.toMutableList()
-                            activeRequestList.add(0,activeRequest)
+                            var friendList = it.friendList.toMutableList()
+                            var friendItem = friendList.find { it.userId == userId } ?: return
+                            friendList.remove(friendItem)
+                            friendItem = friendItem.copy(playRequest = true)
+                            friendList.add(friendItem)
                             friendPlayground = it.copy(
-                                activeRequest = activeRequestList
+                                friendList = friendList
                             )
                             scope.launch {
                                 database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(friendUserid)
@@ -264,13 +295,13 @@ class CloudRepository(
                     var friendPlayground = snapshot.getValue(Playground::class.java)
                     Log.i(TAG, "cancelFriendPlayRequest: Friend User Id ${friendUserId}")
                     friendPlayground?.let {
-                        var activeRequestList = it.activeRequest.toMutableList()
-                        Log.i(TAG, "onDataChange: ${activeRequestList}")
-                        if (activeRequestList.isNotEmpty()){
-                            activeRequestList = activeRequestList.filter { it.friendUserId != userId }.toMutableList()
-                        }
+                        var friendList = it.friendList.toMutableList()
+                        var friendItem = friendList.find { it.userId == userId } ?: return
+                        friendList.remove(friendItem)
+                        friendItem = friendItem.copy(playRequest = false)
+                        friendList.add(friendItem)
                         friendPlayground = it.copy(
-                            activeRequest = activeRequestList,
+                            friendList = friendList,
                             inGame = false
                         )
                         scope.launch {
@@ -324,18 +355,21 @@ class CloudRepository(
                 Log.i(TAG, "cancelFriendPlayRequest: Friend User Id ${requesterUserId}")
                 // set ingame true
                 myPlayground?.let {
-                    var activeRequest = mutableListOf<Playground.ActiveRequest>()
-                    if (it.activeRequest != null){
-                        activeRequest = activeRequest.filter { it.friendUserId != requesterUserId }.toMutableList()
-                    }
-                    myPlayground = it.copy(
-                        inGame = true,
-                        activeRequest = activeRequest
-                    )
-                    scope.launch {
-                        database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(userId)
-                            .setValue(myPlayground)
-                    }
+
+
+                        var friendList = it.friendList.toMutableList()
+                        var friendItem = friendList.find { it.userId == requesterUserId } ?: return
+                        friendList.remove(friendItem)
+                        friendItem = friendItem.copy(playRequest = false)
+                        friendList.add(friendItem)
+                        myPlayground = it.copy(
+                            friendList = friendList,
+                            inGame = true
+                        )
+                        scope.launch {
+                            database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(userId)
+                                .setValue(myPlayground)
+                        }
                 }
             }
 
@@ -412,6 +446,30 @@ class CloudRepository(
             }
         }catch (e : FirebaseException){
             Log.e(TAG, "createGameSession: ${e.message}")
+        }
+    }
+
+    override suspend fun playAgainRequest(gameSessionId : String,boardState : BoardState) {
+        scope.launch(Dispatchers.IO) {
+            database.getReference(Constants.GAME_SESSION).child(gameSessionId).setValue(boardState)
+        }
+        scope.launch {
+            dataStoreRepository.clearGameBoard()
+        }
+    }
+
+    override suspend fun acceptPlayAgainRequest(gameSessionId: String, boardState: BoardState) {
+        scope.launch {
+            database.getPlayGroundReference(Constants.GAME_SESSION).child(gameSessionId).setValue(boardState)
+        }
+        scope.launch {
+            dataStoreRepository.clearGameBoard()
+        }
+    }
+
+    override suspend fun cancelPlayRequest(userId: String, friendUserId: String) {
+        scope.launch {
+            dataStoreRepository.clearGameBoard()
         }
     }
 

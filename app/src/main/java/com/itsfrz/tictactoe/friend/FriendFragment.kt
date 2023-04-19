@@ -33,6 +33,7 @@ import com.itsfrz.tictactoe.friend.components.FriendSearchBar
 import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 import com.itsfrz.tictactoe.friend.viewmodel.FriendPageViewModel
 import com.itsfrz.tictactoe.friend.viewmodel.FriendPageViewModelFactory
+import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
@@ -68,9 +69,11 @@ class FriendFragment : Fragment() {
     fun setupGameEngine(){
         job = CoroutineScope(Dispatchers.IO).launch {
             dataStoreRepository.fetchPreference().collectLatest {
+                viewModel.userId.value.let { if (it.isNotEmpty()) { cloudRepository.fetchPlaygroundInfoAndStore(it) } }
                 viewModel.setupUserDetail(it.userProfile)
                 viewModel.updateFriendList(it.playGround?.friendList)
                 viewModel.updateActiveRequestList(it.playGround?.activeRequest)
+                it.playGround?.let { viewModel.onEvent(FriendPageUseCase.OnUpdateUserInGameInfo(it.inGame)) }
             }
         }
     }
@@ -97,8 +100,7 @@ class FriendFragment : Fragment() {
                 val requestList = viewModel.playRequestList.value
                 val isLoaderActive = viewModel.loaderState.value
                 val playRequestLoader = viewModel.playRequestLoader.value
-                val inGame = viewModel.inGameState.value
-                if (inGame){
+                if (viewModel.inGameState.value){
                     val gameBundle = bundleOf()
                     gameBundle.putSerializable("GameMode", GameMode.FRIEND)
                     gameBundle.putString("userId",viewModel.userId.value)
@@ -106,8 +108,8 @@ class FriendFragment : Fragment() {
                     gameBundle.putString("sessionId",viewModel.gameSessionId.value)
                     findNavController().navigate(R.id.gameFragment,gameBundle)
                     viewModel.onEvent(FriendPageUseCase.OnRequestLoaderVisibilityToggle(false))
+                    viewModel.onEvent(FriendPageUseCase.OnUpdateUserInGameInfo(false))
                 }
-
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -146,36 +148,14 @@ class FriendFragment : Fragment() {
                                     UserItemLayout(
                                         username = item.username,
                                         isUserOnline = item.online,
-                                        onItemEvent = {
+                                        playRequestEvent = {
                                             viewModel.onEvent(FriendPageUseCase.OnRequestFriendEvent(index))
                                         },
-                                        onAcceptEvent = { /*TODO*/ })
-                                }
-
-                            }
-                            Spacer(modifier = Modifier
-                                .padding(horizontal = 15.dp)
-                                .fillMaxWidth()
-                                .height(0.6.dp)
-                                .background(color = ThemeBlue)
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .padding(horizontal = 15.dp, vertical = 10.dp)
-                                    .fillMaxWidth(),
-                                text = "Play Request's",
-                                style = headerTitle.copy(fontSize = 15.sp, color = ThemeBlue, textAlign = TextAlign.Start, fontWeight = FontWeight.SemiBold)
-                            )
-                            LazyColumn(modifier = Modifier.weight(1F)){
-                                itemsIndexed(requestList) { index, item ->
-                                    UserItemLayout(
-                                        username = item.requesterUsername,
-                                        isUserOnline = item.online,
-                                        isFriendList = false,
-                                        onItemEvent = { /*TODO*/ },
-                                        onAcceptEvent = {
+                                        acceptRequestEvent = {
                                             viewModel.onEvent(FriendPageUseCase.OnAcceptFriendRequestEvent(index))
-                                        })
+                                        },
+                                        isRequested = item.playRequest
+                                    )
                                 }
                             }
                         }
@@ -210,6 +190,8 @@ class FriendFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        job?.cancel()
+        setupGameEngine()
     }
 
     override fun onDestroyView() {

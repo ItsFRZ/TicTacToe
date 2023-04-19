@@ -19,15 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.GameResult
-import com.itsfrz.tictactoe.friend.viewmodel.FriendPageViewModel
+import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 import com.itsfrz.tictactoe.game.presentation.components.GameBoard
 import com.itsfrz.tictactoe.game.presentation.components.GameDivider
 import com.itsfrz.tictactoe.game.presentation.components.UserMove
@@ -75,6 +73,23 @@ class GameFragment : Fragment(){
         viewModel.setGameMode(gameMode)
         viewModel.setAITurn()
         setUpNavArgs()
+
+        job = CoroutineScope(Dispatchers.IO).launch {
+            dataStoreRepository.fetchPreference().collectLatest {
+                viewModel.onEvent(GameUsecase.UpdateUserId(it.userProfile?.userId ?: ""))
+                viewModel.onEvent(GameUsecase.OnUpdateInGameInfo(it.playGround?.inGame ?: true))
+                cloudRepository.fetchPlaygroundInfoAndStore(viewModel.userId.value)
+                cloudRepository.fetchGameBoardInfoAndStore(viewModel.gameSessionId.value)
+                Log.i("BPLAY_AGAIN", "onCreate: Board State ${it.boardState}")
+                it.boardState?.let {
+                    viewModel.gameBoardUpdate(it)
+                }
+                it.playGround?.let {
+                    viewModel.playGroundUpdate(it)
+                }
+
+            }
+        }
     }
 
 
@@ -138,12 +153,17 @@ class GameFragment : Fragment(){
                 val userId = viewModel.userId.value
                 val currentUserId = viewModel.currentUserId.value
                 val friendUserId = viewModel.friendUserId.value
+                val inGame = viewModel.inGame.value
+                val requestDialogState = viewModel.requestDialogState.value
+                val acceptDialogState = viewModel.acceptDialogState.value
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .background(color = PrimaryLight),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.fillMaxWidth().height(20.dp))
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(20.dp))
                     Row(modifier = Modifier
                         .padding(horizontal = 30.dp)
                         .height(30.dp)
@@ -224,20 +244,22 @@ class GameFragment : Fragment(){
                                     ) {
                                         view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                                         viewModel.onEvent(GameUsecase.OnGameRetry)
-                                        viewModel.onEvent(GameUsecase.OnClearGameBoard)
                                     }
                                 }
                                 GameResult.DRAW,GameResult.LOSE -> {
-                                    GameDialogue.GameDrawLoseDialogue(
-                                        gameResult = gameResult,
-                                        onCloseEvent = {
-                                            viewModel.onEvent(GameUsecase.GameExitEvent)
-                                            findNavController().navigateUp()
+                                    if (!acceptDialogState){
+                                        GameDialogue.GameDrawLoseDialogue(
+                                            gameResult = gameResult,
+                                            onCloseEvent = {
+                                                viewModel.onEvent(GameUsecase.GameExitEvent)
+                                                findNavController().navigateUp()
+                                            }
+                                        ) {
+                                            view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                                            viewModel.onEvent(GameUsecase.OnGameRetry)
+                                            if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.AI))
+                                                viewModel.onEvent(GameUsecase.OnClearGameBoard)
                                         }
-                                    ) {
-                                        view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-                                        viewModel.onEvent(GameUsecase.OnGameRetry)
-                                        viewModel.onEvent(GameUsecase.OnClearGameBoard)
                                     }
                                 }
                                 else -> {}
@@ -245,7 +267,7 @@ class GameFragment : Fragment(){
                         }
                     }
                 }
-                if (onBackPress){
+                if (onBackPress || !inGame){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -260,14 +282,69 @@ class GameFragment : Fragment(){
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            GameDialogue.GameExitDialogue(
+                            GameDialogue.GameDialog(
                                 onExitEvent = {
-                                    viewModel.onEvent(GameUsecase.GameExitEvent)
                                     findNavController().navigateUp()
-                                              },
+                                    viewModel.onEvent(GameUsecase.GameExitEvent)
+                                    viewModel.onEvent(GameUsecase.OnBackPress(false))
+                                },
                                 onContinueEvent = {
                                     viewModel.onEvent(GameUsecase.OnBackPress(false))
-                                }
+                                },
+                                titleText = if (!inGame) "Opponent Left The Game\nDo you want to exit ?" else "Do you really want to exit ?"
+                            )
+                        }
+                    }
+                }
+                if (requestDialogState){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = PrimaryLight)
+                            .clickable { }
+                            .padding(horizontal = 30.dp),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            GameDialogue.PlayRequestBox {
+                                viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
+                                viewModel.onEvent(GameUsecase.OnClearGameBoard)
+                                findNavController().navigateUp()
+                            }
+                        }
+                    }
+                }
+                if (acceptDialogState){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = PrimaryLight)
+                            .clickable { }
+                            .padding(horizontal = 30.dp),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            GameDialogue.GameDialog(
+                                onExitEvent = {
+                                    viewModel.onEvent(GameUsecase.OnAcceptPlayAgainRequest)
+                                },
+                                onContinueEvent = {
+                                    findNavController().navigateUp()
+                                    viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
+                                },
+                                headerText = "Play Request",
+                                titleText = "Do you want to play again ?",
+                                buttonText = "Yes"
                             )
                         }
                     }
@@ -278,19 +355,6 @@ class GameFragment : Fragment(){
 
     override fun onResume() {
         super.onResume()
-        job = CoroutineScope(Dispatchers.IO).launch {
-            dataStoreRepository.fetchPreference().collectLatest {
-                viewModel.onEvent(GameUsecase.UpdateUserId(it.userProfile?.userId ?: ""))
-                cloudRepository.fetchPlaygroundInfoAndStore(viewModel.userId.value)
-                cloudRepository.fetchGameBoardInfoAndStore(viewModel.gameSessionId.value)
-                it.boardState?.let {
-                    viewModel.gameBoardUpdate(it)
-                }
-                it.playGround?.let {
-                    viewModel.playGroundUpdate(it)
-                }
-            }
-        }
     }
 
     override fun onDestroyView() {

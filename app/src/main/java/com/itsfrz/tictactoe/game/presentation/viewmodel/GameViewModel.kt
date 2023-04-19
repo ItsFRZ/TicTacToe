@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.GameResult
+import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
+import com.itsfrz.tictactoe.game.presentation.components.GameBoard
 import com.itsfrz.tictactoe.goonline.data.models.BoardState
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
@@ -17,6 +19,7 @@ import com.itsfrz.tictactoe.minimax.GameBrain
 import com.itsfrz.tictactoe.minimax.IGameBrain
 import com.itsfrz.tictactoe.minimax.Move
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.firstOrNull
 
 class GameViewModel(
     private val cloudRepository: CloudRepository,
@@ -88,6 +91,15 @@ class GameViewModel(
     private val _isGameDraw: MutableState<Boolean> = mutableStateOf(false)
     val isGameDraw = _isGameDraw
 
+    private val _inGame: MutableState<Boolean> = mutableStateOf(true)
+    val inGame = _inGame
+
+    private val _requestDialogState : MutableState<Boolean> = mutableStateOf(false)
+    val requestDialogState = _requestDialogState
+
+    private val _acceptDialogState : MutableState<Boolean> = mutableStateOf(false)
+    val acceptDialogState = _acceptDialogState
+
     init {
         getRandomTurnGenerator()
         timeLimitStart()
@@ -139,7 +151,10 @@ class GameViewModel(
                 }
             }
             is GameUsecase.OnGameRetry -> {
-                resetGameBoard()
+                if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
+                    _requestDialogState.value = true
+                    playAgainRequest()
+                }
             }
             is GameUsecase.OnBackPress -> {
                 _onBackPress.value = event.backPressState
@@ -154,6 +169,7 @@ class GameViewModel(
                 _friendUserId.value = event.userId
             }
             is GameUsecase.GameExitEvent -> {
+                updateInGameInStore(false)
                 removeGameBoard()
                 updatePlayGround()
             }
@@ -166,6 +182,62 @@ class GameViewModel(
             }
             is GameUsecase.OnUpdateCurrentUserId -> {
                 _currentUserId.value = event.currentUserId
+            }
+            is GameUsecase.OnCancelPlayRequest -> {
+                _requestDialogState.value = false
+                _acceptDialogState.value = false
+            }
+            is GameUsecase.OnAcceptPlayAgainRequest -> {
+                _requestDialogState.value = false
+                _acceptDialogState.value = false
+                acceptPlayAgainRequest()
+            }
+            else -> {}
+        }
+    }
+
+    private fun acceptPlayAgainRequest(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val playAgainRequest =
+                BoardState.PlayRequest(requesterId = _userId.value, retryRequest = false,acceptRequest = true)
+            val resetBoardState = _gameBoardState.value.copy(
+                playerOneState = BoardState.Player(_gameBoardState.value.playerOneState?.userId ?: "",indexes = emptyList()),
+                playerTwoState = BoardState.Player(_gameBoardState.value.playerTwoState?.userId ?: "", indexes = emptyList()),
+                currentUserTurnId = if (_onlineGameWinner.value == _userId.value) _friendUserId.value else _userId.value,
+                gameWinnerId = "",
+                resetTimer = true,
+                gameDraw = false,
+                playAgain = playAgainRequest
+            )
+            cloudRepository.acceptPlayAgainRequest(_gameSessionId.value, resetBoardState)
+        }
+        resetGameBoard()
+    }
+
+    private fun playAgainRequest() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val playAgainRequest = BoardState.PlayRequest(requesterId = _userId.value,retryRequest = true,acceptRequest = false)
+            val resetBoardState = _gameBoardState.value.copy(
+                playerOneState = BoardState.Player(_gameBoardState.value.playerOneState?.userId ?: "",indexes = emptyList()),
+                playerTwoState = BoardState.Player(_gameBoardState.value.playerTwoState?.userId ?: "",indexes = emptyList()),
+                currentUserTurnId = if (_currentUserId.value == _friendUserId.value) _userId.value else _friendUserId.value,
+                gameWinnerId = "",
+                resetTimer = true,
+                gameDraw = false,
+                playAgain = playAgainRequest
+            )
+            cloudRepository.playAgainRequest(_gameSessionId.value,resetBoardState)
+        }
+        resetGameBoard()
+    }
+
+    private fun updateInGameInStore(inGame: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = gameStoreRepository.fetchPreference().firstOrNull()
+            data?.let {
+                it.playGround?.let {
+                    gameStoreRepository.updatePlayground(it.copy(inGame = inGame))
+                }
             }
         }
     }
@@ -408,7 +480,15 @@ class GameViewModel(
     }
 
     private fun setUserTurn() {
-        _isUserTurnsComplete.value = !_isUserTurnsComplete.value
+        if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
+            viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val nextUserTurn = if (_gameBoardState.value.currentUserTurnId == _userId.value) _friendUserId.value else _userId.value
+                    cloudRepository.updateGameBoard(_gameSessionId.value,_gameBoardState.value.copy(currentUserTurnId = nextUserTurn, resetTimer = true))
+                }
+            }
+        }else
+            _isUserTurnsComplete.value = !_isUserTurnsComplete.value
     }
 
     private fun timeLimitStart(){
@@ -461,6 +541,8 @@ class GameViewModel(
         _winnerIndexList.value = ArrayList(listOf(-1,-1,-1))
         onEvent(GameUsecase.OnDelayLaunch(false))
         _userWarning.value = false
+        _onlineGameWinner.value = ""
+        _gameBoardState.value = BoardState()
     }
 
     fun setGameMode(gameMode: GameMode) {
@@ -476,6 +558,21 @@ class GameViewModel(
 
     // Set user to play its move
     fun gameBoardUpdate(gameBoard: BoardState) {
+        Log.i(TAG, "gameBoardUpdate: gameBoardState ${gameBoard}")
+        gameBoard.playAgain?.let {
+            if (!it.acceptRequest){
+                if (it.requesterId == _userId.value){
+                    _requestDialogState.value = true
+                    _acceptDialogState.value = false
+                }else{
+                    _requestDialogState.value = false
+                    _acceptDialogState.value = true
+                }
+            }else{
+                _requestDialogState.value = false
+                _acceptDialogState.value = false
+            }
+        }
         if (gameBoard.resetTimer)
             resetTimeLimit()
         if (_onlineGameWinner.value.isNotEmpty() || isGameDraw.value){
@@ -491,18 +588,17 @@ class GameViewModel(
             _playerOneIndex.value = ArrayList(gameBoard.playerTwoState?.indexes ?: emptyList())
             _playerTwoIndex.value = ArrayList(gameBoard.playerOneState?.indexes ?: emptyList())
         }
+        Log.i(TAG, "gameBoardUpdate: Player One Index ${playerOneIndex.value}")
+        Log.i(TAG, "gameBoardUpdate: Player Two Index ${playerTwoIndex.value}")
         _gameBoardState.value = gameBoard
         updateGameMapIndexes(_playerOneIndex.value,1)
         updateGameMapIndexes(_playerTwoIndex.value,2)
-        checkGameWinner()
         checkDraw()
+        checkGameWinner()
     }
 
     private fun initiateExitGameRequest() {
         viewModelScope.launch(Dispatchers.IO) {
-//            val playerOneData = _gameBoardState.value.playerOneState?.copy(indexes = emptyList())
-//            val playerTwoData = _gameBoardState.value.playerTwoState?.copy(indexes = emptyList())
-//            val currentUserTurn = if (_currentUserId.value == _userId.value) _friendUserId.value else _userId.value
             _gameBoardState.value = _gameBoardState.value.copy(gameWinnerId = _onlineGameWinner.value, resetTimer = false, currentUserTurnId = "")
             cloudRepository.updateGameBoard(_gameSessionId.value, gameBoardState = _gameBoardState.value)
         }
@@ -556,6 +652,9 @@ class GameViewModel(
     private fun removeGameBoard(){
         viewModelScope.launch(Dispatchers.IO) {
             cloudRepository.removeGameBoard(_gameSessionId.value)
+        }
+        viewModelScope.launch {
+            gameStoreRepository.clearGameBoard()
         }
     }
 

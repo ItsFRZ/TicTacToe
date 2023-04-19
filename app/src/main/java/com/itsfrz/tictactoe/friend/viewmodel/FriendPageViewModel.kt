@@ -28,8 +28,6 @@ class FriendPageViewModel(
     private val _userProfile : MutableState<UserProfile> = mutableStateOf(UserProfile())
     val userProfile = _userProfile
 
-
-
     private val _usernameSearchId : MutableState<String> = mutableStateOf("")
     val usernameSearchId : State<String> = _usernameSearchId
 
@@ -57,22 +55,6 @@ class FriendPageViewModel(
 
     private var job : Job? = null
 
-
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            gameStoreRepository.fetchPreference().collectLatest{
-                it.let {
-                    if (it.userId.isNotEmpty()) {
-                        it.playGround?.let {
-                            _inGameState.value = it.inGame
-                        }
-                        cloudRepository.fetchPlaygroundInfoAndStore(it.userId)
-                    }
-                }
-            }
-        }
-    }
-
     fun onEvent(event : FriendPageUseCase){
         when(event){
             is FriendPageUseCase.OnUserIdChange -> {
@@ -98,6 +80,11 @@ class FriendPageViewModel(
             is FriendPageUseCase.OnRequestLoaderVisibilityToggle -> {
                 _playRequestLoader.value = event.value
             }
+            is FriendPageUseCase.OnUpdateUserInGameInfo -> {
+                _inGameState.value = event.value
+            }
+            is FriendPageUseCase.RefreshPlaygroundData -> {
+            }
             else -> {}
         }
     }
@@ -111,7 +98,7 @@ class FriendPageViewModel(
     }
 
     private fun acceptFriendRequest(index : Int) {
-        val requesterUserId = _playRequestList.value[index].friendUserId
+        val requesterUserId = _friendList.value[index].userId
         onEvent(FriendPageUseCase.OnUpdateGameSessionId(requesterUserId))
         viewModelScope.launch(Dispatchers.IO) {
             cloudRepository.acceptFriendRequest(userId.value,requesterUserId)
@@ -119,6 +106,7 @@ class FriendPageViewModel(
     }
 
     private fun requestFriendToPlay(index : Int) {
+        job?.cancel()
         _playRequestLoader.value = true
         _friendRequestId.value = friendList.value[index].userId
         onEvent(FriendPageUseCase.OnUpdateGameSessionId(userProfile.value.userId))
