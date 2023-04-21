@@ -6,6 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.itsfrz.tictactoe.common.ShareInfo
 import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.goonline.data.models.Playground
@@ -58,7 +59,7 @@ class FriendPageViewModel(
     fun onEvent(event : FriendPageUseCase){
         when(event){
             is FriendPageUseCase.OnUserIdChange -> {
-                _usernameSearchId.value = event.userInput
+                _usernameSearchId.value = ShareInfo.getUserIdFromTemplate(event.userInput)
             }
             is FriendPageUseCase.SearchUserEvent -> {
                 searchAndAddUser()
@@ -82,6 +83,9 @@ class FriendPageViewModel(
             }
             is FriendPageUseCase.OnUpdateUserInGameInfo -> {
                 _inGameState.value = event.value
+            }
+            is FriendPageUseCase.AddFriendDeepLink -> {
+                onEvent(FriendPageUseCase.OnUserIdChange(event.userId))
             }
             is FriendPageUseCase.RefreshPlaygroundData -> {
             }

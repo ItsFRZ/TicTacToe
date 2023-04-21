@@ -26,6 +26,9 @@ class HomePageViewModel(
     private val _isUsernameExists : MutableState<Boolean> = mutableStateOf(false)
     val isUsernameExists : State<Boolean> = _isUsernameExists
 
+    private val _shareFriendDetails : MutableState<String> = mutableStateOf("")
+    val shareFriendDetails : State<String> = _shareFriendDetails
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             gameStoreRepository.fetchPreference().collect{
@@ -38,17 +41,18 @@ class HomePageViewModel(
     fun onEvent(event : HomePageUseCase){
         when(event){
             HomePageUseCase.OnCopyUserIdEvent -> {
-                fetchUserId()
+                viewModelScope.launch(Dispatchers.IO) {
+                     fetchUserId()
+                }
+
             }
             else -> {}
         }
     }
 
-    private fun fetchUserId() {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (_userId.value.isEmpty()){
-                _userId.value = async { gameStoreRepository.fetchUserInfo() }.await()
-            }
+    suspend fun fetchUserId() {
+        if (_userId.value.isEmpty()){
+            _userId.value = gameStoreRepository.fetchUserInfo()
         }
     }
 }

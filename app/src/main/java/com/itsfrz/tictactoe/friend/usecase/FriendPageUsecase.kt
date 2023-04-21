@@ -10,4 +10,5 @@ sealed class FriendPageUseCase {
     data class OnUpdateGameSessionId(val sessionId : String) : FriendPageUseCase()
     data class OnRequestLoaderVisibilityToggle(val value : Boolean) : FriendPageUseCase()
     data class OnUpdateUserInGameInfo(val value : Boolean) : FriendPageUseCase()
+    data class AddFriendDeepLink(val userId : String) : FriendPageUseCase()
 }

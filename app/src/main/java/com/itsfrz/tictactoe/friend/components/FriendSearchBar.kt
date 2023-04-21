@@ -42,6 +42,7 @@ fun FriendSearchBar(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(0.75F)
+                .height(50.dp)
                 .onFocusChanged {
                     isFocussed.value = it.isFocused || it.hasFocus
                 },
@@ -59,8 +60,7 @@ fun FriendSearchBar(
                 focusedLabelColor = ThemeBlue,
                 focusedIndicatorColor = ThemeBlue,
                 leadingIconColor = ThemeBlue
-            ),
-            singleLine = true
+            )
         )
         Spacer(modifier = Modifier
             .width(20.dp)

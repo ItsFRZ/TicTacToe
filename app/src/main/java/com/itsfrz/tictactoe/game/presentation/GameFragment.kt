@@ -74,20 +74,21 @@ class GameFragment : Fragment(){
         viewModel.setAITurn()
         setUpNavArgs()
 
-        job = CoroutineScope(Dispatchers.IO).launch {
-            dataStoreRepository.fetchPreference().collectLatest {
-                viewModel.onEvent(GameUsecase.UpdateUserId(it.userProfile?.userId ?: ""))
-                viewModel.onEvent(GameUsecase.OnUpdateInGameInfo(it.playGround?.inGame ?: true))
-                cloudRepository.fetchPlaygroundInfoAndStore(viewModel.userId.value)
-                cloudRepository.fetchGameBoardInfoAndStore(viewModel.gameSessionId.value)
-                Log.i("BPLAY_AGAIN", "onCreate: Board State ${it.boardState}")
-                it.boardState?.let {
-                    viewModel.gameBoardUpdate(it)
+        if (gameMode == GameMode.RANDOM || gameMode == GameMode.FRIEND){
+            job = CoroutineScope(Dispatchers.IO).launch {
+                dataStoreRepository.fetchPreference().collectLatest {
+                    viewModel.onEvent(GameUsecase.UpdateUserId(it.userProfile?.userId ?: ""))
+                    viewModel.onEvent(GameUsecase.OnUpdateInGameInfo(it.playGround?.inGame ?: true))
+                    cloudRepository.fetchPlaygroundInfoAndStore(viewModel.userId.value)
+                    cloudRepository.fetchGameBoardInfoAndStore(viewModel.gameSessionId.value)
+                    Log.i("BPLAY_AGAIN", "onCreate: Board State ${it.boardState}")
+                    it.boardState?.let {
+                        viewModel.gameBoardUpdate(it)
+                    }
+                    it.playGround?.let {
+                        viewModel.playGroundUpdate(it)
+                    }
                 }
-                it.playGround?.let {
-                    viewModel.playGroundUpdate(it)
-                }
-
             }
         }
     }
@@ -184,8 +185,8 @@ class GameFragment : Fragment(){
                         .fillMaxWidth()
                         .height(40.dp))
                     GameBoard(
-                        crossList = if (gameMode == GameMode.FRIEND) playerTwoData else playerOneData,
-                        rightList = if (gameMode == GameMode.FRIEND) playerOneData else playerTwoData,
+                        crossList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI) playerTwoData else playerOneData,
+                        rightList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI) playerOneData else playerTwoData,
                         userId = userId,
                         currentUserId = currentUserId,
                         gameMode = gameMode,
@@ -204,9 +205,12 @@ class GameFragment : Fragment(){
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(20.dp))
-                    if (gameMode == GameMode.FRIEND){
-                        UserMove(username = if (currentUserId == userId) "Your " else "Opponent's Turn", isCross = currentUserId == friendUserId)
-                    }else{
+                    if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
+                        UserMove(username = if (currentUserId == userId) "Your" else "Opponent", isCross = currentUserId == friendUserId)
+                    }else if(gameMode == GameMode.AI)
+                    {
+                        UserMove(username = if (playerTurns) "Your" else "AI", isCross = !playerTurns)
+                    } else{
                         UserMove(username = if (playerTurns) "Player 2" else "Player 1", isCross = playerTurns)
                     }
                 }
@@ -244,6 +248,8 @@ class GameFragment : Fragment(){
                                     ) {
                                         view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                                         viewModel.onEvent(GameUsecase.OnGameRetry)
+                                        if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.AI))
+                                            viewModel.onEvent(GameUsecase.OnClearGameBoard)
                                     }
                                 }
                                 GameResult.DRAW,GameResult.LOSE -> {
@@ -291,7 +297,7 @@ class GameFragment : Fragment(){
                                 onContinueEvent = {
                                     viewModel.onEvent(GameUsecase.OnBackPress(false))
                                 },
-                                titleText = if (!inGame) "Opponent Left The Game\nDo you want to exit ?" else "Do you really want to exit ?"
+                                titleText = "Do you really want to exit ?"
                             )
                         }
                     }
@@ -355,6 +361,12 @@ class GameFragment : Fragment(){
 
     override fun onResume() {
         super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onEvent(GameUsecase.GameExitEvent)
+        job?.cancel()
     }
 
     override fun onDestroyView() {

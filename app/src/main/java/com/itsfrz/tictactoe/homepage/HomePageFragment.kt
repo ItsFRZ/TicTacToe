@@ -1,18 +1,17 @@
 package com.itsfrz.tictactoe.homepage
 
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -20,11 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
-import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import com.itsfrz.tictactoe.MainActivity
 import com.itsfrz.tictactoe.common.components.CustomCircleIconButton
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
 import com.itsfrz.tictactoe.homepage.viewmodel.HomePageViewModel
@@ -33,6 +29,7 @@ import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.ShareInfo
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
@@ -42,6 +39,7 @@ import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
 import com.itsfrz.tictactoe.homepage.usecase.HomePageUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class HomePageFragment : Fragment() {
@@ -58,6 +56,7 @@ class HomePageFragment : Fragment() {
         setUpOnlineConfig()
         val viewModelFactory = HomePageViewModelFactory(cloudRepository,dataStoreRepository)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[HomePageViewModel::class.java]
+        viewModel.onEvent(HomePageUseCase.OnCopyUserIdEvent)
     }
 
 
@@ -81,6 +80,7 @@ class HomePageFragment : Fragment() {
             setContent {
                 val gameBundle = bundleOf()
                 val userId = viewModel.userId.value
+                val scope = rememberCoroutineScope()
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .background(color = PrimaryLight),
@@ -142,13 +142,16 @@ class HomePageFragment : Fragment() {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         CustomCircleIconButton(iconButtonClick = {
-                             viewModel.onEvent(HomePageUseCase.OnCopyUserIdEvent)
-                             CoroutineScope(Dispatchers.IO).launch {
-                                 val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                 val clipData = ClipData.newPlainText("User Id Copied",userId)
-                                 clipboard.setPrimaryClip(clipData)
-                             }
-                             Toast.makeText(requireContext(), "User Id Copied ${if (userId.length >= 8) userId.substring(0,8) else userId}...", Toast.LENGTH_SHORT).show()
+                            scope.launch(Dispatchers.Main) {
+                                async {  viewModel.onEvent(HomePageUseCase.OnCopyUserIdEvent) }.await()
+                                val message = "${ShareInfo.SHARE_HEADER}\n${ShareInfo.SHARE_TITLE}\n${ShareInfo.SHARE_SUBTITLE}\n\nUserId : ✄-x${userId}x-✄"
+                                val intent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT,message)
+                                }
+                                context.startActivity(Intent.createChooser(intent,"Share"))
+                            }
                         }, buttonIcon = R.drawable.ic_share)
                         CustomCircleIconButton(iconButtonClick = { /*TODO*/ }, buttonIcon = R.drawable.ic_settings)
                     }

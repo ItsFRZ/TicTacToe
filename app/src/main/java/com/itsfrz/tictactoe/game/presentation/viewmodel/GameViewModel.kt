@@ -35,6 +35,8 @@ class GameViewModel(
     private val _userTimer : MutableState<Float> = mutableStateOf(1F)
     val userTimer : State<Float> = _userTimer
 
+    private val _offlineUserTurn : MutableState<Boolean> = mutableStateOf(true)
+
     private val _isUserTurnsComplete : MutableState<Boolean> = mutableStateOf(false)
     val isUserTurnsComplete : State<Boolean> = _isUserTurnsComplete
 
@@ -101,12 +103,12 @@ class GameViewModel(
     val acceptDialogState = _acceptDialogState
 
     init {
-        getRandomTurnGenerator()
         timeLimitStart()
     }
 
     private fun getRandomTurnGenerator() {
-        _isUserTurnsComplete.value = _isUserTurnsComplete.value
+        _isUserTurnsComplete.value = _offlineUserTurn.value == true
+        _offlineUserTurn.value = !_offlineUserTurn.value
     }
 
     private fun switchUserOnTimeOut() {
@@ -143,11 +145,16 @@ class GameViewModel(
                 }
             }
             is GameUsecase.OnAIMove -> {
-                viewModelScope.launch {
-                    val aiValue = viewModelScope.async(Dispatchers.Default) { aiMove() }.await()
-                    _playerTwoIndex.value.add(aiValue)
-                    setGameMap(aiValue)
-                    playGame()
+                if (gameMode == GameMode.AI){
+                    viewModelScope.launch {
+                        val aiValue = viewModelScope.async(Dispatchers.Default) {
+                            delay(100)
+                            aiMove()
+                        }.await()
+                        _playerTwoIndex.value.add(aiValue)
+                        setGameMap(aiValue)
+                        playGame()
+                    }
                 }
             }
             is GameUsecase.OnGameRetry -> {
@@ -169,16 +176,22 @@ class GameViewModel(
                 _friendUserId.value = event.userId
             }
             is GameUsecase.GameExitEvent -> {
-                updateInGameInStore(false)
-                removeGameBoard()
-                updatePlayGround()
+                if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM) {
+                    updateInGameInStore(false)
+                    updatePlayGround()
+                    removeGameBoard()
+                }
+                resetGameBoard()
             }
             is GameUsecase.OnUpdateGameSessionId -> {
                 _gameSessionId.value = event.sessionId
             }
             is GameUsecase.OnClearGameBoard -> {
-                removeGameBoard()
-                updatePlayGround()
+                if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM) {
+                    removeGameBoard()
+                    updatePlayGround()
+                }
+                resetGameBoard()
             }
             is GameUsecase.OnUpdateCurrentUserId -> {
                 _currentUserId.value = event.currentUserId
@@ -530,19 +543,35 @@ class GameViewModel(
             arrayListOf(0,0,0),
             arrayListOf(0,0,0),
         )
-        getRandomTurnGenerator()
         _gameResult.value = GameResult.NONE
         _playerOneIndex.value = arrayListOf()
         _playerTwoIndex.value = arrayListOf()
         _userTimer.value = 0F
         job?.cancel()
         timeLimitStart()
-        setAITurn()
+        if (gameMode == GameMode.AI)
+            setAIRetryTurn()
+        else getRandomTurnGenerator()
+//        setAITurn()
         _winnerIndexList.value = ArrayList(listOf(-1,-1,-1))
         onEvent(GameUsecase.OnDelayLaunch(false))
         _userWarning.value = false
         _onlineGameWinner.value = ""
         _gameBoardState.value = BoardState()
+    }
+
+    private fun setAIRetryTurn() {
+        if (gameMode == GameMode.AI){
+            if (_offlineUserTurn.value){
+                _isUserTurnsComplete.value = true
+                _offlineUserTurn.value = false
+            }else{
+                _isUserTurnsComplete.value = false
+                _offlineUserTurn.value = true
+            }
+            if (!_isUserTurnsComplete.value)
+                onEvent(GameUsecase.OnAIMove)
+        }
     }
 
     fun setGameMode(gameMode: GameMode) {
@@ -551,8 +580,8 @@ class GameViewModel(
 
     fun setAITurn() {
         if (gameMode == GameMode.AI){
-            if (!_isUserTurnsComplete.value)
-                onEvent(GameUsecase.OnAIMove)
+            _offlineUserTurn.value = false
+            _isUserTurnsComplete.value = true
         }
     }
 

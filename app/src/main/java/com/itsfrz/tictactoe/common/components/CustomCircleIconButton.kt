@@ -32,7 +32,7 @@ fun CustomCircleIconButton(
         modifier = buttonModifier
             .size(50.dp)
             .border(
-                border = BorderStroke(width = 0.2.dp, color = ThemeBlue),
+                border = BorderStroke(width = 0.4.dp, color = ThemeBlue),
                 shape = RoundedCornerShape(100)
             ),
         shape = RoundedCornerShape(100),
@@ -40,6 +40,6 @@ fun CustomCircleIconButton(
             backgroundColor = PrimaryLight
         ),
         onClick = { iconButtonClick() }) {
-        Image(contentScale = ContentScale.Fit, painter = painterResource(id =buttonIcon), contentDescription = "Icon Button")
+        Image(modifier = Modifier.size(22.dp), contentScale = ContentScale.Fit, painter = painterResource(id =buttonIcon), contentDescription = "Icon Button")
     }
 }

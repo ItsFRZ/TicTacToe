@@ -29,5 +29,5 @@
     <fragment
         android:id="@+id/friendFragment"
         android:name="com.itsfrz.tictactoe.friend.FriendFragment"
-        android:label="FriendFragment" />
+        android:label="FriendFragment"/>
 </navigation>

@@ -25,6 +25,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.components.UserItemLayout
@@ -54,7 +55,6 @@ class FriendFragment : Fragment() {
     private lateinit var viewModel: FriendPageViewModel
     private lateinit var cloudRepository: CloudRepository
     private lateinit var dataStoreRepository  : GameStoreRepository
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
