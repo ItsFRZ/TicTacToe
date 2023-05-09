@@ -1,4 +1,4 @@
-package com.itsfrz.tictactoe.common
+package com.itsfrz.tictactoe.common.functionality
 
 import android.util.Log
 

@@ -29,8 +29,10 @@ import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 import com.itsfrz.tictactoe.R
-import com.itsfrz.tictactoe.common.ShareInfo
+import com.itsfrz.tictactoe.common.functionality.ShareInfo
+import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.GameMode
+import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
@@ -101,8 +103,11 @@ class HomePageFragment : Fragment() {
                         .fillMaxWidth())
                     CustomOutlinedButton(
                         buttonClick = {
-                            gameBundle.putSerializable("GameMode",GameMode.AI)
-                            findNavController().navigate(R.id.gameFragment,gameBundle)
+                            gameBundle.putSerializable(BundleKey.GAME_MODE,GameMode.AI)
+                            findNavController().navigate(
+                                R.id.selectBoard,gameBundle,
+                                navOptions = NavOptions.navOptionStack
+                            )
                         },
                         buttonText = "AI"
                     )
@@ -111,7 +116,10 @@ class HomePageFragment : Fragment() {
                         .fillMaxWidth())
                     CustomOutlinedButton(
                         buttonClick = {
-                            findNavController().navigate(R.id.onlineModeFragment)
+                            findNavController().navigate(
+                                R.id.onlineModeFragment,null,
+                                navOptions = NavOptions.navOptionStack
+                            )
                         },
                         buttonText = "Online"
                     )
@@ -120,10 +128,11 @@ class HomePageFragment : Fragment() {
                         .fillMaxWidth())
                     CustomOutlinedButton(
                         buttonClick = {
-                            gameBundle.putSerializable("GameMode",GameMode.TWO_PLAYER)
+                            gameBundle.putSerializable(BundleKey.GAME_MODE,GameMode.TWO_PLAYER)
                             findNavController().navigate(
-                                resId = R.id.gameFragment,
-                                args = gameBundle
+                                resId = R.id.selectBoard,
+                                args = gameBundle,
+                                navOptions = NavOptions.navOptionStack
                             )
                         },
                         buttonText = "2 Player"
@@ -155,7 +164,6 @@ class HomePageFragment : Fragment() {
                         }, buttonIcon = R.drawable.ic_share)
                         CustomCircleIconButton(iconButtonClick = { /*TODO*/ }, buttonIcon = R.drawable.ic_settings)
                     }
-
                 }
             }
         }

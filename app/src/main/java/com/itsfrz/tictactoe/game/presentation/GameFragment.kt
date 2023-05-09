@@ -18,14 +18,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
+import com.itsfrz.tictactoe.common.constants.BundleKey
+import com.itsfrz.tictactoe.common.enums.BoardType
+import com.itsfrz.tictactoe.common.enums.GameLevel
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.GameResult
-import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
+import com.itsfrz.tictactoe.common.functionality.GameWinner
+import com.itsfrz.tictactoe.common.state.EssentialInfo
+import com.itsfrz.tictactoe.common.state.IEssentialInfo
 import com.itsfrz.tictactoe.game.presentation.components.GameBoard
 import com.itsfrz.tictactoe.game.presentation.components.GameDivider
 import com.itsfrz.tictactoe.game.presentation.components.UserMove
@@ -48,6 +54,8 @@ class GameFragment : Fragment(){
     private var job : Job? = null
     private lateinit var viewModel: GameViewModel
     private lateinit var gameMode : GameMode
+    private lateinit var gameLevel : GameLevel
+    private lateinit var boardType: BoardType
     private lateinit var cloudRepository: CloudRepository
     private lateinit var dataStoreRepository  : GameStoreRepository
 
@@ -66,14 +74,15 @@ class GameFragment : Fragment(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpOnlineConfig()
-        val viewModelFactory = GameViewModelFactory(cloudRepository,dataStoreRepository)
+        gameMode = requireArguments().getSerializable(BundleKey.GAME_MODE) as GameMode
+        gameLevel = requireArguments().getSerializable(BundleKey.SELECTED_LEVEL) as GameLevel
+        boardType = requireArguments().getSerializable(BundleKey.BOARD_TYPE) as BoardType
+        Log.i("GAME_MODE", "onCreate: Game Mode ${gameMode}, Selected Level ${gameLevel}, Board Type ${boardType}")
+        val essentialInfo : EssentialInfo = IEssentialInfo(gameMode, gameLevel, boardType)
+        val viewModelFactory = GameViewModelFactory(cloudRepository,dataStoreRepository,essentialInfo)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[GameViewModel::class.java]
-        gameMode = requireArguments().getSerializable("GameMode") as GameMode
-        Log.i("GAME_MODE", "onCreate: Game Mode ${gameMode}")
-        viewModel.setGameMode(gameMode)
         viewModel.setAITurn()
         setUpNavArgs()
-
         if (gameMode == GameMode.RANDOM || gameMode == GameMode.FRIEND){
             job = CoroutineScope(Dispatchers.IO).launch {
                 dataStoreRepository.fetchPreference().collectLatest {
@@ -93,19 +102,18 @@ class GameFragment : Fragment(){
         }
     }
 
-
     private fun setUpNavArgs() {
-        val friendUserId = requireArguments().getString("friendId")
+        val friendUserId = requireArguments().getString(BundleKey.FRIEND_ID)
         friendUserId?.let {
             if (it.isNotEmpty())
                 viewModel.onEvent(GameUsecase.UpdateFriendUserId(it))
         }
-        val userId = requireArguments().getString("userId")
+        val userId = requireArguments().getString(BundleKey.USER_ID)
         userId?.let {
             if (it.isNotEmpty())
                 viewModel.onEvent(GameUsecase.UpdateUserId(it))
         }
-        val gameSessionId = requireArguments().getString("sessionId")
+        val gameSessionId = requireArguments().getString(BundleKey.SESSION_ID)
         gameSessionId?.let {
             if (it.isNotEmpty()) {
                 viewModel.onEvent(GameUsecase.OnUpdateGameSessionId(it))
@@ -129,7 +137,6 @@ class GameFragment : Fragment(){
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         return ComposeView(requireContext()).apply {
             setContent {
 
@@ -190,11 +197,15 @@ class GameFragment : Fragment(){
                         userId = userId,
                         currentUserId = currentUserId,
                         gameMode = gameMode,
-                        winnerIndexList = winnerIndexList,
+                        gameCellList = calculateCellList(),
+                        columnCount = calculateBoardColumnCount(),
+                        boardHeight = calculateBoardHeight(),
+                        winnerIndexList = if (boardType == BoardType.THREEX3) winnerIndexList else GameWinner.winnerIndexList.value,
                         isWinner = gameResult != GameResult.NONE,
                         isPlayerMoved = !playerTurns,
                         onMove = { index -> viewModel.onEvent(GameUsecase.OnUserTick(index)) },
                         onAIMove = {
+                            Log.i("AI_MOVE", "onCreateView: On AI Move")
                             viewModel.onEvent(GameUsecase.OnAIMove)
                         }
                     )
@@ -207,8 +218,7 @@ class GameFragment : Fragment(){
                         .height(20.dp))
                     if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
                         UserMove(username = if (currentUserId == userId) "Your" else "Opponent", isCross = currentUserId == friendUserId)
-                    }else if(gameMode == GameMode.AI)
-                    {
+                    }else if(gameMode == GameMode.AI) {
                         UserMove(username = if (playerTurns) "Your" else "AI", isCross = !playerTurns)
                     } else{
                         UserMove(username = if (playerTurns) "Player 2" else "Player 1", isCross = playerTurns)
@@ -239,7 +249,7 @@ class GameFragment : Fragment(){
                             when(gameResult){
                                 GameResult.WIN -> {
                                     GameDialogue.GameWinDialogue(
-                                        winnerUsername = if (playerTurns) "Player 1" else "Player 2",
+                                        winnerUsername = getWinnerName(playerTurns),
                                         dialogueButtonText = "Play Again",
                                         onCloseEvent = {
                                             viewModel.onEvent(GameUsecase.GameExitEvent)
@@ -356,6 +366,36 @@ class GameFragment : Fragment(){
                     }
                 }
             }
+        }
+    }
+
+    private fun getWinnerName(playerTurns: Boolean): String {
+        return if(gameMode == GameMode.AI && !playerTurns) "You Win"
+        else if (gameMode == GameMode.FRIEND && !playerTurns) "You Win"
+        else if (playerTurns) "Player 1" else "Player 2"
+    }
+
+    private fun calculateCellList() : List<Int>{
+        return when(boardType){
+            BoardType.THREEX3 -> (1..9).toList()
+            BoardType.FOURX4 -> (1..25).toList()
+            BoardType.FIVEX5 -> (1..36).toList()
+        }
+    }
+
+    private fun calculateBoardColumnCount() : Int {
+        return when(boardType){
+            BoardType.THREEX3 -> 3
+            BoardType.FOURX4 -> 5
+            BoardType.FIVEX5 -> 6
+        }
+    }
+
+    private fun calculateBoardHeight() : Dp {
+        return when(boardType){
+            BoardType.THREEX3 -> 100.dp
+            BoardType.FOURX4 -> 70.dp
+            BoardType.FIVEX5 -> 55.dp
         }
     }
 

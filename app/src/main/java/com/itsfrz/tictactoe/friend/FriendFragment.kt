@@ -29,6 +29,9 @@ import androidx.navigation.fragment.navArgs
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.components.UserItemLayout
+import com.itsfrz.tictactoe.common.constants.BundleKey
+import com.itsfrz.tictactoe.common.enums.BoardType
+import com.itsfrz.tictactoe.common.enums.GameLevel
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.friend.components.FriendSearchBar
 import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
@@ -102,10 +105,12 @@ class FriendFragment : Fragment() {
                 val playRequestLoader = viewModel.playRequestLoader.value
                 if (viewModel.inGameState.value){
                     val gameBundle = bundleOf()
-                    gameBundle.putSerializable("GameMode", GameMode.FRIEND)
-                    gameBundle.putString("userId",viewModel.userId.value)
-                    gameBundle.putString("friendId",viewModel.friendRequestId.value)
-                    gameBundle.putString("sessionId",viewModel.gameSessionId.value)
+                    gameBundle.putSerializable(BundleKey.GAME_MODE, GameMode.FRIEND)
+                    gameBundle.putSerializable(BundleKey.BOARD_TYPE, BoardType.THREEX3)
+                    gameBundle.putSerializable(BundleKey.SELECTED_LEVEL,GameLevel.NONE)
+                    gameBundle.putString(BundleKey.USER_ID,viewModel.userId.value)
+                    gameBundle.putString(BundleKey.FRIEND_ID,viewModel.friendRequestId.value)
+                    gameBundle.putString(BundleKey.SESSION_ID,viewModel.gameSessionId.value)
                     findNavController().navigate(R.id.gameFragment,gameBundle)
                     viewModel.onEvent(FriendPageUseCase.OnRequestLoaderVisibilityToggle(false))
                     viewModel.onEvent(FriendPageUseCase.OnUpdateUserInGameInfo(false))

@@ -2,6 +2,7 @@ package com.itsfrz.tictactoe.online
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,20 +16,24 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import com.itsfrz.tictactoe.MainActivity
+import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
 import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.headerTitle
-import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModel
-import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModelFactory
+import com.itsfrz.tictactoe.online.viewmodel.BoardViewModel
+import com.itsfrz.tictactoe.online.viewmodel.BoardViewModelFactory
 import com.itsfrz.tictactoe.ui.theme.headerSubTitle
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.constants.BundleKey
+import com.itsfrz.tictactoe.common.functionality.NavOptions
+import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModel
+import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModelFactory
 
 class OnlineModeFragment : Fragment() {
-    private lateinit var viewModel: OnlineModeViewModel
+    private lateinit var viewmodel: OnlineModeViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -38,7 +43,7 @@ class OnlineModeFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         val viewModelFactory = OnlineModeViewModelFactory()
-        viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[OnlineModeViewModel::class.java]
+        viewmodel = ViewModelProvider(viewModelStore,viewModelFactory)[OnlineModeViewModel::class.java]
 
     }
 
@@ -84,7 +89,14 @@ class OnlineModeFragment : Fragment() {
                         .height(20.dp)
                         .fillMaxWidth())
                     CustomOutlinedButton(
-                        buttonClick = {findNavController().navigate(R.id.friendFragment)},
+                        buttonClick = {
+                            findNavController()
+                                .navigate(
+                                    resId = R.id.friendFragment,
+                                    args = null,
+                                    navOptions = NavOptions.navOptionStack
+                                )
+                           },
                         buttonText = "Friend"
                     )
                 }

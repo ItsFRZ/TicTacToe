@@ -60,7 +60,7 @@ class CloudRepository(
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        throw Exception(error.message)
+                        Log.e(TAG, "onCancelled: ${error.message}")
                     }
                 })
         }catch (e : FirebaseException){
@@ -96,7 +96,7 @@ class CloudRepository(
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        throw Exception(error.message)
+                        Log.e(TAG, "onCancelled: ${error.message}")
                     }
                 })
         }catch (e : FirebaseException){
@@ -186,7 +186,7 @@ class CloudRepository(
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
+                        Log.e(TAG, "onCancelled: ${error.message}")
                     }
                 })
         }
@@ -281,7 +281,7 @@ class CloudRepository(
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
+                        Log.e(TAG, "onCancelled: ${error.message}")
                     }
                 })
         }
@@ -312,7 +312,7 @@ class CloudRepository(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    Log.e(TAG, "onCancelled: ${error.message}")
                 }
             })
     }

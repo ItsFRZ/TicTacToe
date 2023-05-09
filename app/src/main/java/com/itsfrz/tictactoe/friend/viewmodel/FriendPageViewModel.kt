@@ -6,15 +6,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.itsfrz.tictactoe.common.ShareInfo
+import com.itsfrz.tictactoe.common.functionality.ShareInfo
 import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
-import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collectLatest
 
 class FriendPageViewModel(
     private val cloudRepository: CloudRepository,

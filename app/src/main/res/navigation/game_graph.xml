@@ -13,10 +13,6 @@
         android:id="@+id/homePage"
         android:name="com.itsfrz.tictactoe.homepage.HomePageFragment"
         android:label="fragment_home_page">
-
-        <argument
-            android:name="gameMode"
-            app:argType="com.itsfrz.tictactoe.common.enums.GameMode" />
     </fragment>
     <fragment
         android:id="@+id/onlineModeFragment"
@@ -30,4 +26,10 @@
         android:id="@+id/friendFragment"
         android:name="com.itsfrz.tictactoe.friend.FriendFragment"
         android:label="FriendFragment"/>
+    <fragment
+        android:id="@+id/selectBoard"
+        android:name="com.itsfrz.tictactoe.board.SelectBoardFragment"
+        android:label="fragment_select_board">
+
+    </fragment>
 </navigation>

@@ -17,8 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.enums.BoardType
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.ui.theme.PrimaryLight
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
@@ -29,6 +31,9 @@ fun GameBoard(
     rightList : List<Int>,
     gameMode : GameMode,
     isWinner : Boolean,
+    gameCellList : List<Int>,
+    columnCount : Int,
+    boardHeight : Dp,
     winnerIndexList : List<Int>,
     isPlayerMoved : Boolean,
     onMove : (index : Int) -> Unit,
@@ -36,26 +41,25 @@ fun GameBoard(
     userId : String,
     currentUserId : String,
 ) {
+    if (isWinner){
+        Log.i("CHECK_WINNNER", "GameBoard: Winner Index ${winnerIndexList}")
 
-    Log.i("USER_ID", "GameBoard: Current UserId ${currentUserId}")
-    Log.i("USER_ID", "GameBoard: UserId ${userId}")
+    }
     val color by animateColorAsState(
         targetValue = ThemeBlue,
         animationSpec = tween(durationMillis = 3000, delayMillis = 250, easing = LinearOutSlowInEasing)
     )
-
-    val gameItemList = (1..9).toList()
     LazyVerticalGrid(
         modifier = Modifier
             .padding(horizontal = 12.dp)
+            .fillMaxWidth(9F)
             .border(border = BorderStroke(width = 1.dp, color = PrimaryLight)),
-        columns = GridCells.Fixed(3),
+        columns = GridCells.Fixed(columnCount),
         content = {
-            itemsIndexed(items = gameItemList){ index: Int, item: Int ->
+            itemsIndexed(items = gameCellList){ index: Int, item: Int ->
                 Column(
                     modifier = Modifier
-                        .height(100.dp)
-                        .fillMaxWidth(9F)
+                        .height(boardHeight)
                         .background(color = if (isWinner && index in winnerIndexList) color else PrimaryLight)
                         .clickable {
                             if (!isWinner) {
