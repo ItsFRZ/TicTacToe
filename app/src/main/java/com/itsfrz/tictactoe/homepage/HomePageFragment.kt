@@ -32,7 +32,9 @@ import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.functionality.ShareInfo
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.GameMode
+import com.itsfrz.tictactoe.common.functionality.InternetHelper
 import com.itsfrz.tictactoe.common.functionality.NavOptions
+import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
@@ -48,6 +50,7 @@ class HomePageFragment : Fragment() {
     private lateinit var viewModel: HomePageViewModel
     private lateinit var cloudRepository: CloudRepository
     private lateinit var dataStoreRepository  : GameStoreRepository
+    private lateinit var commonViewModel: CommonViewModel
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
@@ -59,8 +62,11 @@ class HomePageFragment : Fragment() {
         val viewModelFactory = HomePageViewModelFactory(cloudRepository,dataStoreRepository)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[HomePageViewModel::class.java]
         viewModel.onEvent(HomePageUseCase.OnCopyUserIdEvent)
+        commonViewModel = CommonViewModel.getInstance()
+        viewModel.userId.value.let {
+            commonViewModel.registerViewModel(dataStoreRepository,cloudRepository,it)
+        }
     }
-
 
     private fun setUpOnlineConfig() {
         val database = FirebaseDB
@@ -167,6 +173,17 @@ class HomePageFragment : Fragment() {
                 }
             }
         }
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        commonViewModel.updateOnlineStatus(isOnline = InternetHelper.isOnline(requireContext()))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        commonViewModel.updateOnlineStatus(isOnline = false)
     }
 
 }

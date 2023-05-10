@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface GameStoreRepository {
     suspend fun updateUserInfo(userId : String)
-    suspend fun fetchUserInfo() : String
+    suspend fun getUserInfo() : String
     suspend fun updateUserProfile(userProfile : UserProfile)
     suspend fun updatePlayground(playground: Playground)
     suspend fun fetchPreference(): Flow<GameDataStore>
@@ -15,4 +15,6 @@ interface GameStoreRepository {
     suspend fun clearPlayground(userId: String)
     suspend fun updateBoardState(boardState: BoardState)
     suspend fun clearGameBoard()
+    suspend fun updateOnlineStatus(isOnline : Boolean)
+    suspend fun getUserProfile() : UserProfile?
 }

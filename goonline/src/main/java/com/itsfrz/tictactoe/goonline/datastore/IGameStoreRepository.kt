@@ -24,7 +24,7 @@ class IGameStoreRepository(private val dataStore : DataStore<GameDataStore>) : G
         }
     }
 
-    override suspend fun fetchUserInfo() : String {
+    override suspend fun getUserInfo() : String {
         return dataStore.data.firstOrNull()?.userId ?: ""
     }
 
@@ -127,6 +127,32 @@ class IGameStoreRepository(private val dataStore : DataStore<GameDataStore>) : G
         }catch (e : Exception){
             Log.e(TAG, "updateBoardState: GameDataStore ${e.message}")
         }
+    }
+
+    override suspend fun updateOnlineStatus(isOnline: Boolean) {
+        try{
+            val dataStoreValue = dataStore.data.firstOrNull()
+            dataStoreValue?.let {
+                it.userProfile?.let {
+                    val userProfile = it.copy(online = isOnline)
+                    dataStore.updateData { it.copy(userProfile = userProfile) }
+                }
+            }
+        }catch (e : Exception){
+            Log.e(TAG, "updateOnlineStatus: GameDataStore ${e.message}")
+        }
+    }
+
+    override suspend fun getUserProfile(): UserProfile?{
+        try {
+            val dataStoreValue = dataStore.data.firstOrNull()
+            dataStoreValue?.let {
+                return it.userProfile
+            }
+        }catch (e : Exception){
+            Log.e(TAG, "getUserProfile: GameDataStore ${e.message}")
+        }
+        return null
     }
 
 }

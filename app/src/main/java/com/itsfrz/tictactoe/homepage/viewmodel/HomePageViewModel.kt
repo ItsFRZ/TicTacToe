@@ -1,6 +1,5 @@
 package com.itsfrz.tictactoe.homepage.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -9,10 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
 import com.itsfrz.tictactoe.homepage.usecase.HomePageUseCase
-import com.itsfrz.tictactoe.userregistration.usecase.UserRegistrationUseCase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class HomePageViewModel(
@@ -40,7 +36,7 @@ class HomePageViewModel(
 
     fun onEvent(event : HomePageUseCase){
         when(event){
-            HomePageUseCase.OnCopyUserIdEvent -> {
+            is HomePageUseCase.OnCopyUserIdEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
                      fetchUserId()
                 }
@@ -52,7 +48,7 @@ class HomePageViewModel(
 
     suspend fun fetchUserId() {
         if (_userId.value.isEmpty()){
-            _userId.value = gameStoreRepository.fetchUserInfo()
+            _userId.value = gameStoreRepository.getUserInfo()
         }
     }
 }

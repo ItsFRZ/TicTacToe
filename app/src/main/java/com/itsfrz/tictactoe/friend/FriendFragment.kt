@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -33,6 +34,8 @@ import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.BoardType
 import com.itsfrz.tictactoe.common.enums.GameLevel
 import com.itsfrz.tictactoe.common.enums.GameMode
+import com.itsfrz.tictactoe.common.functionality.InternetHelper
+import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.friend.components.FriendSearchBar
 import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 import com.itsfrz.tictactoe.friend.viewmodel.FriendPageViewModel
@@ -58,12 +61,14 @@ class FriendFragment : Fragment() {
     private lateinit var viewModel: FriendPageViewModel
     private lateinit var cloudRepository: CloudRepository
     private lateinit var dataStoreRepository  : GameStoreRepository
+    private lateinit var commonViewModel: CommonViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpOnlineConfig()
         val viewModelFactory = FriendPageViewModelFactory(cloudRepository,dataStoreRepository)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[FriendPageViewModel::class.java]
+        commonViewModel = CommonViewModel.getInstance()
         setupGameEngine()
 
     }
@@ -130,7 +135,13 @@ class FriendFragment : Fragment() {
                             onUserNameChange = {
                                 viewModel.onEvent(FriendPageUseCase.OnUserIdChange(it))
                             },
-                            onAddEvent = {viewModel.onEvent(FriendPageUseCase.SearchUserEvent)}
+                            onAddEvent = {
+                                if (InternetHelper.isOnline(requireContext())){
+                                    viewModel.onEvent(FriendPageUseCase.SearchUserEvent)
+                                }else{
+                                    Toast.makeText(requireContext(), "Internet is not available :(", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                         )
                         Spacer(modifier = Modifier
                             .padding(horizontal = 15.dp)
@@ -154,10 +165,18 @@ class FriendFragment : Fragment() {
                                         username = item.username,
                                         isUserOnline = item.online,
                                         playRequestEvent = {
-                                            viewModel.onEvent(FriendPageUseCase.OnRequestFriendEvent(index))
+                                            if (InternetHelper.isOnline(requireContext())){
+                                                viewModel.onEvent(FriendPageUseCase.OnRequestFriendEvent(index))
+                                            }else{
+                                                Toast.makeText(requireContext(), "Internet is not available :(", Toast.LENGTH_SHORT).show()
+                                            }
                                         },
                                         acceptRequestEvent = {
-                                            viewModel.onEvent(FriendPageUseCase.OnAcceptFriendRequestEvent(index))
+                                            if (InternetHelper.isOnline(requireContext())){
+                                                viewModel.onEvent(FriendPageUseCase.OnAcceptFriendRequestEvent(index))
+                                            }else{
+                                                Toast.makeText(requireContext(), "Internet is not available :(", Toast.LENGTH_SHORT).show()
+                                            }
                                         },
                                         isRequested = item.playRequest
                                     )
@@ -196,7 +215,13 @@ class FriendFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         job?.cancel()
+        commonViewModel.updateOnlineStatus(InternetHelper.isOnline(requireContext()))
         setupGameEngine()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        commonViewModel.updateOnlineStatus(isOnline = false)
     }
 
     override fun onDestroyView() {

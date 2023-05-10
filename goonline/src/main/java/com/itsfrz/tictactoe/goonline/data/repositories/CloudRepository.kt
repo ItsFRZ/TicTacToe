@@ -473,4 +473,15 @@ class CloudRepository(
         }
     }
 
+    override suspend fun updateOnlineStatus(isOnline : Boolean,userId: String?) {
+        scope.launch {
+            dataStoreRepository.updateOnlineStatus(isOnline)
+            val userProfile = dataStoreRepository.getUserProfile()
+            userProfile?.let { profile ->
+                userId?.let { id ->
+                    database.getReference(Constants.USER_PROFILE).child(id).setValue(profile)
+                }
+            }
+        }
+    }
 }

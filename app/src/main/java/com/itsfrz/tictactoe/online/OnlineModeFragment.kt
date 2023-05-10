@@ -28,12 +28,15 @@ import com.itsfrz.tictactoe.online.viewmodel.BoardViewModelFactory
 import com.itsfrz.tictactoe.ui.theme.headerSubTitle
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.constants.BundleKey
+import com.itsfrz.tictactoe.common.functionality.InternetHelper
 import com.itsfrz.tictactoe.common.functionality.NavOptions
+import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModel
 import com.itsfrz.tictactoe.online.viewmodel.OnlineModeViewModelFactory
 
 class OnlineModeFragment : Fragment() {
     private lateinit var viewmodel: OnlineModeViewModel
+    private lateinit var commonViewModel: CommonViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -44,7 +47,7 @@ class OnlineModeFragment : Fragment() {
 
         val viewModelFactory = OnlineModeViewModelFactory()
         viewmodel = ViewModelProvider(viewModelStore,viewModelFactory)[OnlineModeViewModel::class.java]
-
+        commonViewModel = CommonViewModel.getInstance()
     }
 
     override fun onCreateView(
@@ -102,6 +105,11 @@ class OnlineModeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        commonViewModel.updateOnlineStatus(isOnline = InternetHelper.isOnline(requireContext()))
     }
 
 }
