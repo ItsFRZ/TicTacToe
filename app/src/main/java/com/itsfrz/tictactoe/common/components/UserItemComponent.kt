@@ -28,75 +28,76 @@ import com.itsfrz.tictactoe.R
 
 @Composable
 fun UserItemLayout(
+    modifier : Modifier,
     username : String,
     isUserOnline : Boolean,
     playRequestEvent : () -> Unit,
     acceptRequestEvent : () -> Unit,
     isRequested : Boolean,
 ) {
-
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 15.dp, vertical = 4.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = modifier
     ) {
-        Row(modifier = Modifier
-            .fillMaxWidth(.7F),
-            horizontalArrangement = Arrangement.Start,
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 15.dp, vertical = 4.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Row(modifier = Modifier
+                .fillMaxWidth(.7F),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            Box(modifier = Modifier
-                .size(40.dp)
-                .background(color = ThemeBlue, shape = RoundedCornerShape(100)),
-                contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier
+                    .size(40.dp)
+                    .background(color = ThemeBlue, shape = RoundedCornerShape(100)),
+                    contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "${username[0]}",
+                        style = headerTitle.copy(
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(20.dp))
+
                 Text(
-                    text = "${username[0]}",
-                    style = headerTitle.copy(
-                        fontSize = 18.sp,
-                        color = Color.White
+                    modifier = Modifier.fillMaxWidth(.54F),
+                    text = if (username.length > 12) "${username.substring(0,12)}..." else username,
+                    style = headerSubTitle.copy(color = PrimaryDark, fontSize = 14.sp, textAlign = TextAlign.Start)
+                )
+                Box(modifier = Modifier
+                    .size(8.dp)
+                    .background(
+                        color = if (isUserOnline) ThemeGreen else ThemeRed,
+                        shape = RoundedCornerShape(100)
                     )
                 )
             }
 
-            Spacer(modifier = Modifier.width(20.dp))
-
-            Text(
-                modifier = Modifier.fillMaxWidth(.54F),
-                text = if (username.length > 12) "${username.substring(0,12)}..." else username,
-                style = headerSubTitle.copy(color = PrimaryDark, fontSize = 14.sp, textAlign = TextAlign.Start)
-            )
-            Box(modifier = Modifier
-                .size(8.dp)
-                .background(
-                    color = if (isUserOnline) ThemeGreen else ThemeRed,
-                    shape = RoundedCornerShape(100)
-                )
-            )
-        }
-
-        Row(modifier = Modifier
-            .height(42.dp)
-            .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (isRequested){
-                UserItemButton(buttonText = "Accept", backgroundColor = ThemeGreen) {
-                    acceptRequestEvent()
-                }
-            }else{
-                UserItemButton(buttonText = "Request", backgroundColor = ThemeBlue) {
-                    playRequestEvent()
+            Row(modifier = Modifier
+                .height(42.dp)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isRequested){
+                    UserItemButton(buttonText = "Accept", backgroundColor = ThemeGreen) {
+                        acceptRequestEvent()
+                    }
+                }else{
+                    UserItemButton(buttonText = "Request", backgroundColor = ThemeBlue) {
+                        playRequestEvent()
+                    }
                 }
             }
         }
     }
-
-
-
 }
 
 @Composable

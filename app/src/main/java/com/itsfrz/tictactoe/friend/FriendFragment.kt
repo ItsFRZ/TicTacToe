@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -97,6 +99,7 @@ class FriendFragment : Fragment() {
         )
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -157,11 +160,17 @@ class FriendFragment : Fragment() {
                             style = headerTitle.copy(fontSize = 15.sp, color = ThemeBlue, textAlign = TextAlign.Start, fontWeight = FontWeight.SemiBold)
                         )
                         Column(modifier = Modifier.fillMaxSize()) {
-                            LazyColumn(modifier = Modifier.weight(1F)){
+                            LazyColumn(
+                                modifier = Modifier.weight(1F),
+                            ){
                                 itemsIndexed(
-                                    friendList
+                                    items = friendList,
+                                    key = { index, item -> item.userId.hashCode()+index }
                                 ){ index,item ->
                                     UserItemLayout(
+                                        modifier = Modifier.animateItemPlacement(
+                                            animationSpec = tween(durationMillis = 600)
+                                        ),
                                         username = item.username,
                                         isUserOnline = item.online,
                                         playRequestEvent = {

@@ -106,7 +106,7 @@ class CloudRepository(
 
     suspend fun searchAndStoreFriend(userId : String,friendUserId : String?){
         try {
-            Log.i(TAG, "searchAndStoreFriend: Search Started")
+            Log.i(TAG, "searchAndStoreFriend: Search Started For Friend UserId ${friendUserId}")
             if (friendUserId.isNullOrEmpty())
                 throw Exception("Friend UserId should not be null or empty")
             database.getProfileReference(Constants.USER_PROFILE)
@@ -121,8 +121,6 @@ class CloudRepository(
                             scope.launch(Dispatchers.IO) {
                                 dataStoreRepository.updateFriendData(userProfile)
                                 updateFriendDataInServer(userId,userProfile)
-                            }
-                            scope.launch {
                             }
                         }
                     }
