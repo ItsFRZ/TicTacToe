@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.common.components
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.EaseInBounce
 import androidx.compose.animation.core.tween
@@ -15,6 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +36,7 @@ object GameDialogue{
         onCloseEvent : () -> Unit,
         onDialogueButtonClick : () -> Unit,
     ) {
+        val view = LocalView.current
         LaunchedEffect(Unit){
             delay(3000)
         }
@@ -40,13 +44,13 @@ object GameDialogue{
             modifier = Modifier
                 .fillMaxWidth(7f)
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(2.dp),
+            shape = RoundedCornerShape(8.dp),
             elevation = 10.dp
         ) {
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(PrimaryLight),
+                    .background(ThemeDialogBackground),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -68,6 +72,7 @@ object GameDialogue{
                             )
                             .padding(8.dp),
                         onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                             onCloseEvent()
                         }
                     ){
@@ -98,7 +103,9 @@ object GameDialogue{
                     .wrapContentWidth()
                     .height(5.dp))
                 CustomButton(
-                    onButtonClick = { onDialogueButtonClick() },
+                    onButtonClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        onDialogueButtonClick() },
                     buttonText = if (gameResult == GameResult.DRAW) "Play Again" else "Retry"
                 )
                 Spacer(modifier = Modifier
@@ -116,6 +123,7 @@ object GameDialogue{
         onCloseEvent : () -> Unit,
         onDialogueButtonClick : () -> Unit,
     ){
+        val view = LocalView.current
         LaunchedEffect(Unit){
             delay(3000)
         }
@@ -129,7 +137,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(PrimaryLight),
+                    .background(ThemeDialogBackground),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -152,6 +160,7 @@ object GameDialogue{
                             )
                             .padding(8.dp),
                         onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                             onCloseEvent()
                         }
                     ){
@@ -169,7 +178,7 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
-                AnimatedStarLayout(starLayoutBackground = PrimaryLight, starInactiveColor = PrimaryDark)
+                AnimatedStarLayout(starLayoutBackground = ThemeDialogBackground, starInactiveColor = PrimaryDark)
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(2.dp))
@@ -178,7 +187,10 @@ object GameDialogue{
                     .wrapContentWidth()
                     .height(5.dp))
                 CustomButton(
-                    onButtonClick = { onDialogueButtonClick() },
+                    onButtonClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        onDialogueButtonClick()
+                                    },
                     buttonText = dialogueButtonText
                 )
                 Spacer(modifier = Modifier
@@ -265,6 +277,7 @@ object GameDialogue{
         titleText : String = "Do you really want to exit ?",
         buttonText : String = "Agree"
     ) {
+        val view = LocalView.current
         Card(
             modifier = Modifier
                 .fillMaxWidth(7f)
@@ -275,7 +288,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(PrimaryLight),
+                    .background(ThemeDialogBackground),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -297,6 +310,7 @@ object GameDialogue{
                             )
                             .padding(8.dp),
                         onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                             onContinueEvent()
                         }
                     ){
@@ -319,7 +333,9 @@ object GameDialogue{
                     .wrapContentWidth()
                     .height(10.dp))
                 CustomButton(
-                    onButtonClick = { onExitEvent() },
+                    onButtonClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        onExitEvent() },
                     buttonText = buttonText
                 )
                 Spacer(modifier = Modifier
@@ -338,12 +354,12 @@ object GameDialogue{
                 .wrapContentHeight(),
             shape = RoundedCornerShape(2.dp),
             elevation = 10.dp,
-            backgroundColor = PrimaryLight
+            backgroundColor = ThemeDialogBackground
         ) {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 10.dp, vertical = 25.dp)
-                    .background(PrimaryLight),
+                    .background(ThemeDialogBackground),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -366,20 +382,21 @@ object GameDialogue{
     fun PlayRequestBox(
         onCloseClick : () -> Unit
     ) {
+        val view = LocalView.current
         Card(
             modifier = Modifier
                 .fillMaxWidth(.7f)
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(2.dp),
+            shape = RoundedCornerShape(8.dp),
             elevation = 10.dp,
-            backgroundColor = PrimaryLight
+            backgroundColor = ThemeDialogBackground
         ) {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 15.dp, vertical = 22.dp)
-                    .background(PrimaryLight),
+                    .background(ThemeDialogBackground),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Row(
                     modifier = Modifier
@@ -396,20 +413,21 @@ object GameDialogue{
                             )
                             .padding(8.dp),
                         onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                             onCloseClick()
                         }
                     ){
                         Icon(
                             painter = painterResource(id = R.drawable.ic_cross),
                             contentDescription = "Back Icon",
-                            tint = ThemeBlue
+                            tint = Color.White
                         )
                     }
                 }
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(4.dp))
-                Text(text = "WAIT", style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
+                Text(text = "WAIT", style = headerTitle.copy(color = Color.White, fontSize = 20.sp))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))

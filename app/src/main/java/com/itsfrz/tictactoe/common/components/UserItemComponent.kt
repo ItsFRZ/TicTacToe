@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.common.components
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +37,7 @@ fun UserItemLayout(
     acceptRequestEvent : () -> Unit,
     isRequested : Boolean,
 ) {
+    val view = LocalView.current
     Column(
         modifier = modifier
     ) {
@@ -69,7 +72,7 @@ fun UserItemLayout(
                 Text(
                     modifier = Modifier.fillMaxWidth(.54F),
                     text = if (username.length > 12) "${username.substring(0,12)}..." else username,
-                    style = headerSubTitle.copy(color = PrimaryDark, fontSize = 14.sp, textAlign = TextAlign.Start)
+                    style = headerSubTitle.copy(color = Color.White, fontSize = 14.sp, textAlign = TextAlign.Start)
                 )
                 Box(modifier = Modifier
                     .size(8.dp)
@@ -88,10 +91,12 @@ fun UserItemLayout(
             ) {
                 if (isRequested){
                     UserItemButton(buttonText = "Accept", backgroundColor = ThemeGreen) {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                         acceptRequestEvent()
                     }
                 }else{
-                    UserItemButton(buttonText = "Request", backgroundColor = ThemeBlue) {
+                    UserItemButton(buttonText = "Request", backgroundColor = ThemeButtonBackground) {
+                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                         playRequestEvent()
                     }
                 }
@@ -114,7 +119,8 @@ private fun UserItemButton(
         contentPadding = PaddingValues(top = 5.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = backgroundColor
-        )
+        ),
+        border = BorderStroke(width = 0.4.dp, color = ThemeButtonBorder)
     ) {
         Text(
             modifier = Modifier.fillMaxSize(),

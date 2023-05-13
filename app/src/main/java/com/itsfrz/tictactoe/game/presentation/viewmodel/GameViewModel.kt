@@ -330,6 +330,12 @@ class GameViewModel(
                 checkGameWinner()
                 checkDraw()
             }
+            GameMode.FOUR_PLAYER -> {
+//                setUserTurn()
+//                resetTimeLimit()
+//                checkGameWinner()
+//                checkDraw()
+            }
             GameMode.AI -> {
                 resetTimeLimit()
                 checkGameWinner()

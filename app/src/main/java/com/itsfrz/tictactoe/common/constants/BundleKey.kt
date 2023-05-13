@@ -9,4 +9,5 @@ object BundleKey {
     const val USER_ID = "USER_ID"
     const val FRIEND_ID = "FRIEND_ID"
     const val SESSION_ID = "SESSION_ID"
+    const val PLAYER_COUNT = "PLAYER_COUNT"
 }

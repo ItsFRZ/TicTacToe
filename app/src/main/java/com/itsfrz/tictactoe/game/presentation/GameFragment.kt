@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import com.itsfrz.tictactoe.game.presentation.components.GameBoard
 import com.itsfrz.tictactoe.game.presentation.components.GameDivider
 import com.itsfrz.tictactoe.game.presentation.components.UserMove
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
+import com.itsfrz.tictactoe.game.presentation.components.ProgressTimer
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModel
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModelFactory
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
@@ -43,7 +45,7 @@ import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
 import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
-import com.itsfrz.tictactoe.ui.theme.PrimaryLight
+import com.itsfrz.tictactoe.ui.theme.PrimaryMain
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.ThemeBlueLight
 import kotlinx.coroutines.*
@@ -164,26 +166,25 @@ class GameFragment : Fragment(){
                 val inGame = viewModel.inGame.value
                 val requestDialogState = viewModel.requestDialogState.value
                 val acceptDialogState = viewModel.acceptDialogState.value
+
                 Column(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = PrimaryLight),
+                    .background(color = PrimaryMain),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
-                        .height(20.dp))
-                    Row(modifier = Modifier
-                        .padding(horizontal = 30.dp)
-                        .height(30.dp)
-                        .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(modifier = Modifier.size(userTimeOutPulsatingWarning.dp), painter = painterResource(id = R.drawable.ic_timer), contentDescription = "Game Timer", tint = ThemeBlue)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        LinearProgressIndicator(modifier = Modifier
-                            .height(6.dp)
-                            .fillMaxWidth(),progress = timeLimitAnimation, color = ThemeBlue, backgroundColor = ThemeBlueLight)
-                    }
+                        .height(10.dp))
+
+                    ProgressTimer(
+                        userTimeOutPulsatingWarning = userTimeOutPulsatingWarning,
+                        timeLimitAnimation = timeLimitAnimation,
+                        playerTurns = playerTurns,
+                        currentUserId = currentUserId,
+                        gameMode = gameMode,
+                        userId = userId,
+                        isCross = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM) currentUserId == friendUserId else if (gameMode == GameMode.AI)  !playerTurns else playerTurns
+                    )
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(20.dp))
@@ -216,13 +217,6 @@ class GameFragment : Fragment(){
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(20.dp))
-                    if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
-                        UserMove(username = if (currentUserId == userId) "Your" else "Opponent", isCross = currentUserId == friendUserId)
-                    }else if(gameMode == GameMode.AI) {
-                        UserMove(username = if (playerTurns) "Your" else "AI", isCross = !playerTurns)
-                    } else{
-                        UserMove(username = if (playerTurns) "Player 2" else "Player 1", isCross = playerTurns)
-                    }
                 }
                 if (gameResult != GameResult.NONE){
                     LaunchedEffect(Unit){
@@ -236,7 +230,7 @@ class GameFragment : Fragment(){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = PrimaryLight)
+                            .background(color = PrimaryMain)
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
                     ){
@@ -256,7 +250,6 @@ class GameFragment : Fragment(){
                                             findNavController().navigateUp()
                                         }
                                     ) {
-                                        view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                                         viewModel.onEvent(GameUsecase.OnGameRetry)
                                         if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.AI))
                                             viewModel.onEvent(GameUsecase.OnClearGameBoard)
@@ -287,7 +280,7 @@ class GameFragment : Fragment(){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = PrimaryLight)
+                            .background(color = PrimaryMain)
                             .clickable { }
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
@@ -316,7 +309,7 @@ class GameFragment : Fragment(){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = PrimaryLight)
+                            .background(color = PrimaryMain)
                             .clickable { }
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
@@ -339,7 +332,7 @@ class GameFragment : Fragment(){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = PrimaryLight)
+                            .background(color = PrimaryMain)
                             .clickable { }
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center

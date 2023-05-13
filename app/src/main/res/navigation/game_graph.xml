@@ -11,7 +11,7 @@
         android:label="fragment_user_registration"/>
     <fragment
         android:id="@+id/homePage"
-        android:name="com.itsfrz.tictactoe.homepage.HomePageFragment"
+        android:name="com.itsfrz.tictactoe.home.HomeFragment"
         android:label="fragment_home_page">
     </fragment>
     <fragment
@@ -32,4 +32,8 @@
         android:label="fragment_select_board">
 
     </fragment>
+    <fragment
+        android:id="@+id/emojiPickerFragment"
+        android:name="com.itsfrz.tictactoe.emoji.EmojiPickerFragment"
+        android:label="fragment_emoji_picker" />
 </navigation>

@@ -2,6 +2,7 @@ package com.itsfrz.tictactoe.userregistration
 
 import android.content.Context
 import android.os.Bundle
+import android.view.HapticFeedbackConstants
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -73,14 +76,16 @@ class UserRegistrationFragment : Fragment() {
 
                 Column(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = PrimaryLight),
+                    .background(color = PrimaryMain),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier
                         .height(100.dp)
                         .fillMaxWidth())
                     Text(
-                        style = headerTitle,
+                        style = headerTitle.copy(
+                            color = Color.White
+                        ),
                         text = buildAnnotatedString {
                             append("You must register\n")
                             withStyle(

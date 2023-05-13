@@ -8,6 +8,7 @@ import com.itsfrz.tictactoe.board.usecase.SelectBoardUseCase
 import com.itsfrz.tictactoe.common.enums.BoardType
 import com.itsfrz.tictactoe.common.enums.GameLevel
 import com.itsfrz.tictactoe.common.enums.GameMode
+import com.itsfrz.tictactoe.common.enums.PlayerCount
 
 class BoardViewModel : ViewModel(){
 
@@ -19,6 +20,9 @@ class BoardViewModel : ViewModel(){
 
     private val _boardType : MutableState<BoardType> = mutableStateOf(BoardType.THREEX3)
     val boardType : State<BoardType> = _boardType
+
+    private val _playerCount : MutableState<PlayerCount> = mutableStateOf(PlayerCount.ONE)
+    val playerCount : State<PlayerCount> = _playerCount
 
     private val _selectedIndex : MutableState<Int> = mutableStateOf(-1)
     val selectedIndex : State<Int> = _selectedIndex
@@ -41,6 +45,9 @@ class BoardViewModel : ViewModel(){
                     2 -> BoardType.FIVEX5
                     else -> BoardType.THREEX3
                 }
+            }
+            is SelectBoardUseCase.OnPlayerCountEvent -> {
+                _playerCount.value = event.playerCount
             }
         }
     }

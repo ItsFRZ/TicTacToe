@@ -1,4 +1,4 @@
-package com.itsfrz.tictactoe.homepage.viewmodel
+package com.itsfrz.tictactoe.home.viewmodel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
-import com.itsfrz.tictactoe.homepage.usecase.HomePageUseCase
+import com.itsfrz.tictactoe.home.usecase.HomePageUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

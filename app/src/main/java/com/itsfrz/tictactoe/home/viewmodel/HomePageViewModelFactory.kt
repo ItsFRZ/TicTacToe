@@ -1,4 +1,4 @@
-package com.itsfrz.tictactoe.homepage.viewmodel
+package com.itsfrz.tictactoe.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

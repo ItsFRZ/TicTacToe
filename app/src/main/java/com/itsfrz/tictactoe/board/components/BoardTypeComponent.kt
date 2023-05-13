@@ -31,7 +31,8 @@ fun BoardTypeComponent(
 ) {
     Card(
         modifier = modifier,
-        elevation = 15.dp
+        elevation = 15.dp,
+        backgroundColor = ThemeButtonBackground
     ) {
         Column(modifier = Modifier
             .fillMaxHeight(),
@@ -49,6 +50,7 @@ fun BoardTypeComponent(
             }else{
                 Text(text = gameBoardContentText, style = headerSubTitle.copy(fontSize = 12.sp, color = ThemeBlue))
             }
+            Spacer(modifier = Modifier.fillMaxWidth().height(5.dp))
         }
     }
 }
@@ -61,7 +63,7 @@ private fun BoardHeaderComponent(
     Box(modifier = Modifier
         .fillMaxWidth()
         .wrapContentHeight(), contentAlignment = Alignment.Center) {
-        Text(modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, text = boardHeaderText, style = headerSubTitle.copy(color = ThemeBlue, fontSize = 22.sp))
+        Text(modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, text = boardHeaderText, style = headerSubTitle.copy(color = Color.White, fontSize = 22.sp))
         Row(modifier = Modifier
             .fillMaxWidth()
             .height(30.dp),
@@ -98,11 +100,11 @@ private fun DifficultyCapsule(
         .padding(horizontal = 20.dp, vertical = 10.dp)
         .height(30.dp)
         .clip(RoundedCornerShape(20.dp))
-        .background(color = ThemeBlue)
+        .background(color = ThemeButtonBackgroundDisabled)
         .border(width = 1.dp, color = ThemeGreen, shape = RoundedCornerShape(20.dp))
     ) {
         for (i in 0 until 3){
-            var borderColor = ThemeBlue
+            var borderColor = ThemeButtonBackground
             if (i == 1)
                 borderColor = ThemeGreen
             Column(modifier = Modifier
@@ -113,7 +115,7 @@ private fun DifficultyCapsule(
                     ) else Shapes.zeroRoundedCorners()
                 )
                 .border(width = 1.dp, color = borderColor)
-                .background(color = if (selectedIndex == i) ThemeGreen else ThemeBlue)
+                .background(color = if (selectedIndex == i) ThemeGreen else ThemeButtonBackground)
                 .clickable { onDifficultyEvent(i) },
                horizontalAlignment = Alignment.CenterHorizontally,
                verticalArrangement = Arrangement.Center

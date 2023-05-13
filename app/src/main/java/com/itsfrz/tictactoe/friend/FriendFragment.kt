@@ -1,7 +1,6 @@
 package com.itsfrz.tictactoe.friend
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
@@ -27,8 +25,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.components.UserItemLayout
@@ -42,16 +38,12 @@ import com.itsfrz.tictactoe.friend.components.FriendSearchBar
 import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 import com.itsfrz.tictactoe.friend.viewmodel.FriendPageViewModel
 import com.itsfrz.tictactoe.friend.viewmodel.FriendPageViewModelFactory
-import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
-import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
 import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
-import com.itsfrz.tictactoe.homepage.viewmodel.HomePageViewModel
-import com.itsfrz.tictactoe.homepage.viewmodel.HomePageViewModelFactory
-import com.itsfrz.tictactoe.ui.theme.PrimaryLight
+import com.itsfrz.tictactoe.ui.theme.PrimaryMain
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 import kotlinx.coroutines.*
@@ -130,7 +122,7 @@ class FriendFragment : Fragment() {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = PrimaryLight)
+                            .background(color = PrimaryMain)
                             .alpha(if (isLoaderActive || playRequestLoader) 0.3F else 1F)
                     ) {
                         FriendSearchBar(

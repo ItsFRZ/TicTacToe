@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.ui.theme.PrimaryDark
-import com.itsfrz.tictactoe.ui.theme.PrimaryLight
+import com.itsfrz.tictactoe.ui.theme.PrimaryMain
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.errorMessage
 
@@ -46,7 +46,7 @@ fun TextFieldWithValidation(
             modifier = Modifier.onFocusChanged {
                 isFocussed.value = it.isFocused || it.hasFocus
             },
-            label = { Text(text = label) },
+            label = { Text(text = label, color = if (isFocussed.value && !isValidationTriggered) ThemeBlue else if (isValidationTriggered) Color.Red else PrimaryDark) },
             value = fieldValue,
             onValueChange = {inputData -> onUsernameChange(inputData)},
             leadingIcon = {
@@ -56,7 +56,7 @@ fun TextFieldWithValidation(
             colors = TextFieldDefaults.textFieldColors(
                 textColor = if(isValidationTriggered) Color.Red else ThemeBlue,
                 cursorColor = ThemeBlue,
-                backgroundColor = PrimaryLight,
+                backgroundColor = PrimaryMain,
                 focusedLabelColor = ThemeBlue,
                 focusedIndicatorColor = ThemeBlue,
                 leadingIconColor = ThemeBlue,

@@ -13,18 +13,20 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.board.components.BoardTypeComponent
-import com.itsfrz.tictactoe.ui.theme.PrimaryLight
+import com.itsfrz.tictactoe.ui.theme.PrimaryMain
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.board.components.SelectedBoardIndicator
 import com.itsfrz.tictactoe.board.usecase.SelectBoardUseCase
@@ -32,10 +34,12 @@ import com.itsfrz.tictactoe.common.components.CustomButton
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.BoardType
 import com.itsfrz.tictactoe.common.enums.GameMode
+import com.itsfrz.tictactoe.common.enums.PlayerCount
 import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModel
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModelFactory
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
+import com.itsfrz.tictactoe.ui.theme.ThemeButtonBackground
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 
 class SelectBoardFragment : Fragment() {
@@ -47,7 +51,9 @@ class SelectBoardFragment : Fragment() {
         val viewModelFactory = BoardViewModelFactory()
         viewmodel = ViewModelProvider(this,viewModelFactory)[BoardViewModel::class.java]
         val gameMode = requireArguments().getSerializable(BundleKey.GAME_MODE) as GameMode
+        val playerCount = requireArguments().getSerializable(BundleKey.PLAYER_COUNT) as PlayerCount
         viewmodel.onEvent(SelectBoardUseCase.OnGameModeEvent(gameMode))
+        viewmodel.onEvent(SelectBoardUseCase.OnPlayerCountEvent(playerCount))
     }
 
     @OptIn(ExperimentalFoundationApi::class)
@@ -61,16 +67,22 @@ class SelectBoardFragment : Fragment() {
                 val selectedLevel = viewmodel.level.value
                 val boardType = viewmodel.boardType.value
                 val gameMode = viewmodel.gameMode.value
+                val playerCount = viewmodel.playerCount.value
                 val listState = rememberLazyListState()
                 Column(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = PrimaryLight),
+                    .background(color = PrimaryMain),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(25.dp))
-                    Text(modifier = Modifier.fillMaxWidth(), text = "Choose Board", style = headerTitle.copy(color = ThemeBlue))
+                    Text(modifier = Modifier.fillMaxWidth(), text = buildAnnotatedString {
+                        append("Choose")
+                        withStyle(style = SpanStyle(color = ThemeBlue)){
+                            append(" Board")
+                        }
+                    }, style = headerTitle.copy(color = Color.White))
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp))
@@ -155,6 +167,7 @@ class SelectBoardFragment : Fragment() {
                             bundle.putSerializable(BundleKey.GAME_MODE,gameMode)
                             bundle.putSerializable(BundleKey.SELECTED_LEVEL,selectedLevel)
                             bundle.putSerializable(BundleKey.BOARD_TYPE,boardType)
+                            bundle.putSerializable(BundleKey.PLAYER_COUNT,playerCount)
                             findNavController().navigate(
                                 resId = R.id.gameFragment,
                                 args = bundle,

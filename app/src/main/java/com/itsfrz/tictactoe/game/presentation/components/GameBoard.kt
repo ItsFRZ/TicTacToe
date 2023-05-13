@@ -20,9 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.R
-import com.itsfrz.tictactoe.common.enums.BoardType
 import com.itsfrz.tictactoe.common.enums.GameMode
-import com.itsfrz.tictactoe.ui.theme.PrimaryLight
+import com.itsfrz.tictactoe.ui.theme.PrimaryMain
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 
 @Composable
@@ -53,14 +52,14 @@ fun GameBoard(
         modifier = Modifier
             .padding(horizontal = 12.dp)
             .fillMaxWidth(9F)
-            .border(border = BorderStroke(width = 1.dp, color = PrimaryLight)),
+            .border(border = BorderStroke(width = 1.dp, color = PrimaryMain)),
         columns = GridCells.Fixed(columnCount),
         content = {
             itemsIndexed(items = gameCellList){ index: Int, item: Int ->
                 Column(
                     modifier = Modifier
                         .height(boardHeight)
-                        .background(color = if (isWinner && index in winnerIndexList) color else PrimaryLight)
+                        .background(color = if (isWinner && index in winnerIndexList) color else PrimaryMain)
                         .clickable {
                             if (!isWinner) {
                                 if (gameMode == GameMode.TWO_PLAYER) {
@@ -91,8 +90,8 @@ fun GameBoard(
                         Column(modifier = Modifier
                             .fillMaxHeight(1F)
                             .fillMaxWidth()
-                            .background(color = PrimaryLight)) {
-                            Icon(imageVector = Icons.Filled.Menu, contentDescription = "Blank", tint = PrimaryLight)
+                            .background(color = PrimaryMain)) {
+                            Icon(imageVector = Icons.Filled.Menu, contentDescription = "Blank", tint = PrimaryMain)
                         }
                     }
                 }
