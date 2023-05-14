@@ -114,6 +114,10 @@ class GameViewModel(
     private val _acceptDialogState : MutableState<Boolean> = mutableStateOf(false)
     val acceptDialogState = _acceptDialogState
 
+    // Multiplayer Config
+    private val _playerTurn : MutableState<PlayerTurn> = mutableStateOf(PlayerTurn.NONE)
+    val playerTurn : State<PlayerTurn> = _playerTurn
+
     init {
         essentialInfo.getEssentialInfo().let {
             gameMode = it.gameMode
@@ -191,6 +195,27 @@ class GameViewModel(
 
                 if (gameMode == GameMode.FRIEND){
                     updatePlayerData(event.index)
+                }
+
+                if (gameMode == GameMode.FOUR_PLAYER){
+                    when(_playerTurn.value){
+                        PlayerTurn.ONE -> {
+                            _playerOneIndex.value.add(event.index)
+                        }
+                        PlayerTurn.TWO -> {
+                            _playerTwoIndex.value.add(event.index)
+                        }
+                        PlayerTurn.THREE -> {
+                            _playerThreeIndex.value.add(event.index)
+                        }
+                        PlayerTurn.FOUR -> {
+                            _playerFourIndex.value.add(event.index)
+                        }
+                        else -> {}
+                    }
+
+                    setGameMap(event.index)
+                    playGame()
                 }
             }
             is GameUsecase.OnAIMove -> {
@@ -341,10 +366,10 @@ class GameViewModel(
                 checkDraw()
             }
             GameMode.FOUR_PLAYER -> {
-//                setUserTurn()
-//                resetTimeLimit()
-//                checkGameWinner()
-//                checkDraw()
+                setMultiplayerTurn()
+                resetTimeLimit()
+                checkGameWinner()
+                checkDraw()
             }
             GameMode.AI -> {
                 resetTimeLimit()
@@ -360,6 +385,26 @@ class GameViewModel(
             GameMode.RANDOM -> {
 
             }
+        }
+    }
+
+    fun setMultiplayerRandomTurn(){
+        val randomTurn = (1..4).random()
+        _playerTurn.value = when(randomTurn){
+            1 -> PlayerTurn.ONE
+            2 -> PlayerTurn.TWO
+            3 -> PlayerTurn.THREE
+            4 -> PlayerTurn.FOUR
+            else -> PlayerTurn.ONE
+        }
+    }
+    private fun setMultiplayerTurn() {
+        _playerTurn.value = when(_playerTurn.value) {
+            PlayerTurn.ONE -> PlayerTurn.TWO
+            PlayerTurn.TWO -> PlayerTurn.THREE
+            PlayerTurn.THREE -> PlayerTurn.FOUR
+            PlayerTurn.FOUR -> PlayerTurn.ONE
+            PlayerTurn.NONE -> PlayerTurn.ONE
         }
     }
 
@@ -395,19 +440,27 @@ class GameViewModel(
         var validateWinner = false
         val TAG = "GAME_WIN"
         Log.i(TAG, "checkGameWinner: Inside Game Condition ${boardType}")
-        when(boardType) {
-            BoardType.THREEX3 -> {
-                validateWinner = checkDiagonalPossibility() || checkVerticalPossibility() || checkHorizontalPossibility()
+        if(gameMode == GameMode.FOUR_PLAYER){
+            if (boardType == BoardType.FOURX4)
+            {
+                validateWinner = GameWinner.checkAllMultiplayerPositionsByBoard(gameMap,4,3)
+            } else {
+                validateWinner = GameWinner.checkAllMultiplayerPositionsByBoard(gameMap,4,4)
             }
-            BoardType.FOURX4 -> {
-                validateWinner = GameWinner.checkAllPositionsByBoard(gameMap,4)
-                Log.i(TAG, "checkGameWinner: 4x4 Board : ${gameMap}")
+        }else{
+            when(boardType) {
+                BoardType.THREEX3 -> {
+                    validateWinner = checkDiagonalPossibility() || checkVerticalPossibility() || checkHorizontalPossibility()
+                }
+                BoardType.FOURX4 -> {
+                    validateWinner = GameWinner.checkAllPositionsByBoard(gameMap,4)
+                    Log.i(TAG, "checkGameWinner: 4x4 Board : ${gameMap}")
+                }
+                BoardType.FIVEX5 -> {
+                    validateWinner = GameWinner.checkAllPositionsByBoard(gameMap,5)
+                    Log.i(TAG, "checkGameWinner: 5x5 Board : ${gameMap}")
+                }
             }
-            BoardType.FIVEX5 -> {
-                validateWinner = GameWinner.checkAllPositionsByBoard(gameMap,5)
-                Log.i(TAG, "checkGameWinner: 5x5 Board : ${gameMap}")
-            }
-
         }
         if (validateWinner){
             when(gameMode){
@@ -435,6 +488,9 @@ class GameViewModel(
                         _gameResult.value = GameResult.WIN
                     }
                     initiateExitGameRequest()
+                }
+                GameMode.FOUR_PLAYER -> {
+                    _gameResult.value = GameResult.WIN
                 }
                 else -> {
                 }
@@ -569,7 +625,17 @@ class GameViewModel(
     }
 
     private fun setGameMap(index: Int) {
-        val inputData = if (_isUserTurnsComplete.value) 1 else 2
+        val inputData = if (gameMode == GameMode.FOUR_PLAYER) {
+            when(_playerTurn.value){
+                PlayerTurn.ONE -> 1
+                PlayerTurn.TWO -> 2
+                PlayerTurn.THREE -> 3
+                PlayerTurn.FOUR -> 4
+                else -> 1
+            }
+        } else {
+            if (_isUserTurnsComplete.value) 1 else 2
+        }
         when(boardType){
             BoardType.THREEX3 -> {
                 if (index in 0..2){

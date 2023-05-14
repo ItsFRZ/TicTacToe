@@ -26,10 +26,7 @@ import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.constants.BundleKey
-import com.itsfrz.tictactoe.common.enums.BoardType
-import com.itsfrz.tictactoe.common.enums.GameLevel
-import com.itsfrz.tictactoe.common.enums.GameMode
-import com.itsfrz.tictactoe.common.enums.GameResult
+import com.itsfrz.tictactoe.common.enums.*
 import com.itsfrz.tictactoe.common.functionality.GameWinner
 import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.state.EssentialInfo
@@ -106,6 +103,9 @@ class GameFragment : Fragment(){
                 }
             }
         }
+        if (gameMode == GameMode.FOUR_PLAYER){
+            viewModel.setMultiplayerRandomTurn()
+        }
     }
 
     private fun setUpNavArgs() {
@@ -148,10 +148,11 @@ class GameFragment : Fragment(){
 
                 val playerOneData = viewModel.playerOneIndex.value
                 val playerTwoData = viewModel.playerTwoIndex.value
-                val playerThreeData = viewModel.playerTwoIndex.value
-                val playerFourData = viewModel.playerTwoIndex.value
+                val playerThreeData = viewModel.playerThreeIndex.value
+                val playerFourData = viewModel.playerFourIndex.value
                 val winnerIndexList = viewModel.winnerIndexList.value
                 val playerTurns = viewModel.isUserTurnsComplete.value
+                val multiplayerTurn = viewModel.playerTurn.value
                 val userTimeLimit = viewModel.userTimer.value
                 val userTimeOutWarning = viewModel.userWarning.value
                 val userTimeOutPulsatingWarning by rememberInfiniteTransition().animateFloat(
@@ -186,10 +187,11 @@ class GameFragment : Fragment(){
                         userTimeOutPulsatingWarning = userTimeOutPulsatingWarning,
                         timeLimitAnimation = timeLimitAnimation,
                         playerTurns = playerTurns,
+                        avatar = getCurrentAvatar(gameMode,currentUserId,friendUserId,playerTurns,multiplayerTurn),
                         currentUserId = currentUserId,
                         gameMode = gameMode,
                         userId = userId,
-                        isCross = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM) currentUserId == friendUserId else if (gameMode == GameMode.AI)  !playerTurns else playerTurns
+                        playerTurn = multiplayerTurn,
                     )
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
@@ -199,8 +201,10 @@ class GameFragment : Fragment(){
                         .fillMaxWidth()
                         .height(40.dp))
                     GameBoard(
-                        crossList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI) playerTwoData else playerOneData,
-                        rightList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI) playerOneData else playerTwoData,
+                        crossList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerTwoData else playerOneData,
+                        rightList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerOneData else playerTwoData,
+                        player3List = playerThreeData,
+                        player4List = playerFourData,
                         userId = userId,
                         currentUserId = currentUserId,
                         gameMode = gameMode,
@@ -210,7 +214,10 @@ class GameFragment : Fragment(){
                         winnerIndexList = if (boardType == BoardType.THREEX3) winnerIndexList else GameWinner.winnerIndexList.value,
                         isWinner = gameResult != GameResult.NONE,
                         isPlayerMoved = !playerTurns,
-                        onMove = { index -> viewModel.onEvent(GameUsecase.OnUserTick(index)) },
+                        onMove = { index ->
+                            Log.i("HIDDEN_BUG", "onCreateView: ${index}")
+                            viewModel.onEvent(GameUsecase.OnUserTick(index))
+                                 },
                         onAIMove = {
                             Log.i("AI_MOVE", "onCreateView: On AI Move")
                             viewModel.onEvent(GameUsecase.OnAIMove)
@@ -369,6 +376,39 @@ class GameFragment : Fragment(){
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun getCurrentAvatar(gameMode: GameMode, currentUserId: String, friendUserId: String, playerTurns: Boolean, multiplayerTurn: PlayerTurn): Int {
+        return if (gameMode == GameMode.FOUR_PLAYER){
+            when (multiplayerTurn){
+                PlayerTurn.ONE ->  commonViewModel.getResourceIdList()[0]
+                PlayerTurn.TWO ->  commonViewModel.getResourceIdList()[1]
+                PlayerTurn.THREE ->  commonViewModel.getResourceIdList()[2]
+                PlayerTurn.FOUR ->  commonViewModel.getResourceIdList()[3]
+                else -> commonViewModel.getResourceIdList()[0]
+            }
+        }else{
+            if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
+                if (currentUserId == friendUserId) {
+                    R.drawable.ic_cross_i
+                }else{
+                    R.drawable.ic_tick_i
+                }
+            }else if(gameMode == GameMode.AI){
+                if(!playerTurns){
+                    R.drawable.ic_ai_emoji
+                }else{
+                    commonViewModel.getResourceIdList()[0]
+                }
+            }else if (gameMode == GameMode.TWO_PLAYER){
+                if (!playerTurns){
+                    commonViewModel.getResourceIdList()[0]
+                }else
+                    commonViewModel.getResourceIdList()[1]
+            }else{
+                R.drawable.ic_tick_i
             }
         }
     }

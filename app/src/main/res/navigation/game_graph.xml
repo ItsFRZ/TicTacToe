@@ -36,8 +36,4 @@
         android:id="@+id/emojiPickerFragment"
         android:name="com.itsfrz.tictactoe.emoji.EmojiPickerFragment"
         android:label="fragment_emoji_picker" />
-    <fragment
-        android:id="@+id/fourPlayerGameFragment"
-        android:name="com.itsfrz.tictactoe.game4player.GameMultiplayerFragment"
-        android:label="FourPlayerGameFragment" />
 </navigation>

@@ -15,16 +15,33 @@ object GameWinner {
         for (row in 0 until gameState[0].size){
             for (col in 0 until gameState.size){
                 println("row $row, col $col")
-                if (validateAllPositions(gameState,row,col,2,boardSize))
+                if (validateAllPositions(gameState,row,col,2,boardSize,boardSize))
                     return true
-                if (validateAllPositions(gameState,row,col,1,boardSize))
+                if (validateAllPositions(gameState,row,col,1,boardSize,boardSize))
                     return true
             }
         }
         return false
     }
 
-    private fun validateAllPositions(gameState: List<List<Int>>, row: Int, col: Int, playerValue : Int, boardSize : Int): Boolean {
+    public fun checkAllMultiplayerPositionsByBoard(gameState: List<List<Int>>,boardSize : Int,validPositionCount : Int): Boolean {
+        for (row in 0 until gameState[0].size){
+            for (col in 0 until gameState.size){
+                println("row $row, col $col")
+                if (validateAllPositions(gameState,row,col,2,boardSize,validPositionCount))
+                    return true
+                if (validateAllPositions(gameState,row,col,1,boardSize,validPositionCount))
+                    return true
+                if (validateAllPositions(gameState,row,col,3,boardSize,validPositionCount))
+                    return true
+                if (validateAllPositions(gameState,row,col,4,boardSize,validPositionCount))
+                    return true
+            }
+        }
+        return false
+    }
+
+    private fun validateAllPositions(gameState: List<List<Int>>, row: Int, col: Int, playerValue : Int, boardSize : Int,validatePositionCount : Int): Boolean {
         _winnerIndexList.value.clear()
         var count = 0
         var tempRow = row
@@ -38,7 +55,7 @@ object GameWinner {
                     count++
                 else count--
                   _winnerIndexList.value.add(getBoardIndex(gameState,tempRow,tempCol))
-                if(count == boardSize) {
+                if(count == validatePositionCount) {
                     println("Pass From Vertical Top")
                     return true;
                 }
@@ -58,7 +75,7 @@ object GameWinner {
                     count++
                 else count--
                   _winnerIndexList.value.add(getBoardIndex(gameState,tempRow,tempCol))
-                if(count == boardSize) {
+                if(count == validatePositionCount) {
                     println("Pass Right Upper Diagonal")
                     return true;
                 }
@@ -80,7 +97,7 @@ object GameWinner {
                     count++
                 else count--
                   _winnerIndexList.value.add(getBoardIndex(gameState,tempRow,tempCol))
-                if(count == boardSize) {
+                if(count == validatePositionCount) {
                     println("Pass Horizontal Right")
                     return true;
                 }
@@ -101,7 +118,7 @@ object GameWinner {
                     count++
                 else count--
                   _winnerIndexList.value.add(getBoardIndex(gameState,tempRow,tempCol))
-                if(count == boardSize) {
+                if(count == validatePositionCount) {
                     println("Pass Right Lower Diagonal")
                     return true;
                 }
@@ -123,7 +140,7 @@ object GameWinner {
                     count++
                 else count--
                   _winnerIndexList.value.add(getBoardIndex(gameState,tempRow,tempCol))
-                if(count == boardSize) {
+                if(count == validatePositionCount) {
                     println("Pass Vertical Down")
                     return true;
                 }
@@ -144,7 +161,7 @@ object GameWinner {
                     count++
                 else count--
                   _winnerIndexList.value.add(getBoardIndex(gameState,tempRow,tempCol))
-                if(count == boardSize) {
+                if(count == validatePositionCount) {
                     println("Pass Left Lower Diagonal")
                     return true;
                 }
@@ -166,7 +183,7 @@ object GameWinner {
                     count++
                 else count--
                   _winnerIndexList.value.add(getBoardIndex(gameState,tempRow,tempCol))
-                if(count == boardSize) {
+                if(count == validatePositionCount) {
                     println("Pass Horizontal Left")
                     return true;
                 }
@@ -187,7 +204,7 @@ object GameWinner {
                     count++
                 else count--
                   _winnerIndexList.value.add(getBoardIndex(gameState,tempRow,tempCol))
-                if(count == boardSize) {
+                if(count == validatePositionCount) {
                     println("Pass Left Upper Diagonal")
                     return true;
                 }

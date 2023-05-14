@@ -96,23 +96,25 @@ class SelectBoardFragment : Fragment() {
                             flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
                         ){
                             item {
-                                BoardTypeComponent(
-                                    modifier = Modifier
-                                        .padding(horizontal = 20.dp, vertical = 15.dp)
-                                        .fillParentMaxWidth(.88F)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .height(320.dp),
-                                    boardLevelText = "Rookie",
-                                    boardSizeText = "3x3",
-                                    boardTypeVisual = R.drawable.ic_board_size_3,
-                                    selectedIndex = isIndexSelected(selectedIndex,boardType,BoardType.THREEX3),
-                                    onDifficultyEvent = { capsuleIndex -> viewmodel.onEvent(SelectBoardUseCase.OnBoardInfoEvent(Pair(BoardType.THREEX3,capsuleIndex))) },
-                                    isAIMode = gameMode == GameMode.AI,
-                                    gameBoardContentText = "Good to start with!"
-                                )
-                                Spacer(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(12.dp))
+                                if (gameMode != GameMode.FOUR_PLAYER){
+                                    BoardTypeComponent(
+                                        modifier = Modifier
+                                            .padding(horizontal = 20.dp, vertical = 15.dp)
+                                            .fillParentMaxWidth(.88F)
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .height(320.dp),
+                                        boardLevelText = "Rookie",
+                                        boardSizeText = "3x3",
+                                        boardTypeVisual = R.drawable.ic_board_size_3,
+                                        selectedIndex = isIndexSelected(selectedIndex,boardType,BoardType.THREEX3),
+                                        onDifficultyEvent = { capsuleIndex -> viewmodel.onEvent(SelectBoardUseCase.OnBoardInfoEvent(Pair(BoardType.THREEX3,capsuleIndex))) },
+                                        isAIMode = gameMode == GameMode.AI,
+                                        gameBoardContentText = "Good to start with!"
+                                    )
+                                    Spacer(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(12.dp))
+                                }
                             }
                             item {
                                 BoardTypeComponent(
@@ -154,7 +156,10 @@ class SelectBoardFragment : Fragment() {
                             }
                         }
                     }
-                    SelectedBoardIndicator(listState.firstVisibleItemIndex){
+                    SelectedBoardIndicator(
+                        gameMode = gameMode,
+                        selectedBoardIndex = listState.firstVisibleItemIndex
+                    ){
                         viewmodel.onEvent(SelectBoardUseCase.OnBoardTypeChange(it))
                     }
                     Spacer(modifier = Modifier

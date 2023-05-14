@@ -16,18 +16,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.enums.GameMode
+import com.itsfrz.tictactoe.common.enums.PlayerCount
+import com.itsfrz.tictactoe.common.enums.PlayerTurn
 import com.itsfrz.tictactoe.ui.theme.*
 
 @Composable
 fun ProgressTimer(
     userTimeOutPulsatingWarning : Float,
     timeLimitAnimation : Float,
-    @DrawableRes avatar : Int = 0,
+    @DrawableRes avatar : Int,
     playerTurns : Boolean,
     currentUserId : String,
     gameMode : GameMode,
     userId : String,
-    isCross : Boolean
+    playerTurn: PlayerTurn
 ) {
 
     Column(
@@ -39,6 +41,15 @@ fun ProgressTimer(
             UserMove(username = if (currentUserId == userId) "Your" else "Opponent")
         }else if(gameMode == GameMode.AI) {
             UserMove(username = if (playerTurns) "Your" else "AI")
+        }else if(gameMode == GameMode.FOUR_PLAYER){
+            val username = when(playerTurn){
+                PlayerTurn.ONE -> "Player 1"
+                PlayerTurn.TWO -> "Player 2"
+                PlayerTurn.THREE -> "Player 3"
+                PlayerTurn.FOUR -> "Player 4"
+                else -> "Player 1"
+            }
+            UserMove(username = username)
         } else{
             UserMove(username = if (playerTurns) "Player 2" else "Player 1")
         }
@@ -47,15 +58,20 @@ fun ProgressTimer(
             .height(20.dp))
         Row(modifier = Modifier
             .padding(horizontal = 30.dp)
-            .height(30.dp)
+            .height(40.dp)
             .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier.size(25.dp).clip(shape = RoundedCornerShape(100)).background(color = ThemeButtonBackground).border(width = 0.4.dp, color = ThemeButtonBorder).padding(8.dp),
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(shape = RoundedCornerShape(100))
+                    .background(color = ThemeButtonBackground)
+                    .border(width = 0.4.dp, color = ThemeButtonBorder)
+                    .padding(4.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(modifier = Modifier.size(userTimeOutPulsatingWarning.dp), painter = painterResource(id = if (isCross) R.drawable.ic_cross else R.drawable.ic_right), contentDescription = "Game Timer")
+                Image(modifier = Modifier.size(userTimeOutPulsatingWarning.dp), painter = painterResource(id = avatar), contentDescription = "Game Timer")
             }
             Spacer(modifier = Modifier.width(8.dp))
             LinearProgressIndicator(modifier = Modifier

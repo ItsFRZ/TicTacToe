@@ -14,17 +14,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 
 @Composable
 fun SelectedBoardIndicator(
+    gameMode: GameMode,
     selectedBoardIndex: Int,
     eventPropagate: (index : Int) -> Unit
 ) {
+    val startIndex = if (gameMode == GameMode.FOUR_PLAYER) 1 else 0
     Row(modifier = Modifier
         .fillMaxWidth()
         .wrapContentHeight(), horizontalArrangement = Arrangement.Center) {
-        for (i in 0..2){
+        for (i in startIndex..2){
             if (i == selectedBoardIndex) eventPropagate(i)
             CustomRadioIndicator(isSelected = i == selectedBoardIndex, indicatorSize = 10.dp)
         }

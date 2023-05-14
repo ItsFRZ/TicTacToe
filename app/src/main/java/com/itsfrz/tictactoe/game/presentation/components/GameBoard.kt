@@ -30,6 +30,8 @@ import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 fun GameBoard(
     crossList : List<Int>,
     rightList : List<Int>,
+    player3List : List<Int>,
+    player4List : List<Int>,
     gameMode : GameMode,
     isWinner : Boolean,
     gameCellList : List<Int>,
@@ -44,14 +46,21 @@ fun GameBoard(
     @DrawableRes playerIcons : List<Int>
 ) {
 
-    val context = LocalContext.current
-
     var playerOneIcon by remember {
         mutableStateOf(0)
     }
     var playerTwoIcon by remember {
         mutableStateOf(0)
     }
+    var playerThreeIcon by remember {
+        mutableStateOf(0)
+    }
+    var playerFourIcon by remember {
+        mutableStateOf(0)
+    }
+
+
+
 
     if (gameMode == GameMode.AI){
         playerOneIcon = playerIcons.get(0)
@@ -59,7 +68,13 @@ fun GameBoard(
     }else if (gameMode == GameMode.TWO_PLAYER){
         playerOneIcon =  playerIcons.get(0)
         playerTwoIcon =  playerIcons.get(1)
-    }else {
+    }else if (gameMode == GameMode.FOUR_PLAYER){
+        playerOneIcon =  playerIcons.get(0)
+        playerTwoIcon =  playerIcons.get(1)
+        playerThreeIcon =  playerIcons.get(2)
+        playerFourIcon =  playerIcons.get(3)
+    }
+    else {
         playerOneIcon = R.drawable.ic_tick_i
         playerTwoIcon = R.drawable.ic_cross_i
     }
@@ -98,6 +113,10 @@ fun GameBoard(
                                     if (!(index in crossList) && !(index in rightList) && (userId == currentUserId)) {
                                         onMove(index)
                                     }
+                                } else if (gameMode == GameMode.FOUR_PLAYER) {
+                                    if (!(index in crossList) && !(index in rightList) && !(index in player3List) && !(index in player4List)) {
+                                        onMove(index)
+                                    }
                                 }
                             }
                         }
@@ -110,7 +129,13 @@ fun GameBoard(
                         Image(modifier = Modifier.fillMaxHeight(1F), painter = painterResource(id = playerTwoIcon), contentDescription = "Cross Mark")
                     }else if (index in rightList){
                         Image(modifier = Modifier.fillMaxHeight(1F),painter = painterResource(id = playerOneIcon), contentDescription = "Right Mark")
-                    }else{
+                    }else if(index in player3List){
+                        Log.i("HIDDEN_BUG", "GameBoard: Player 3 ${player3List}")
+                        Image(modifier = Modifier.fillMaxHeight(1F), painter = painterResource(id = playerThreeIcon), contentDescription = "Cross Mark")
+                    }else if (index in player4List){
+                        Log.i("HIDDEN_BUG", "GameBoard: Player 4 ${player4List}")
+                        Image(modifier = Modifier.fillMaxHeight(1F), painter = painterResource(id = playerFourIcon), contentDescription = "Cross Mark")
+                    } else{
                         Column(modifier = Modifier
                             .fillMaxHeight(1F)
                             .fillMaxWidth()
