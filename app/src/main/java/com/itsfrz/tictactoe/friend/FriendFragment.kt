@@ -219,7 +219,6 @@ class FriendFragment : Fragment() {
         commonViewModel.updateOnlineStatus(InternetHelper.isOnline(requireContext()))
         setupGameEngine()
     }
-
     override fun onStop() {
         super.onStop()
         commonViewModel.updateOnlineStatus(isOnline = false)

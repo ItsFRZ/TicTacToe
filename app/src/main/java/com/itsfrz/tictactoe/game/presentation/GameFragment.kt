@@ -31,8 +31,10 @@ import com.itsfrz.tictactoe.common.enums.GameLevel
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.GameResult
 import com.itsfrz.tictactoe.common.functionality.GameWinner
+import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.state.EssentialInfo
 import com.itsfrz.tictactoe.common.state.IEssentialInfo
+import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.game.presentation.components.GameBoard
 import com.itsfrz.tictactoe.game.presentation.components.GameDivider
 import com.itsfrz.tictactoe.game.presentation.components.UserMove
@@ -55,6 +57,7 @@ class GameFragment : Fragment(){
 
     private var job : Job? = null
     private lateinit var viewModel: GameViewModel
+    private lateinit var commonViewModel: CommonViewModel
     private lateinit var gameMode : GameMode
     private lateinit var gameLevel : GameLevel
     private lateinit var boardType: BoardType
@@ -83,6 +86,7 @@ class GameFragment : Fragment(){
         val essentialInfo : EssentialInfo = IEssentialInfo(gameMode, gameLevel, boardType)
         val viewModelFactory = GameViewModelFactory(cloudRepository,dataStoreRepository,essentialInfo)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[GameViewModel::class.java]
+        commonViewModel = CommonViewModel.getInstance()
         viewModel.setAITurn()
         setUpNavArgs()
         if (gameMode == GameMode.RANDOM || gameMode == GameMode.FRIEND){
@@ -144,6 +148,8 @@ class GameFragment : Fragment(){
 
                 val playerOneData = viewModel.playerOneIndex.value
                 val playerTwoData = viewModel.playerTwoIndex.value
+                val playerThreeData = viewModel.playerTwoIndex.value
+                val playerFourData = viewModel.playerTwoIndex.value
                 val winnerIndexList = viewModel.winnerIndexList.value
                 val playerTurns = viewModel.isUserTurnsComplete.value
                 val userTimeLimit = viewModel.userTimer.value
@@ -208,7 +214,8 @@ class GameFragment : Fragment(){
                         onAIMove = {
                             Log.i("AI_MOVE", "onCreateView: On AI Move")
                             viewModel.onEvent(GameUsecase.OnAIMove)
-                        }
+                        },
+                        playerIcons = commonViewModel.getResourceIdList(),
                     )
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
@@ -246,8 +253,9 @@ class GameFragment : Fragment(){
                                         winnerUsername = getWinnerName(playerTurns),
                                         dialogueButtonText = "Play Again",
                                         onCloseEvent = {
-                                            viewModel.onEvent(GameUsecase.GameExitEvent)
+                                            findNavController().popBackStack()
                                             findNavController().navigateUp()
+                                            viewModel.onEvent(GameUsecase.GameExitEvent)
                                         }
                                     ) {
                                         viewModel.onEvent(GameUsecase.OnGameRetry)
@@ -260,8 +268,9 @@ class GameFragment : Fragment(){
                                         GameDialogue.GameDrawLoseDialogue(
                                             gameResult = gameResult,
                                             onCloseEvent = {
-                                                viewModel.onEvent(GameUsecase.GameExitEvent)
+                                                findNavController().popBackStack()
                                                 findNavController().navigateUp()
+                                                viewModel.onEvent(GameUsecase.GameExitEvent)
                                             }
                                         ) {
                                             view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
@@ -293,8 +302,9 @@ class GameFragment : Fragment(){
                         ) {
                             GameDialogue.GameDialog(
                                 onExitEvent = {
-                                    findNavController().navigateUp()
                                     viewModel.onEvent(GameUsecase.GameExitEvent)
+                                    findNavController().popBackStack()
+                                    findNavController().navigateUp()
                                     viewModel.onEvent(GameUsecase.OnBackPress(false))
                                 },
                                 onContinueEvent = {
@@ -348,8 +358,9 @@ class GameFragment : Fragment(){
                                     viewModel.onEvent(GameUsecase.OnAcceptPlayAgainRequest)
                                 },
                                 onContinueEvent = {
-                                    findNavController().navigateUp()
                                     viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
+                                    findNavController().popBackStack()
+                                    findNavController().navigateUp()
                                 },
                                 headerText = "Play Request",
                                 titleText = "Do you want to play again ?",

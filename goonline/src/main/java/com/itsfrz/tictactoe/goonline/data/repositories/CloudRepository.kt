@@ -480,6 +480,74 @@ class CloudRepository(
                     database.getReference(Constants.USER_PROFILE).child(id).setValue(profile)
                 }
             }
+            val userPlayground = dataStoreRepository.getUserPlayGround()
+            userPlayground?.let {
+                it.friendList?.let {
+                    it.forEach {
+                        scope.launch {
+                            if (!userId.isNullOrEmpty()){
+                                updateMineOnlineStatusInFriendList(userId,it.userId,isOnline)
+                            }
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private suspend fun updateMineOnlineStatusInFriendList(currentUserId : String,friendUserId: String,isOnline : Boolean) {
+        database
+            .getPlayGroundReference(Constants.USER_PLAYGROUND)
+            .child(friendUserId)
+            .addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    var friendPlayground = snapshot.getValue(Playground::class.java)
+                    var isOnlineStatusSet : Boolean = false
+                    var friendFriendsList : MutableList<Playground.Friend>? = null
+                    friendPlayground?.let {friendPlayground ->
+                        var currentUserProfile : Playground.Friend?  = null
+                        var currentUserProfileIndex : Int = -1
+                        friendPlayground.friendList?.let {
+                            it.forEachIndexed { index : Int, friend : Playground.Friend ->
+                                if (friend.userId == currentUserId){
+                                    currentUserProfile = friend
+                                    currentUserProfileIndex = index
+                                }
+                            }
+                        }
+                        currentUserProfile?.let {
+                            if (currentUserProfileIndex != -1){
+                                val friendFriendList = friendPlayground.friendList.toMutableList()
+                                var myData : Playground.Friend = friendFriendList.removeAt(currentUserProfileIndex)
+                                myData = myData.copy(
+                                    online = isOnline
+                                )
+                                friendFriendList.add(currentUserProfileIndex,myData)
+                                friendFriendsList = friendFriendList
+                                isOnlineStatusSet = true
+                            }
+                        }
+                    }
+
+                    if (isOnlineStatusSet){
+                        if (!friendFriendsList.isNullOrEmpty()){
+                            friendPlayground?.let {
+                                friendPlayground = it.copy(
+                                    friendList = friendFriendsList!!.toList()
+                                )
+                                scope.launch {
+                                    database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(friendUserId)
+                                        .setValue(friendPlayground)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e(TAG, "onCancelled: updateMineOnlineStatusInFriendList : Something Went Wrong")
+                }
+            })
     }
 }

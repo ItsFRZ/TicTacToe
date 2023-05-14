@@ -155,4 +155,16 @@ class IGameStoreRepository(private val dataStore : DataStore<GameDataStore>) : G
         return null
     }
 
+    override suspend fun getUserPlayGround(): Playground? {
+        try {
+            val dataStoreValue = dataStore.data.firstOrNull()
+            dataStoreValue?.let {
+                return it.playGround
+            }
+        }catch (e : Exception){
+            Log.e(TAG, "getUserPlayGround: GameDataStore ${e.message}")
+        }
+        return null
+    }
+
 }

@@ -170,7 +170,8 @@ class HomeFragment : Fragment() {
                             CustomOutlinedButton(
                                 buttonClick = {
                                     findNavController().navigate(
-                                        R.id.onlineModeFragment,null,
+                                        resId = R.id.onlineModeFragment,
+                                        args = null,
                                         navOptions = NavOptions.navOptionStack
                                     )
                                 },

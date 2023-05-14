@@ -56,6 +56,7 @@ class EmojiPickerFragment : Fragment() {
         viewmodel = ViewModelProvider(this,viewModelFactory)[EmojiPickerViewModel::class.java]
         commonViewModel = CommonViewModel.getInstance()
         viewmodel.onEvent(EmojiPickerUseCase.FillEmojiData(commonViewModel.emojiDataList))
+        commonViewModel.onEvent(CommonUseCase.ResetSelectEmojiData)
         setUpNavArgs()
     }
 
@@ -155,8 +156,4 @@ class EmojiPickerFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        commonViewModel.onEvent(CommonUseCase.ResetSelectEmojiData)
-    }
 }

@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.game.domain.usecase
 
+import com.itsfrz.tictactoe.common.enums.PlayerCount
 import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 
 sealed class GameUsecase{
@@ -17,4 +18,5 @@ sealed class GameUsecase{
     data class OnUpdateGameSessionId(val sessionId : String) : GameUsecase()
     data class OnUpdateCurrentUserId(val currentUserId : String) : GameUsecase()
     data class OnUpdateInGameInfo(val value : Boolean) : GameUsecase()
+    data class OnPlayerCountUpdate(val playerCount : PlayerCount) : GameUsecase()
 }

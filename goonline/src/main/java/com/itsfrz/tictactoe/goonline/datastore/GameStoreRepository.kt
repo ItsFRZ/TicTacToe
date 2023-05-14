@@ -17,4 +17,5 @@ interface GameStoreRepository {
     suspend fun clearGameBoard()
     suspend fun updateOnlineStatus(isOnline : Boolean)
     suspend fun getUserProfile() : UserProfile?
+    suspend fun getUserPlayGround() : Playground?
 }

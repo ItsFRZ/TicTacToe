@@ -113,4 +113,12 @@ class CommonViewModel private constructor(): ViewModel() {
             PlayerCount.FOUR -> 4
         }
     }
+
+    fun getResourceIdList(): List<Int> {
+        val resourceIds = arrayListOf<Int>()
+        _selectedEmojiList.value.forEach {
+            resourceIds.add(_emojiDataList[it].emojiResourceId)
+        }
+        return resourceIds
+    }
 }

@@ -1,6 +1,8 @@
 package com.itsfrz.tictactoe.game.presentation.components
 
+import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -12,10 +14,10 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -39,7 +41,29 @@ fun GameBoard(
     onAIMove : () -> Unit,
     userId : String,
     currentUserId : String,
+    @DrawableRes playerIcons : List<Int>
 ) {
+
+    val context = LocalContext.current
+
+    var playerOneIcon by remember {
+        mutableStateOf(0)
+    }
+    var playerTwoIcon by remember {
+        mutableStateOf(0)
+    }
+
+    if (gameMode == GameMode.AI){
+        playerOneIcon = playerIcons.get(0)
+        playerTwoIcon = R.drawable.ic_ai_emoji
+    }else if (gameMode == GameMode.TWO_PLAYER){
+        playerOneIcon =  playerIcons.get(0)
+        playerTwoIcon =  playerIcons.get(1)
+    }else {
+        playerOneIcon = R.drawable.ic_tick_i
+        playerTwoIcon = R.drawable.ic_cross_i
+    }
+
     if (isWinner){
         Log.i("CHECK_WINNNER", "GameBoard: Winner Index ${winnerIndexList}")
 
@@ -83,9 +107,9 @@ fun GameBoard(
                     verticalArrangement = Arrangement.Center
                 ) {
                     if (index in crossList){
-                        Image(modifier = Modifier.fillMaxHeight(1F), painter = painterResource(id = R.drawable.ic_cross), contentDescription = "Cross Mark")
+                        Image(modifier = Modifier.fillMaxHeight(1F), painter = painterResource(id = playerTwoIcon), contentDescription = "Cross Mark")
                     }else if (index in rightList){
-                        Image(modifier = Modifier.fillMaxHeight(1F),painter = painterResource(id = R.drawable.ic_right), contentDescription = "Right Mark")
+                        Image(modifier = Modifier.fillMaxHeight(1F),painter = painterResource(id = playerOneIcon), contentDescription = "Right Mark")
                     }else{
                         Column(modifier = Modifier
                             .fillMaxHeight(1F)

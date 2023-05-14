@@ -6,10 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.itsfrz.tictactoe.common.enums.BoardType
-import com.itsfrz.tictactoe.common.enums.GameLevel
-import com.itsfrz.tictactoe.common.enums.GameMode
-import com.itsfrz.tictactoe.common.enums.GameResult
+import com.itsfrz.tictactoe.common.enums.*
 import com.itsfrz.tictactoe.common.functionality.GameWinner
 import com.itsfrz.tictactoe.common.state.EssentialInfo
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
@@ -58,6 +55,14 @@ class GameViewModel(
     private val _playerTwoIndex : MutableState<ArrayList<Int>> = mutableStateOf(arrayListOf())
     val playerTwoIndex = _playerTwoIndex
 
+    private val _playerThreeIndex : MutableState<ArrayList<Int>> = mutableStateOf(arrayListOf())
+    val playerThreeIndex = _playerThreeIndex
+
+    // Player two is also robot
+    private val _playerFourIndex : MutableState<ArrayList<Int>> = mutableStateOf(arrayListOf())
+    val playerFourIndex = _playerFourIndex
+
+
     private val _winnerIndexList : MutableState<ArrayList<Int>> = mutableStateOf(arrayListOf())
     val winnerIndexList = _winnerIndexList
 
@@ -73,6 +78,8 @@ class GameViewModel(
     private val _isDelayed: MutableState<Boolean> = mutableStateOf(false)
     val isDelayed = _isDelayed
 
+    private val _playerCount : MutableState<PlayerCount> = mutableStateOf(PlayerCount.ONE)
+    val playerCount = _playerCount
 
     // Online Config
     private val _friendUserId: MutableState<String> = mutableStateOf("")
@@ -246,6 +253,9 @@ class GameViewModel(
                 _requestDialogState.value = false
                 _acceptDialogState.value = false
                 acceptPlayAgainRequest()
+            }
+            is GameUsecase.OnPlayerCountUpdate -> {
+                _playerCount.value = event.playerCount
             }
             else -> {}
         }
