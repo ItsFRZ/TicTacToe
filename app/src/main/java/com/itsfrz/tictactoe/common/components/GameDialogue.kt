@@ -25,18 +25,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.enums.GameResult
+import com.itsfrz.tictactoe.common.functionality.GameSound
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
+import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.ui.theme.*
 import kotlinx.coroutines.delay
 
 object GameDialogue{
 
+    private lateinit var gameSound: GameSound
+    fun setDialogSound(gameSound: GameSound){
+        this.gameSound = gameSound
+    }
     @Composable
     fun GameDrawLoseDialogue(
         gameResult : GameResult,
+        commonViewModel: CommonViewModel,
         onCloseEvent : () -> Unit,
         onDialogueButtonClick : () -> Unit,
     ) {
         val view = LocalView.current
+        LaunchedEffect(Unit){
+            gameSound.triggerPopSound()
+        }
         LaunchedEffect(Unit){
             delay(3000)
         }
@@ -67,35 +78,36 @@ object GameDialogue{
                         modifier = Modifier
                             .size(25.dp)
                             .border(
-                                border = BorderStroke(width = 0.8.dp, color = ThemeBlue),
+                                border = BorderStroke(width = 0.8.dp, color = ThemePicker.secondaryColor.value),
                                 shape = RoundedCornerShape(100)
                             )
                             .padding(8.dp),
                         onClick = {
-                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            gameSound.clickSound()
+                            commonViewModel.performHapticVibrate(view)
                             onCloseEvent()
                         }
                     ){
                         Icon(
                             painter = painterResource(id = R.drawable.ic_cross),
                             contentDescription = "Back Icon",
-                            tint = ThemeBlue
+                            tint = ThemePicker.secondaryColor.value
                         )
                     }
                 }
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
-                Text(text = if (gameResult == GameResult.DRAW) "DRAW" else "You Lose!", style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
+                Text(text = if (gameResult == GameResult.DRAW) "DRAW" else "You Lose!", style = headerTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 20.sp))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
                 when(gameResult){
                     GameResult.DRAW -> {
-                        Text(text = "Better Luck Next Time!", style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Italic, color = ThemeBlue))
+                        Text(text = "Better Luck Next Time!", style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Italic, color = ThemePicker.secondaryColor.value))
                     }
                     GameResult.LOSE -> {
-                        Icon(modifier = Modifier.size(50.dp), painter = painterResource(id = R.drawable.ic_game_retry), contentDescription = "Game Retry", tint = ThemeBlue)
+                        Icon(modifier = Modifier.size(50.dp), painter = painterResource(id = R.drawable.ic_game_retry), contentDescription = "Game Retry", tint = ThemePicker.secondaryColor.value)
                     }
                     else ->{}
                 }
@@ -104,7 +116,8 @@ object GameDialogue{
                     .height(5.dp))
                 CustomButton(
                     onButtonClick = {
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        gameSound.clickSound()
+                        commonViewModel.performHapticVibrate(view)
                         onDialogueButtonClick() },
                     buttonText = if (gameResult == GameResult.DRAW) "Play Again" else "Retry"
                 )
@@ -121,8 +134,12 @@ object GameDialogue{
         winnerUsername: String,
         dialogueButtonText : String,
         onCloseEvent : () -> Unit,
+        commonViewModel: CommonViewModel,
         onDialogueButtonClick : () -> Unit,
     ){
+        LaunchedEffect(Unit){
+            gameSound.triggerPopSound()
+        }
         val view = LocalView.current
         LaunchedEffect(Unit){
             delay(3000)
@@ -155,26 +172,27 @@ object GameDialogue{
                         modifier = Modifier
                             .size(25.dp)
                             .border(
-                                border = BorderStroke(width = 0.8.dp, color = ThemeBlue),
+                                border = BorderStroke(width = 0.8.dp, color = ThemePicker.secondaryColor.value),
                                 shape = RoundedCornerShape(100)
                             )
                             .padding(8.dp),
                         onClick = {
-                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            gameSound.clickSound()
+                            commonViewModel.performHapticVibrate(view)
                             onCloseEvent()
                         }
                     ){
                         Icon(
                             painter = painterResource(id = R.drawable.ic_cross),
                             contentDescription = "Back Icon",
-                            tint = ThemeBlue
+                            tint = ThemePicker.secondaryColor.value
                         )
                     }
                 }
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
-                Text(text = "WINNER", style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
+                Text(text = "WINNER", style = headerTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 20.sp))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
@@ -182,13 +200,14 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(2.dp))
-                Text(text = winnerUsername, style = headerSubTitle.copy(color = ThemeBlue, fontSize = 14.sp))
+                Text(text = winnerUsername, style = headerSubTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 14.sp))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
                 CustomButton(
                     onButtonClick = {
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        gameSound.clickSound()
+                        commonViewModel.performHapticVibrate(view)
                         onDialogueButtonClick()
                                     },
                     buttonText = dialogueButtonText
@@ -216,11 +235,12 @@ object GameDialogue{
         }
         
         LaunchedEffect(Unit){
-            starOneColor.animateTo(targetValue = ThemeBlue, animationSpec = tween(durationMillis = 200, delayMillis = 30, easing = EaseInBounce))
+            starOneColor.animateTo(targetValue = ThemePicker.secondaryColor.value, animationSpec = tween(durationMillis = 200, delayMillis = 30, easing = EaseInBounce))
             delay(60)
-            starTwoColor.animateTo(targetValue = ThemeBlue, animationSpec = tween(durationMillis = 200, delayMillis = 30, easing = EaseInBounce))
+            gameSound.activeStarSound()
+            starTwoColor.animateTo(targetValue = ThemePicker.secondaryColor.value, animationSpec = tween(durationMillis = 200, delayMillis = 30, easing = EaseInBounce))
             delay(60)
-            starThreeColor.animateTo(targetValue = ThemeBlue, animationSpec = tween(durationMillis = 200, delayMillis = 30, easing = EaseInBounce))
+            starThreeColor.animateTo(targetValue = ThemePicker.secondaryColor.value, animationSpec = tween(durationMillis = 200, delayMillis = 30, easing = EaseInBounce))
         }
         
         Row(
@@ -275,8 +295,12 @@ object GameDialogue{
         onContinueEvent : () -> Unit,
         headerText : String = "EXIT",
         titleText : String = "Do you really want to exit ?",
-        buttonText : String = "Agree"
+        buttonText : String = "Agree",
+        commonViewModel: CommonViewModel
     ) {
+        LaunchedEffect(Unit){
+            gameSound.triggerPopSound()
+        }
         val view = LocalView.current
         Card(
             modifier = Modifier
@@ -305,36 +329,38 @@ object GameDialogue{
                         modifier = Modifier
                             .size(25.dp)
                             .border(
-                                border = BorderStroke(width = 0.8.dp, color = ThemeBlue),
+                                border = BorderStroke(width = 0.8.dp, color = ThemePicker.secondaryColor.value),
                                 shape = RoundedCornerShape(100)
                             )
                             .padding(8.dp),
                         onClick = {
-                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            gameSound.clickSound()
+                            commonViewModel.performHapticVibrate(view)
                             onContinueEvent()
                         }
                     ){
                         Icon(
                             painter = painterResource(id = R.drawable.ic_cross),
                             contentDescription = "Back Icon",
-                            tint = ThemeBlue
+                            tint = ThemePicker.secondaryColor.value
                         )
                     }
                 }
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
-                Text(text =headerText, style = headerTitle.copy(color = ThemeBlue, fontSize = 20.sp))
+                Text(text =headerText, style = headerTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 20.sp))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
-                Text(text = titleText, style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Normal, color = ThemeBlue))
+                Text(text = titleText, style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Normal, color = ThemePicker.secondaryColor.value))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(10.dp))
                 CustomButton(
                     onButtonClick = {
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        gameSound.clickSound()
+                        commonViewModel.performHapticVibrate(view)
                         onExitEvent() },
                     buttonText = buttonText
                 )
@@ -348,6 +374,9 @@ object GameDialogue{
 
     @Composable
     fun CommonLoadingScreen() {
+        LaunchedEffect(Unit){
+            gameSound.triggerPopSound()
+        }
         Card(
             modifier = Modifier
                 .fillMaxWidth(.6f)
@@ -366,11 +395,11 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
-                CircularProgressIndicator(modifier = Modifier.size(30.dp), color = ThemeBlue)
+                CircularProgressIndicator(modifier = Modifier.size(30.dp), color = ThemePicker.secondaryColor.value)
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
-                Text(text = "Please wait ...", style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Normal, color = ThemeBlue))
+                Text(text = "Please wait ...", style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Normal, color = ThemePicker.secondaryColor.value))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(10.dp))
@@ -380,8 +409,12 @@ object GameDialogue{
 
     @Composable
     fun PlayRequestBox(
-        onCloseClick : () -> Unit
+        onCloseClick : () -> Unit,
+        commonViewModel: CommonViewModel
     ) {
+        LaunchedEffect(Unit){
+            gameSound.triggerPopSound()
+        }
         val view = LocalView.current
         Card(
             modifier = Modifier
@@ -408,12 +441,13 @@ object GameDialogue{
                         modifier = Modifier
                             .size(22.dp)
                             .border(
-                                border = BorderStroke(width = 0.8.dp, color = ThemeBlue),
+                                border = BorderStroke(width = 0.8.dp, color = ThemePicker.secondaryColor.value),
                                 shape = RoundedCornerShape(100)
                             )
                             .padding(8.dp),
                         onClick = {
-                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            gameSound.clickSound()
+                           commonViewModel.performHapticVibrate(view)
                             onCloseClick()
                         }
                     ){
@@ -434,11 +468,11 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
-                CircularProgressIndicator(modifier = Modifier.size(40.dp), color = ThemeBlue)
+                CircularProgressIndicator(modifier = Modifier.size(40.dp), color = ThemePicker.secondaryColor.value)
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
-                Text(text = "Please wait for your opponent\nto connect ...", style = headerSubTitle.copy(fontSize = 12.sp, fontStyle = FontStyle.Italic, color = ThemeBlue, fontWeight = FontWeight.Light))
+                Text(text = "Please wait for your opponent\nto connect ...", style = headerSubTitle.copy(fontSize = 12.sp, fontStyle = FontStyle.Italic, color = ThemePicker.secondaryColor.value, fontWeight = FontWeight.Light))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(10.dp))

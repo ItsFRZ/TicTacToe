@@ -10,15 +10,11 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
@@ -27,26 +23,23 @@ import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.*
+import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.GameWinner
-import com.itsfrz.tictactoe.common.functionality.NavOptions
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.state.EssentialInfo
 import com.itsfrz.tictactoe.common.state.IEssentialInfo
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.game.presentation.components.GameBoard
 import com.itsfrz.tictactoe.game.presentation.components.GameDivider
-import com.itsfrz.tictactoe.game.presentation.components.UserMove
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.game.presentation.components.ProgressTimer
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModel
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModelFactory
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
-import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
-import com.itsfrz.tictactoe.ui.theme.PrimaryMain
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
-import com.itsfrz.tictactoe.ui.theme.ThemeBlueLight
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.IGameStoreRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -60,6 +53,7 @@ class GameFragment : Fragment(){
     private lateinit var boardType: BoardType
     private lateinit var cloudRepository: CloudRepository
     private lateinit var dataStoreRepository  : GameStoreRepository
+    private lateinit var gameSound: GameSound
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -84,6 +78,7 @@ class GameFragment : Fragment(){
         val viewModelFactory = GameViewModelFactory(cloudRepository,dataStoreRepository,essentialInfo)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[GameViewModel::class.java]
         commonViewModel = CommonViewModel.getInstance()
+        gameSound = commonViewModel.gameSound
         viewModel.setAITurn()
         setUpNavArgs()
         if (gameMode == GameMode.RANDOM || gameMode == GameMode.FRIEND){
@@ -126,6 +121,7 @@ class GameFragment : Fragment(){
                 viewModel.onEvent(GameUsecase.OnUpdateCurrentUserId(it))
             }
         }
+        Log.i("ID_CHECK", "setUpNavArgs: Friend User ID ${friendUserId} Session Id ${gameSessionId} User Id ${userId}")
     }
 
     private fun setUpOnlineConfig() {
@@ -176,7 +172,7 @@ class GameFragment : Fragment(){
 
                 Column(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = PrimaryMain),
+                    .background(color = ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier
@@ -216,10 +212,12 @@ class GameFragment : Fragment(){
                         isPlayerMoved = !playerTurns,
                         onMove = { index ->
                             Log.i("HIDDEN_BUG", "onCreateView: ${index}")
+                            gameSound.pieceClick1MovingSound()
                             viewModel.onEvent(GameUsecase.OnUserTick(index))
                                  },
                         onAIMove = {
                             Log.i("AI_MOVE", "onCreateView: On AI Move")
+                            gameSound.pieceClick2MovingSound()
                             viewModel.onEvent(GameUsecase.OnAIMove)
                         },
                         playerIcons = commonViewModel.getResourceIdList(),
@@ -244,7 +242,7 @@ class GameFragment : Fragment(){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = PrimaryMain)
+                            .background(color = ThemePicker.primaryColor.value)
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
                     ){
@@ -263,10 +261,11 @@ class GameFragment : Fragment(){
                                             findNavController().popBackStack()
                                             findNavController().navigateUp()
                                             viewModel.onEvent(GameUsecase.GameExitEvent)
-                                        }
+                                        },
+                                        commonViewModel = commonViewModel
                                     ) {
                                         viewModel.onEvent(GameUsecase.OnGameRetry)
-                                        if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.AI))
+                                        if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.FOUR_PLAYER || gameMode == GameMode.AI))
                                             viewModel.onEvent(GameUsecase.OnClearGameBoard)
                                     }
                                 }
@@ -274,13 +273,13 @@ class GameFragment : Fragment(){
                                     if (!acceptDialogState){
                                         GameDialogue.GameDrawLoseDialogue(
                                             gameResult = gameResult,
+                                            commonViewModel = commonViewModel,
                                             onCloseEvent = {
                                                 findNavController().popBackStack()
                                                 findNavController().navigateUp()
                                                 viewModel.onEvent(GameUsecase.GameExitEvent)
                                             }
                                         ) {
-                                            view?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                                             viewModel.onEvent(GameUsecase.OnGameRetry)
                                             if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.AI))
                                                 viewModel.onEvent(GameUsecase.OnClearGameBoard)
@@ -296,7 +295,7 @@ class GameFragment : Fragment(){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = PrimaryMain)
+                            .background(color = ThemePicker.primaryColor.value)
                             .clickable { }
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
@@ -317,7 +316,8 @@ class GameFragment : Fragment(){
                                 onContinueEvent = {
                                     viewModel.onEvent(GameUsecase.OnBackPress(false))
                                 },
-                                titleText = "Do you really want to exit ?"
+                                titleText = "Do you really want to exit ?",
+                                commonViewModel = commonViewModel
                             )
                         }
                     }
@@ -326,7 +326,7 @@ class GameFragment : Fragment(){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = PrimaryMain)
+                            .background(color = ThemePicker.primaryColor.value)
                             .clickable { }
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
@@ -337,11 +337,11 @@ class GameFragment : Fragment(){
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            GameDialogue.PlayRequestBox {
+                            GameDialogue.PlayRequestBox(commonViewModel = commonViewModel, onCloseClick = {
                                 viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
                                 viewModel.onEvent(GameUsecase.OnClearGameBoard)
                                 findNavController().navigateUp()
-                            }
+                            })
                         }
                     }
                 }
@@ -349,7 +349,7 @@ class GameFragment : Fragment(){
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = PrimaryMain)
+                            .background(color = ThemePicker.primaryColor.value)
                             .clickable { }
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
@@ -371,7 +371,8 @@ class GameFragment : Fragment(){
                                 },
                                 headerText = "Play Request",
                                 titleText = "Do you want to play again ?",
-                                buttonText = "Yes"
+                                buttonText = "Yes",
+                                commonViewModel = commonViewModel
                             )
                         }
                     }

@@ -10,4 +10,5 @@ object BundleKey {
     const val FRIEND_ID = "FRIEND_ID"
     const val SESSION_ID = "SESSION_ID"
     const val PLAYER_COUNT = "PLAYER_COUNT"
+    const val SETTING_TYPE = "SETTING_TYPE"
 }

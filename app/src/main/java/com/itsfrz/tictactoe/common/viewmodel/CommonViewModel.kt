@@ -1,25 +1,28 @@
 package com.itsfrz.tictactoe.common.viewmodel
 
 import android.content.Context
-import android.content.res.AssetManager
-import android.graphics.drawable.Drawable
 import android.util.Log
+import android.view.HapticFeedbackConstants
+import android.view.View
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.enums.GameLanguage
+import com.itsfrz.tictactoe.common.enums.GameTheme
 import com.itsfrz.tictactoe.common.enums.PlayerCount
+import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.state.EmojiState
 import com.itsfrz.tictactoe.common.usecase.CommonUseCase
-import com.itsfrz.tictactoe.emoji.usecase.EmojiPickerUseCase
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.setting.SettingDataStore
+import com.itsfrz.tictactoe.goonline.datastore.setting.SettingRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.io.InputStream
 
 
 class CommonViewModel private constructor(): ViewModel() {
@@ -28,7 +31,16 @@ class CommonViewModel private constructor(): ViewModel() {
 
     private lateinit var gameStoreRepository: GameStoreRepository
     private lateinit var cloudRepository: CloudRepository
+    lateinit var settingRepository : SettingRepository
+    lateinit var gameSound: GameSound
     private var userId: String = ""
+    public var music: Boolean = true
+    public var sound: Boolean = true
+    public var vibration: Boolean = true
+    public var notification: Boolean = true
+    public var theme: GameTheme = GameTheme.THEME_BLUE
+    public var language: GameLanguage = GameLanguage.ENGLISH
+
 
     private var _emojiDataList : ArrayList<EmojiState> = arrayListOf()
     val emojiDataList = _emojiDataList
@@ -55,13 +67,21 @@ class CommonViewModel private constructor(): ViewModel() {
             }
             return instance!!
         }
+
+        fun destructInstance() : Boolean{
+            if (instance != null)
+                instance == null
+            return instance == null
+        }
     }
 
-    fun registerViewModel(gameStoreRepository: GameStoreRepository,cloudRepository: CloudRepository,userId : String){
+    fun registerViewModel(gameStoreRepository: GameStoreRepository, cloudRepository: CloudRepository,settingRepository: SettingRepository, gameSound: GameSound, userId : String){
         instance?.let {
             it.gameStoreRepository = gameStoreRepository
             it.cloudRepository = cloudRepository
             it.userId = userId
+            it.gameSound = gameSound
+            it.settingRepository = settingRepository
         }
     }
 
@@ -76,6 +96,8 @@ class CommonViewModel private constructor(): ViewModel() {
     }
 
     fun loadEmojiData(context : Context){
+        if (_emojiDataList.isNotEmpty())
+            return
         try {
             for (fileNameCounter in 1..30){
                 val resId : Int = context.resources.getIdentifier("ic_emoji_i"+fileNameCounter,"drawable",context.packageName)
@@ -85,6 +107,12 @@ class CommonViewModel private constructor(): ViewModel() {
             Log.e(TAG, "loadEmojiData: Error in emoji data parsing")
             e.printStackTrace()
         }
+    }
+
+    fun releaseEmojiResources(){
+        _emojiDataList.clear()
+        _selectedEmojiList.value = arrayListOf()
+        _playerCount.value = 0
     }
 
     fun onEvent(event : CommonUseCase){
@@ -120,5 +148,24 @@ class CommonViewModel private constructor(): ViewModel() {
             resourceIds.add(_emojiDataList[it].emojiResourceId)
         }
         return resourceIds
+    }
+
+    fun performHapticVibrate(view : View){
+        if (vibration) {
+            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        }
+    }
+
+    suspend fun loadUserPreference() : Unit{
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.getGameSetting()?.collectLatest {
+                music = it.music
+                sound = it.sound
+                vibration = it.vibration
+                notification = it.notification
+                gameSound.updateConditionAttributes(isMusicEnabled = it.music, isSoundEnabled = it.sound)
+                gameSound.startBackgroundMusic()
+            }
+        }
     }
 }

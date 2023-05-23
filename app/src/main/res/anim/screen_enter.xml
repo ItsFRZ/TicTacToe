@@ -2,8 +2,8 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android">
     <scale
         android:duration="250"
-        android:fromXScale="0.7"
-        android:fromYScale="0.7"
+        android:fromXScale="0.8"
+        android:fromYScale="0.8"
         android:pivotX="50%"
         android:pivotY="50%"
         android:toXScale="1.0"

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.itsfrz.tictactoe.common.state.EssentialInfo
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 
 class GameViewModelFactory(
     private val cloudRepository: CloudRepository,

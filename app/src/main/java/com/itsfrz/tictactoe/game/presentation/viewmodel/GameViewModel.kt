@@ -13,7 +13,7 @@ import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.goonline.data.models.BoardState
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import com.itsfrz.tictactoe.minimax.GameBrain
 import com.itsfrz.tictactoe.minimax.IGameBrain
 import com.itsfrz.tictactoe.minimax.Move
@@ -326,7 +326,7 @@ class GameViewModel(
             val data = gameStoreRepository.fetchPreference().firstOrNull()
             data?.let {
                 it.playGround?.let {
-                    gameStoreRepository.updatePlayground(it.copy(inGame = inGame))
+                    gameStoreRepository.updatePlayground(it.copy(inGame = inGame, randomSearch = false))
                 }
             }
         }
@@ -445,7 +445,7 @@ class GameViewModel(
             {
                 validateWinner = GameWinner.checkAllMultiplayerPositionsByBoard(gameMap,4,3)
             } else {
-                validateWinner = GameWinner.checkAllMultiplayerPositionsByBoard(gameMap,4,4)
+                validateWinner = GameWinner.checkAllMultiplayerPositionsByBoard(gameMap,5,4)
             }
         }else{
             when(boardType) {
@@ -729,11 +729,15 @@ class GameViewModel(
         _gameResult.value = GameResult.NONE
         _playerOneIndex.value = arrayListOf()
         _playerTwoIndex.value = arrayListOf()
+        _playerThreeIndex.value = arrayListOf()
+        _playerFourIndex.value = arrayListOf()
         _userTimer.value = 0F
         job?.cancel()
         timeLimitStart()
         if (gameMode == GameMode.AI)
             setAIRetryTurn()
+        else if (gameMode == GameMode.FOUR_PLAYER)
+            setMultiplayerRandomTurn()
         else getRandomTurnGenerator()
 //        setAITurn()
         _winnerIndexList.value = ArrayList(listOf(-1,-1,-1))

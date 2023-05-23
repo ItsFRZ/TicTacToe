@@ -26,7 +26,6 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.board.components.BoardTypeComponent
-import com.itsfrz.tictactoe.ui.theme.PrimaryMain
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.board.components.SelectedBoardIndicator
 import com.itsfrz.tictactoe.board.usecase.SelectBoardUseCase
@@ -35,16 +34,20 @@ import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.BoardType
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.PlayerCount
+import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.NavOptions
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
+import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModel
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModelFactory
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.ThemeButtonBackground
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 
 class SelectBoardFragment : Fragment() {
 
     private lateinit var viewmodel : BoardViewModel
+    private lateinit var commonViewModel: CommonViewModel
+    private lateinit var gameSound: GameSound
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +57,8 @@ class SelectBoardFragment : Fragment() {
         val playerCount = requireArguments().getSerializable(BundleKey.PLAYER_COUNT) as PlayerCount
         viewmodel.onEvent(SelectBoardUseCase.OnGameModeEvent(gameMode))
         viewmodel.onEvent(SelectBoardUseCase.OnPlayerCountEvent(playerCount))
+        commonViewModel = CommonViewModel.getInstance()
+        gameSound = commonViewModel.gameSound
     }
 
     @OptIn(ExperimentalFoundationApi::class)
@@ -71,7 +76,7 @@ class SelectBoardFragment : Fragment() {
                 val listState = rememberLazyListState()
                 Column(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = PrimaryMain),
+                    .background(color = ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier
@@ -79,7 +84,7 @@ class SelectBoardFragment : Fragment() {
                         .height(25.dp))
                     Text(modifier = Modifier.fillMaxWidth(), text = buildAnnotatedString {
                         append("Choose")
-                        withStyle(style = SpanStyle(color = ThemeBlue)){
+                        withStyle(style = SpanStyle(color = ThemePicker.secondaryColor.value)){
                             append(" Board")
                         }
                     }, style = headerTitle.copy(color = Color.White))
@@ -107,7 +112,10 @@ class SelectBoardFragment : Fragment() {
                                         boardSizeText = "3x3",
                                         boardTypeVisual = R.drawable.ic_board_size_3,
                                         selectedIndex = isIndexSelected(selectedIndex,boardType,BoardType.THREEX3),
-                                        onDifficultyEvent = { capsuleIndex -> viewmodel.onEvent(SelectBoardUseCase.OnBoardInfoEvent(Pair(BoardType.THREEX3,capsuleIndex))) },
+                                        onDifficultyEvent = { capsuleIndex ->
+                                            gameSound.selectSound()
+                                            viewmodel.onEvent(SelectBoardUseCase.OnBoardInfoEvent(Pair(BoardType.THREEX3,capsuleIndex)))
+                                                            },
                                         isAIMode = gameMode == GameMode.AI,
                                         gameBoardContentText = "Good to start with!"
                                     )
@@ -168,6 +176,8 @@ class SelectBoardFragment : Fragment() {
                     CustomButton(
                         isButtonEnabled = if (gameMode == GameMode.AI && boardType == BoardType.THREEX3) selectedIndex != -1 else true,
                         onButtonClick = {
+                            gameSound.clickSound()
+                            commonViewModel.performHapticVibrate(requireView())
                             val bundle = bundleOf()
                             bundle.putSerializable(BundleKey.GAME_MODE,gameMode)
                             bundle.putSerializable(BundleKey.SELECTED_LEVEL,selectedLevel)

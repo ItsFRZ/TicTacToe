@@ -2,7 +2,6 @@ package com.itsfrz.tictactoe.userregistration
 
 import android.content.Context
 import android.os.Bundle
-import android.view.HapticFeedbackConstants
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -26,11 +24,12 @@ import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.CustomButton
 import com.itsfrz.tictactoe.common.components.TextFieldWithValidation
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
-import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.IGameStoreRepository
 import com.itsfrz.tictactoe.ui.theme.*
 import com.itsfrz.tictactoe.userregistration.usecase.UserRegistrationUseCase
 import com.itsfrz.tictactoe.userregistration.viewmodel.UserRegistrationViewModel
@@ -76,7 +75,7 @@ class UserRegistrationFragment : Fragment() {
 
                 Column(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = PrimaryMain),
+                    .background(color = ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier
@@ -90,7 +89,7 @@ class UserRegistrationFragment : Fragment() {
                             append("You must register\n")
                             withStyle(
                                 style = SpanStyle(
-                                    color = ThemeBlue,
+                                    color = ThemePicker.secondaryColor.value,
                                     fontFamily = headerTitle.fontFamily,
                                     fontSize = headerTitle.fontSize,
                                     fontWeight = headerTitle.fontWeight

@@ -15,8 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.itsfrz.tictactoe.ui.theme.PrimaryMain
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.ui.theme.ThemeButtonBackground
 import com.itsfrz.tictactoe.ui.theme.ThemeButtonBorder
 
@@ -27,7 +26,6 @@ fun CustomCircleIconButton(
     iconButtonClick : () -> Unit,
     @DrawableRes buttonIcon : Int
 ) {
-    val view = LocalView.current
     OutlinedButton(
         modifier = buttonModifier
             .size(50.dp)
@@ -37,10 +35,9 @@ fun CustomCircleIconButton(
             ),
         shape = RoundedCornerShape(100),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = ThemeButtonBackground
+            backgroundColor = ThemePicker.themeButtonBackgroundColor.value
         ),
         onClick = {
-            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
             iconButtonClick()
         }) {
         Image(modifier = Modifier.size(22.dp), contentScale = ContentScale.Fit, painter = painterResource(id =buttonIcon), contentDescription = "Icon Button")

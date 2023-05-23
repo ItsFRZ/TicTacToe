@@ -18,6 +18,7 @@ import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.PlayerCount
 import com.itsfrz.tictactoe.common.enums.PlayerTurn
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.ui.theme.*
 
 @Composable
@@ -66,7 +67,7 @@ fun ProgressTimer(
                 modifier = Modifier
                     .size(38.dp)
                     .clip(shape = RoundedCornerShape(100))
-                    .background(color = ThemeButtonBackground)
+                    .background(color = ThemePicker.themeButtonBackgroundColor.value)
                     .border(width = 0.4.dp, color = ThemeButtonBorder)
                     .padding(4.dp),
                 contentAlignment = Alignment.Center
@@ -76,7 +77,7 @@ fun ProgressTimer(
             Spacer(modifier = Modifier.width(8.dp))
             LinearProgressIndicator(modifier = Modifier
                 .height(6.dp)
-                .fillMaxWidth(),progress = timeLimitAnimation, color = ThemeBlue, backgroundColor = ThemeButtonBackground)
+                .fillMaxWidth(),progress = timeLimitAnimation, color = ThemePicker.secondaryColor.value, backgroundColor = ThemePicker.themeButtonBackgroundColor.value)
         }
     }
 

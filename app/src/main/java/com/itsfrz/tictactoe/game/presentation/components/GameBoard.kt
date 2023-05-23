@@ -23,8 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.enums.GameMode
-import com.itsfrz.tictactoe.ui.theme.PrimaryMain
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 
 @Composable
 fun GameBoard(
@@ -84,21 +83,21 @@ fun GameBoard(
 
     }
     val color by animateColorAsState(
-        targetValue = ThemeBlue,
+        targetValue = ThemePicker.secondaryColor.value,
         animationSpec = tween(durationMillis = 3000, delayMillis = 250, easing = LinearOutSlowInEasing)
     )
     LazyVerticalGrid(
         modifier = Modifier
             .padding(horizontal = 12.dp)
             .fillMaxWidth(9F)
-            .border(border = BorderStroke(width = 1.dp, color = PrimaryMain)),
+            .border(border = BorderStroke(width = 1.dp, color = ThemePicker.primaryColor.value)),
         columns = GridCells.Fixed(columnCount),
         content = {
             itemsIndexed(items = gameCellList){ index: Int, item: Int ->
                 Column(
                     modifier = Modifier
                         .height(boardHeight)
-                        .background(color = if (isWinner && index in winnerIndexList) color else PrimaryMain)
+                        .background(color = if (isWinner && index in winnerIndexList) color else ThemePicker.primaryColor.value)
                         .clickable {
                             if (!isWinner) {
                                 if (gameMode == GameMode.TWO_PLAYER) {
@@ -120,7 +119,7 @@ fun GameBoard(
                                 }
                             }
                         }
-                        .border(width = 1.dp, color = ThemeBlue)
+                        .border(width = 1.dp, color = ThemePicker.secondaryColor.value)
                         .padding(vertical = 15.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
@@ -139,8 +138,8 @@ fun GameBoard(
                         Column(modifier = Modifier
                             .fillMaxHeight(1F)
                             .fillMaxWidth()
-                            .background(color = PrimaryMain)) {
-                            Icon(imageVector = Icons.Filled.Menu, contentDescription = "Blank", tint = PrimaryMain)
+                            .background(color = ThemePicker.primaryColor.value)) {
+                            Icon(imageVector = Icons.Filled.Menu, contentDescription = "Blank", tint = ThemePicker.primaryColor.value)
                         }
                     }
                 }

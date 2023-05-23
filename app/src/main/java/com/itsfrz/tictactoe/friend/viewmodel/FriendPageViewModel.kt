@@ -11,7 +11,7 @@ import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import kotlinx.coroutines.*
 
 class FriendPageViewModel(
@@ -144,6 +144,15 @@ class FriendPageViewModel(
         activeRequest?.let {
             Log.i(TAG, "updateActiveRequestList: ${activeRequest}")
             _playRequestList.value = activeRequest.sortedWith(compareBy<Playground.ActiveRequest>({!it.online}).thenBy { it.requesterUsername }).toSet().toList()
+        }
+    }
+
+    public fun clearGameSession(){
+        viewModelScope.launch(Dispatchers.IO) {
+            cloudRepository.removeGameBoard(_userId.value)
+        }
+        viewModelScope.launch {
+            gameStoreRepository.clearGameBoard()
         }
     }
 

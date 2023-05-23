@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.common.enums.GameMode
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 
 @Composable
 fun SelectedBoardIndicator(
@@ -43,8 +43,8 @@ private fun CustomRadioIndicator(
         .padding(horizontal = 8.dp)
         .size(indicatorSize)
         .clip(RoundedCornerShape(100))
-        .background(color = if (isSelected) ThemeBlue else Color.Transparent)
-        .border(width = 1.dp, color = ThemeBlue, shape = RoundedCornerShape(100))
+        .background(color = if (isSelected) ThemePicker.secondaryColor.value else Color.Transparent)
+        .border(width = 1.dp, color = ThemePicker.secondaryColor.value, shape = RoundedCornerShape(100))
 
     ){}
 }

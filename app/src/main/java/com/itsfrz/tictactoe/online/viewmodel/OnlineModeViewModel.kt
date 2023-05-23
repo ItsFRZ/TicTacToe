@@ -1,40 +1,90 @@
 package com.itsfrz.tictactoe.online.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.itsfrz.tictactoe.common.enums.BoardType
-import com.itsfrz.tictactoe.common.enums.GameLevel
-import com.itsfrz.tictactoe.common.enums.GameMode
-import com.itsfrz.tictactoe.userregistration.usecase.UserRegistrationUseCase
+import androidx.lifecycle.viewModelScope
+import com.itsfrz.tictactoe.goonline.data.models.UserProfile
+import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
+import com.itsfrz.tictactoe.online.usecase.OnlineModeUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-class OnlineModeViewModel : ViewModel(){
+class OnlineModeViewModel(
+    private val cloudRepository: CloudRepository,
+    private val gameStoreRepository: GameStoreRepository
+) : ViewModel(){
 
-    private val _usernameValue : MutableState<String> = mutableStateOf("")
-    val usernameValue : State<String> = _usernameValue
+    private val _userId : MutableState<String> = mutableStateOf("")
+    val userId = _userId
 
-    private val _isUsernameExists : MutableState<Boolean> = mutableStateOf(false)
-    val isUsernameExists : State<Boolean> = _isUsernameExists
+    private val _playerSearchState : MutableState<Boolean> = mutableStateOf(false)
+    val playerSearchState : State<Boolean> = _playerSearchState
 
-    private val _level : MutableState<GameLevel> = mutableStateOf(GameLevel.NONE)
-    val level : State<GameLevel> = _level
+    private val _inGameState : MutableState<Boolean> = mutableStateOf(false)
+    val inGameState : State<Boolean> = _inGameState
 
-    private val _gameMode : MutableState<GameMode> = mutableStateOf(GameMode.FRIEND)
-    val gameMode : State<GameMode> = _gameMode
+    private val _friendRequestId : MutableState<String> = mutableStateOf("")
+    val friendRequestId = _friendRequestId
 
-    private val _boardType : MutableState<BoardType> = mutableStateOf(BoardType.THREEX3)
-    val boardType : State<BoardType> = _boardType
 
-    fun onEvent(event : UserRegistrationUseCase){
+    private val _gameSessionId : MutableState<String> = mutableStateOf("")
+    val gameSessionId = _gameSessionId
+
+
+    private var job : Job? = null
+
+
+    fun onEvent(event : OnlineModeUseCase){
         when(event){
-            is UserRegistrationUseCase.OnUsernameChange -> {
-                Log.i("INPUT", "onEvent: ${event.userInput}")
-                _usernameValue.value = event.userInput
-                _isUsernameExists.value = _usernameValue.value.equals("Faraz")
+            is OnlineModeUseCase.OnRandomPlayerSearch -> {
+                _playerSearchState.value = event.isEnabled
+                searchPlayerAndConnect()
             }
-            else -> {}
+            is OnlineModeUseCase.OnUpdateUserInGameInfo -> {
+                _inGameState.value = event.value
+                fetchGameSessionData()
+            }
+            is OnlineModeUseCase.UpdateFriendUserId -> {
+                _friendRequestId.value = event.userId
+            }
+            is OnlineModeUseCase.OnUpdateGameSessionId -> {
+                _gameSessionId.value = event.sessionId
+            }
+            is OnlineModeUseCase.OnRemoveRandomModeConfig -> {
+                clearGameSession()
+            }
+        }
+    }
+
+    private fun fetchGameSessionData() {
+        cloudRepository.searchAndfetchGameBoardInfoAndStore(userId.value)
+    }
+
+    fun setupUserDetail(user: UserProfile?) {
+        user?.let {
+            _userId.value = it.userId
+        }
+    }
+    private fun searchPlayerAndConnect() {
+       if (_playerSearchState.value){
+           job?.cancel()
+           job = viewModelScope.launch(Dispatchers.IO) {
+               cloudRepository.toggleGameAttributes(_userId.value,inGame = false,randomSearch = true)
+               cloudRepository.searchRandomUser(_userId.value)
+           }
+       }
+    }
+
+    fun clearGameSession(){
+        job?.cancel()
+        job = viewModelScope.launch(Dispatchers.IO) {
+            cloudRepository.toggleGameAttributes(_userId.value,inGame = false,randomSearch = false)
+            cloudRepository.removeGameBoard(_userId.value)
+            gameStoreRepository.clearGameBoard()
         }
     }
 

@@ -36,4 +36,16 @@
         android:id="@+id/emojiPickerFragment"
         android:name="com.itsfrz.tictactoe.emoji.EmojiPickerFragment"
         android:label="fragment_emoji_picker" />
+    <fragment
+        android:id="@+id/settingContainerFragment"
+        android:name="com.itsfrz.tictactoe.setting.SettingFragment"
+        android:label="SettingContainerFragment" />
+    <fragment
+        android:id="@+id/settingContainerFragment2"
+        android:name="com.itsfrz.tictactoe.setting.SettingContainerFragment"
+        android:label="SettingContainerFragment" />
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.itsfrz.tictactoe.stats.StatsFragment"
+        android:label="StatsFragment" />
 </navigation>

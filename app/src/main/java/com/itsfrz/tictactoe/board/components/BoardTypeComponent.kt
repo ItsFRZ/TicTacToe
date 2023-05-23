@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.ui.theme.*
 
 @Composable
@@ -32,7 +33,7 @@ fun BoardTypeComponent(
     Card(
         modifier = modifier,
         elevation = 15.dp,
-        backgroundColor = ThemeButtonBackground
+        backgroundColor = ThemePicker.themeBoardBackground.value
     ) {
         Column(modifier = Modifier
             .fillMaxHeight(),
@@ -48,7 +49,7 @@ fun BoardTypeComponent(
             if (isAIMode) {
                 DifficultyCapsule(selectedIndex = selectedIndex, onDifficultyEvent = { idx -> onDifficultyEvent(idx) })
             }else{
-                Text(text = gameBoardContentText, style = headerSubTitle.copy(fontSize = 12.sp, color = ThemeBlue))
+                Text(text = gameBoardContentText, style = headerSubTitle.copy(fontSize = 12.sp, color = ThemePicker.secondaryColor.value))
             }
             Spacer(modifier = Modifier.fillMaxWidth().height(5.dp))
         }
@@ -76,7 +77,7 @@ private fun BoardHeaderComponent(
                     .size(width = 50.dp, height = 30.dp)
                     .clip(shape = Shapes.cutRoundedCorners(12.dp)),
                 elevation = 18.dp,
-                backgroundColor = ThemeBlue
+                backgroundColor = ThemePicker.secondaryColor.value
             ) {
                 Text(
                     modifier = Modifier
@@ -100,11 +101,11 @@ private fun DifficultyCapsule(
         .padding(horizontal = 20.dp, vertical = 10.dp)
         .height(30.dp)
         .clip(RoundedCornerShape(20.dp))
-        .background(color = ThemeButtonBackgroundDisabled)
+        .background(color = ThemePicker.themeButtonBackgroundColor.value)
         .border(width = 1.dp, color = ThemeGreen, shape = RoundedCornerShape(20.dp))
     ) {
         for (i in 0 until 3){
-            var borderColor = ThemeButtonBackground
+            var borderColor = ThemePicker.themeButtonBackgroundColor.value
             if (i == 1)
                 borderColor = ThemeGreen
             Column(modifier = Modifier
@@ -115,7 +116,7 @@ private fun DifficultyCapsule(
                     ) else Shapes.zeroRoundedCorners()
                 )
                 .border(width = 1.dp, color = borderColor)
-                .background(color = if (selectedIndex == i) ThemeGreen else ThemeButtonBackground)
+                .background(color = if (selectedIndex == i) ThemeGreen else ThemePicker.themeButtonBackgroundColor.value)
                 .clickable { onDifficultyEvent(i) },
                horizontalAlignment = Alignment.CenterHorizontally,
                verticalArrangement = Arrangement.Center

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.ui.theme.*
 
 @Composable
@@ -21,13 +22,12 @@ fun CustomOutlinedButton(
     buttonText : String,
     enabled : Boolean = true
 ) {
-    val view = LocalView.current
+
     OutlinedButton(
         onClick = {
-            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
             buttonClick() },
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = ThemeButtonBackground
+            backgroundColor = ThemePicker.themeButtonBackgroundColor.value
         ),
         enabled = enabled,
         modifier = Modifier

@@ -3,6 +3,7 @@ package com.itsfrz.tictactoe.home
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -30,22 +31,22 @@ import com.itsfrz.tictactoe.common.components.CustomCircleIconButton
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
 import com.itsfrz.tictactoe.home.viewmodel.HomePageViewModel
 import com.itsfrz.tictactoe.home.viewmodel.HomePageViewModelFactory
-import com.itsfrz.tictactoe.ui.theme.PrimaryMain
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 import com.itsfrz.tictactoe.R
-import com.itsfrz.tictactoe.common.functionality.ShareInfo
+import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.PlayerCount
-import com.itsfrz.tictactoe.common.functionality.InternetHelper
-import com.itsfrz.tictactoe.common.functionality.NavOptions
+import com.itsfrz.tictactoe.common.functionality.*
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
-import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.IGameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.setting.ISettingRepository
+import com.itsfrz.tictactoe.goonline.datastore.setting.SettingDataStore
+import com.itsfrz.tictactoe.goonline.datastore.setting.SettingRepository
 import com.itsfrz.tictactoe.home.usecase.HomePageUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,9 +54,23 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
+
+    private lateinit var backgroundPlayer : MediaPlayer
+    private lateinit var popUpSoundPlayer : MediaPlayer
+    private lateinit var pieceSoundClick1Player : MediaPlayer
+    private lateinit var pieceSoundClick2Player : MediaPlayer
+    private lateinit var clickSoundPlayer : MediaPlayer
+    private lateinit var selectSoundPlayer : MediaPlayer
+    private lateinit var starSoundPlayer : MediaPlayer
+    private lateinit var gameWinSoundPlayer : MediaPlayer
+    private lateinit var gameLossSoundPlayer : MediaPlayer
+    private lateinit var coinAccumulateSoundPlayer : MediaPlayer
+    private lateinit var gameSound: GameSound
+
     private lateinit var viewModel: HomePageViewModel
     private lateinit var cloudRepository: CloudRepository
     private lateinit var dataStoreRepository  : GameStoreRepository
+    private lateinit var settingRepository: SettingRepository
     private lateinit var commonViewModel: CommonViewModel
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -63,16 +78,34 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        commonViewModel = CommonViewModel.getInstance()
+        setupGameSound()
         setUpOnlineConfig()
         val viewModelFactory = HomePageViewModelFactory(cloudRepository,dataStoreRepository)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[HomePageViewModel::class.java]
         viewModel.onEvent(HomePageUseCase.OnCopyUserIdEvent)
-        commonViewModel = CommonViewModel.getInstance()
         viewModel.userId.value.let {
-            commonViewModel.registerViewModel(dataStoreRepository,cloudRepository,it)
+            commonViewModel.registerViewModel(dataStoreRepository,cloudRepository,settingRepository,gameSound,it)
         }
-        commonViewModel.loadEmojiData(requireContext())
+        CoroutineScope(Dispatchers.Default).launch {
+            commonViewModel.loadEmojiData(requireContext())
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            commonViewModel.loadUserPreference()
+        }
+    }
+
+    private fun setupGameSound() {
+        backgroundPlayer = MediaPlayer.create(requireContext(),R.raw.background_track)
+        popUpSoundPlayer = MediaPlayer.create(requireContext(),R.raw.popup_sound)
+        clickSoundPlayer = MediaPlayer.create(requireContext(),R.raw.button_click)
+        selectSoundPlayer = MediaPlayer.create(requireContext(),R.raw.emoji_select_click)
+        pieceSoundClick1Player = MediaPlayer.create(requireContext(),R.raw.piece_click_1)
+        pieceSoundClick2Player = MediaPlayer.create(requireContext(),R.raw.piece_click_2)
+        starSoundPlayer = MediaPlayer.create(requireContext(),R.raw.star_active)
+        gameSound = GameSound(backgroundPlayer,popUpSoundPlayer,clickSoundPlayer,selectSoundPlayer,pieceSoundClick1Player,pieceSoundClick2Player,starSoundPlayer)
+        gameSound.startBackgroundMusic()
+        GameDialogue.setDialogSound(gameSound)
     }
 
     private fun setUpOnlineConfig() {
@@ -84,6 +117,8 @@ class HomeFragment : Fragment() {
             dataStoreRepository = dataStoreRepository,
             scope = CoroutineScope(Dispatchers.IO)
         )
+        val settingStore = SettingDataStore.getDataStore(requireContext())
+        settingRepository = ISettingRepository(settingStore)
     }
 
     @SuppressLint("ServiceCast")
@@ -98,33 +133,35 @@ class HomeFragment : Fragment() {
                 val scope = rememberCoroutineScope()
                 Column(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = PrimaryMain),
+                    .background(color = ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier
-                        .height(100.dp)
+                        .height(80.dp)
+                        .fillMaxWidth())
+                    Text(
+                        style = headerTitle.copy(color = Color.White),
+                        text = buildAnnotatedString {
+                            append("Choose Your")
+                            withStyle(style = SpanStyle(color = ThemePicker.secondaryColor.value)){
+                                append(" Play Mode")
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 30.sp
+                    )
+                    Spacer(modifier = Modifier
+                        .height(48.dp)
                         .fillMaxWidth())
                     LazyColumn(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
                         item {
-                            Text(
-                                style = headerTitle.copy(color = Color.White),
-                                text = buildAnnotatedString {
-                                    append("Choose Your")
-                                    withStyle(style = SpanStyle(color = ThemeBlue)){
-                                        append(" Play Mode")
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center,
-                                lineHeight = 30.sp
-                            )
-                            Spacer(modifier = Modifier
-                                .height(78.dp)
-                                .fillMaxWidth())
                             CustomOutlinedButton(
                                 buttonClick = {
+                                    gameSound.clickSound()
+                                    commonViewModel.performHapticVibrate(requireView())
                                     gameBundle.putSerializable(BundleKey.GAME_MODE,GameMode.AI)
                                     gameBundle.putSerializable(BundleKey.PLAYER_COUNT,PlayerCount.ONE)
                                     findNavController().navigate(
@@ -132,13 +169,15 @@ class HomeFragment : Fragment() {
                                         navOptions = NavOptions.navOptionStack
                                     )
                                 },
-                                buttonText = "1 Player"
+                                buttonText = "Robot"
                             )
                             Spacer(modifier = Modifier
                                 .height(20.dp)
                                 .fillMaxWidth())
                             CustomOutlinedButton(
                                 buttonClick = {
+                                    gameSound.clickSound()
+                                    commonViewModel.performHapticVibrate(requireView())
                                     gameBundle.putSerializable(BundleKey.GAME_MODE,GameMode.TWO_PLAYER)
                                     gameBundle.putSerializable(BundleKey.PLAYER_COUNT,PlayerCount.TWO)
                                     findNavController().navigate(
@@ -154,6 +193,8 @@ class HomeFragment : Fragment() {
                                 .fillMaxWidth())
                             CustomOutlinedButton(
                                 buttonClick = {
+                                    gameSound.clickSound()
+                                    commonViewModel.performHapticVibrate(requireView())
                                     gameBundle.putSerializable(BundleKey.GAME_MODE,GameMode.FOUR_PLAYER)
                                     gameBundle.putSerializable(BundleKey.PLAYER_COUNT,PlayerCount.FOUR)
                                     findNavController().navigate(
@@ -169,6 +210,8 @@ class HomeFragment : Fragment() {
                                 .fillMaxWidth())
                             CustomOutlinedButton(
                                 buttonClick = {
+                                    gameSound.clickSound()
+                                    commonViewModel.performHapticVibrate(requireView())
                                     findNavController().navigate(
                                         resId = R.id.onlineModeFragment,
                                         args = null,
@@ -180,7 +223,16 @@ class HomeFragment : Fragment() {
                             Spacer(modifier = Modifier
                                 .height(40.dp)
                                 .fillMaxWidth())
-                            CustomCircleIconButton(iconButtonClick = { /*TODO*/ }, buttonIcon = R.drawable.ic_stats)
+                            CustomCircleIconButton(iconButtonClick = {
+                                gameSound.clickSound()
+                                commonViewModel.performHapticVibrate(requireView())
+                                gameBundle.putSerializable(BundleKey.USER_ID,userId)
+                                findNavController().navigate(
+                                    resId = R.id.statsFragment,
+                                    args = gameBundle,
+                                    navOptions = NavOptions.navOptionStack
+                                )
+                            }, buttonIcon = R.drawable.ic_stats)
                             Spacer(modifier = Modifier
                                 .height(10.dp)
                                 .fillMaxWidth())
@@ -191,6 +243,8 @@ class HomeFragment : Fragment() {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 CustomCircleIconButton(iconButtonClick = {
+                                    gameSound.clickSound()
+                                    commonViewModel.performHapticVibrate(requireView())
                                     scope.launch(Dispatchers.Main) {
                                         async {  viewModel.onEvent(HomePageUseCase.OnCopyUserIdEvent) }.await()
                                         val message = "${ShareInfo.SHARE_HEADER}\n${ShareInfo.SHARE_TITLE}\n${ShareInfo.SHARE_SUBTITLE}\n\nUserId : ✄-x${userId}x-✄"
@@ -202,8 +256,19 @@ class HomeFragment : Fragment() {
                                         context.startActivity(Intent.createChooser(intent,"Share"))
                                     }
                                 }, buttonIcon = R.drawable.ic_share)
-                                CustomCircleIconButton(iconButtonClick = { /*TODO*/ }, buttonIcon = R.drawable.ic_settings)
+                                CustomCircleIconButton(iconButtonClick = {
+                                    gameSound.clickSound()
+                                    commonViewModel.performHapticVibrate(requireView())
+                                    findNavController().navigate(
+                                        resId = R.id.settingContainerFragment,
+                                        args = null,
+                                        navOptions = NavOptions.navOptionStack
+                                    )
+                                }, buttonIcon = R.drawable.ic_settings)
                             }
+                            Spacer(modifier = Modifier
+                                .height(40.dp)
+                                .fillMaxWidth())
                         }
                     }
                 }
@@ -214,12 +279,21 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        gameSound.resumeBackgroundMusic()
         commonViewModel.updateOnlineStatus(isOnline = InternetHelper.isOnline(requireContext()))
     }
 
     override fun onStop() {
         super.onStop()
         commonViewModel.updateOnlineStatus(isOnline = false)
+    }
+
+    
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        gameSound.pauseBackgroundMusic()
     }
 
 }

@@ -19,9 +19,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.ui.theme.PrimaryDark
-import com.itsfrz.tictactoe.ui.theme.PrimaryMain
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.errorMessage
 
 @Composable
@@ -46,23 +45,23 @@ fun TextFieldWithValidation(
             modifier = Modifier.onFocusChanged {
                 isFocussed.value = it.isFocused || it.hasFocus
             },
-            label = { Text(text = label, color = if (isFocussed.value && !isValidationTriggered) ThemeBlue else if (isValidationTriggered) Color.Red else PrimaryDark) },
+            label = { Text(text = label, color = if (isFocussed.value && !isValidationTriggered) ThemePicker.secondaryColor.value else if (isValidationTriggered) Color.Red else PrimaryDark) },
             value = fieldValue,
             onValueChange = {inputData -> onUsernameChange(inputData)},
             leadingIcon = {
-                Image(colorFilter = ColorFilter.tint(color = if (isFocussed.value && !isValidationTriggered) ThemeBlue else if (isValidationTriggered) Color.Red else PrimaryDark), painter = painterResource(id = leadingIcon), contentDescription = "Username")
+                Image(colorFilter = ColorFilter.tint(color = if (isFocussed.value && !isValidationTriggered) ThemePicker.secondaryColor.value else if (isValidationTriggered) Color.Red else PrimaryDark), painter = painterResource(id = leadingIcon), contentDescription = "Username")
             },
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.textFieldColors(
-                textColor = if(isValidationTriggered) Color.Red else ThemeBlue,
-                cursorColor = ThemeBlue,
-                backgroundColor = PrimaryMain,
-                focusedLabelColor = ThemeBlue,
-                focusedIndicatorColor = ThemeBlue,
-                leadingIconColor = ThemeBlue,
-                errorLabelColor = if (isValidationTriggered) Color.Red else ThemeBlue,
-                errorLeadingIconColor = if (isValidationTriggered) Color.Red else ThemeBlue,
-                errorIndicatorColor = if (isValidationTriggered) Color.Red else ThemeBlue
+                textColor = if(isValidationTriggered) Color.Red else ThemePicker.secondaryColor.value,
+                cursorColor = ThemePicker.secondaryColor.value,
+                backgroundColor = ThemePicker.primaryColor.value,
+                focusedLabelColor = ThemePicker.secondaryColor.value,
+                focusedIndicatorColor = ThemePicker.secondaryColor.value,
+                leadingIconColor = ThemePicker.secondaryColor.value,
+                errorLabelColor = if (isValidationTriggered) Color.Red else ThemePicker.secondaryColor.value,
+                errorLeadingIconColor = if (isValidationTriggered) Color.Red else ThemePicker.secondaryColor.value,
+                errorIndicatorColor = if (isValidationTriggered) Color.Red else ThemePicker.secondaryColor.value
             ),
             isError = isValidationTriggered,
             singleLine = true

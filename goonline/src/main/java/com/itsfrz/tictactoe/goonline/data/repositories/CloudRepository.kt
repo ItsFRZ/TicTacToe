@@ -15,7 +15,7 @@ import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import com.itsfrz.tictactoe.goonline.data.service.GameSessionService
 import com.itsfrz.tictactoe.goonline.data.service.PlaygroundService
 import com.itsfrz.tictactoe.goonline.data.service.UserProfileService
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -219,41 +219,6 @@ class CloudRepository(
             updatePlayground(playground)
         }
     }
-
-    // request the friend to play + create separate game session
-//    suspend fun requestFriendToPlay(userProfile: UserProfile?,friendUserid : String){
-//        userProfile?.let { currentUser ->
-//            val activeRequest = Playground.ActiveRequest(
-//                friendUserId = userProfile.userId,
-//                requesterUsername = userProfile.username,
-//                online = true,
-//                playResponse = false
-//            )
-//            database.getPlayGroundReference("${Constants.USER_PLAYGROUND}").child("${friendUserid}")
-//                .addListenerForSingleValueEvent(object : ValueEventListener{
-//                    override fun onDataChange(snapshot: DataSnapshot) {
-//                        Log.i(TAG, "requestFriendToPlay: ${snapshot}")
-//                        var friendPlayground = snapshot.getValue(Playground::class.java)
-//                        friendPlayground?.let {
-//                            val activeRequestList = it.fr.toMutableList()
-//                            activeRequestList.add(0,activeRequest)
-//                            friendPlayground = it.copy(
-//                                activeRequest = activeRequestList
-//                            )
-//                            scope.launch {
-//                                database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(friendUserid)
-//                                    .setValue(friendPlayground)
-//                            }
-//                        }
-//                    }
-//
-//                    override fun onCancelled(error: DatabaseError) {
-//                        TODO("Not yet implemented")
-//                    }
-//                })
-//        }
-//    }
-
     suspend fun requestFriendToPlay(userProfile: UserProfile?,friendUserid : String){
         userProfile?.let { currentUser ->
             val userId = userProfile.userId
@@ -423,7 +388,7 @@ class CloudRepository(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    Log.e(TAG, "fetchGameBoardInfoAndStore: ${error.message}")
                 }
             })
     }
@@ -431,11 +396,11 @@ class CloudRepository(
     override suspend fun removeGameBoard(sessionId: String) {
         try { // remove game session
             scope.launch(Dispatchers.IO) {
-                database.getReference("${Constants.GAME_SESSION}").child(sessionId).removeValue()
+                database.getReference(Constants.GAME_SESSION).child(sessionId).removeValue()
                 val data = dataStoreRepository.fetchPreference().firstOrNull()
                 data?.let { it ->
                     it.playGround?.let {
-                        updatePlayground(it.copy(inGame = false))
+                        updatePlayground(it.copy(inGame = false, randomSearch = false))
                     }
                 }
             }
@@ -443,9 +408,21 @@ class CloudRepository(
                 dataStoreRepository.clearGameBoard()
             }
         }catch (e : FirebaseException){
-            Log.e(TAG, "createGameSession: ${e.message}")
+            Log.e(TAG, "removeGameBoard: ${e.message}")
         }
     }
+
+    suspend fun toggleGameAttributes(userId: String,inGame : Boolean,randomSearch : Boolean){
+        val playground = dataStoreRepository.getUserPlayGround()
+        playground?.let { it ->
+            val updatedPlayground = it.copy(randomSearch = randomSearch, inGame = inGame)
+            updatePlayground(updatedPlayground)
+            scope.launch {
+                dataStoreRepository.updatePlayground(updatedPlayground)
+            }
+        }
+    }
+
 
     override suspend fun playAgainRequest(gameSessionId : String,boardState : BoardState) {
         scope.launch(Dispatchers.IO) {
@@ -550,4 +527,253 @@ class CloudRepository(
                 }
             })
     }
+
+    suspend fun searchRandomUser(userId: String){
+        database.getReference(Constants.BASE_URL).child(Constants.PLAYGROUND)
+            .addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    scope.launch(Dispatchers.IO) {
+                        var isOpponentFound = false
+                        for (snap in snapshot.children){
+                            val playground = snap.getValue(Playground::class.java)
+                            playground?.let {
+                                if (playground.userId != userId && playground.randomSearch && !playground.inGame && !isOpponentFound){
+                                    scope.launch(Dispatchers.IO) {
+                                        playWithRandomUser(playground,userId)
+                                    }
+                                    isOpponentFound = true
+                                }
+                            }
+                        }
+                        if (!isOpponentFound){
+                            createGameSession(userId,"")
+                            waitForRandomUser(userId)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e(TAG, "searchRandomUser: ${error.message}")
+                }
+            })
+
+    }
+
+    private fun waitForRandomUser(sessionId: String) {
+        database.getReference(Constants.GAME_SESSION).child(sessionId)
+            .addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val session = snapshot.getValue(BoardState::class.java)
+                    session?.let {
+                        scope.launch(Dispatchers.IO) {
+                            dataStoreRepository.updateBoardState(it)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e(TAG, "waitForRandomUser: ${error.message}")
+                }
+            })
+    }
+
+    private suspend fun playWithRandomUser(playground: Playground, userId: String) {
+        val friendUserId = playground.userId
+        if (friendUserId != null) {
+            database.getReference(Constants.GAME_SESSION).child(friendUserId)
+                .addListenerForSingleValueEvent(object : ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val session = snapshot.getValue(BoardState::class.java)
+                        session?.let {
+                            it.playerTwoState?.let {
+                                scope.launch(Dispatchers.IO) {
+                                    database.getReference(Constants.GAME_SESSION).child(friendUserId).setValue(session.copy(playerTwoState = session.playerTwoState!!.copy(userId = userId)))
+                                    database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(friendUserId).setValue(playground.copy(inGame = true))
+                                    val myPlayground = dataStoreRepository.getUserPlayGround()
+                                    myPlayground?.let {
+                                        myPlayground.userId?.let {
+                                            database.getPlayGroundReference(Constants.USER_PLAYGROUND).child(myPlayground.userId).setValue(myPlayground.copy(inGame = true))
+                                        }
+                                    }
+                                    database.getReference(Constants.GAME_SESSION).child(friendUserId)
+                                        .addListenerForSingleValueEvent(object : ValueEventListener{
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                val gameSession = snapshot.getValue(BoardState::class.java)
+                                                gameSession?.let {
+                                                    scope.launch {
+                                                        dataStoreRepository.updateBoardState(it)
+                                                    }
+                                                }
+                                            }
+
+                                            override fun onCancelled(error: DatabaseError) {
+                                                Log.e(TAG, "playWithRandomUser: ${error.message}")
+                                            }
+                                        })
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e(TAG, "playWithRandomUser: ${error.message}")
+                    }
+                })
+
+        }
+    }
+
+    fun searchAndfetchGameBoardInfoAndStore(userId: String) {
+        database.getReference(Constants.SESSION).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (snap in snapshot.children){
+                    val session = snapshot.getValue(BoardState::class.java)
+                    session?.let {
+                        if (it.playerOneState?.userId == userId || it.playerTwoState?.userId == userId) {
+                            scope.launch {
+                                dataStoreRepository.updateBoardState(session)
+                            }
+                            return
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "searchAndfetchGameBoardInfoAndStore: ${error.message}")
+            }
+        })
+    }
+
 }
+
+
+/*
+
+
+
+  suspend fun searchRandomUser(userId: String){
+        database.getReference(Constants.BASE_URL).child(Constants.PLAYGROUND)
+            .addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    scope.launch(Dispatchers.IO) {
+                        for (snap in snapshot.children){
+                            val playground = snap.getValue(Playground::class.java)
+                            playground?.let {
+                                if (playground.userId != userId && playground.randomSearch && !playground.inGame){
+                                   checkSessionCreated(userId,playground.userId!!)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e(TAG, "searchRandomUser: ${error.message}")
+                }
+            })
+
+    }
+
+    private suspend fun checkSessionCreated(userId: String, friendUserId: String) {
+        scope.launch {
+            async {
+                // Check Is Friend Created Session
+                database.getReference(Constants.GAME_SESSION).child(friendUserId).addListenerForSingleValueEvent(object : ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val session = snapshot.getValue(BoardState::class.java)
+                        if (session?.started == true)
+                            return
+                        session?.let {
+                            if (it.currentUserTurnId == friendUserId) {
+                               scope.launch {
+                                   updateGameBoardForRandomUser(userId,friendUserId,it.currentUserTurnId)
+                               }
+                            }
+                        }
+                        if (session == null){
+                            scope.launch {
+                                createRandomUserSession(userId, friendUserId)
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e(TAG, "checkIsSessionCreated: ${error.message}")
+                    }
+                })
+            }.await()
+        }
+    }
+
+    suspend fun updateGameBoardForRandomUser(userId: String,friendUserId: String,sessionId: String){
+        scope.launch {
+            val playground = dataStoreRepository.getUserPlayGround()
+            playground?.let {
+                updatePlayground(it.copy(inGame = true))
+            }
+            database.getReference(Constants.GAME_SESSION).child(sessionId)
+                .addValueEventListener(object : ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val boardState = snapshot.getValue(BoardState::class.java)
+                        boardState?.let {
+                            scope.launch {
+                                dataStoreRepository.updateBoardState(it.copy(started = true))
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+
+                    }
+                })
+        }
+    }
+
+    suspend fun createRandomUserSession(userId: String,friendUserId: String){
+        scope.launch {
+            createGameSession(userId,friendUserId)
+            database.getPlayGroundReference(Constants.USER_PLAYGROUND)
+                .child(friendUserId)
+                .addValueEventListener(object : ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val friendPlayground = snapshot.getValue(Playground::class.java)
+                        friendPlayground?.let {
+                            if (it.inGame){
+                                scope.launch {
+                                    val playground = dataStoreRepository.getUserPlayGround()
+                                    playground?.let {
+                                        updatePlayground(it.copy(inGame = true))
+                                    }
+                                }
+                            }
+                        }
+
+                        database.getReference(Constants.GAME_SESSION).child(userId)
+                            .addValueEventListener(object : ValueEventListener{
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    val boardState = snapshot.getValue(BoardState::class.java)
+                                    boardState?.let {
+                                        scope.launch {
+                                            dataStoreRepository.updateBoardState(it)
+                                        }
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+
+                                }
+                            })
+
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e(TAG, "createRandomUserSession: ${error.message}")
+                    }
+                })
+        }
+    }
+
+
+
+ */

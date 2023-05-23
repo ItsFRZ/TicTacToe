@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.ui.theme.*
 
 @Composable
@@ -25,11 +26,10 @@ fun CustomButton(
     isButtonEnabled : Boolean = true,
     buttonText : String = "GO",
     buttonColors : ButtonColors = ButtonDefaults.buttonColors(
-        backgroundColor = ThemeButtonBackground,
-        disabledBackgroundColor = ThemeButtonBackgroundDisabled
+        backgroundColor = ThemePicker.themeButtonBackgroundColor.value,
+        disabledBackgroundColor = ThemePicker.themeButtonBackgroundDisabled.value
     )
 ) {
-    val view = LocalView.current
     Button(
         modifier = modifier
             .padding(vertical = 5.dp)
@@ -40,7 +40,6 @@ fun CustomButton(
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(width = 0.4.dp, color = ThemeButtonBorder),
         onClick = {
-            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
             onButtonClick() },
         enabled = isButtonEnabled
     ) {

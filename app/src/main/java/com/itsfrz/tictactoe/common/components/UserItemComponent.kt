@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.itsfrz.tictactoe.common.enums.ButtonType
 import com.itsfrz.tictactoe.ui.theme.*
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 
 @Composable
 fun UserItemLayout(
@@ -56,7 +57,7 @@ fun UserItemLayout(
 
                 Box(modifier = Modifier
                     .size(40.dp)
-                    .background(color = ThemeBlue, shape = RoundedCornerShape(100)),
+                    .background(color = ThemePicker.secondaryColor.value, shape = RoundedCornerShape(100)),
                     contentAlignment = Alignment.Center) {
                     Text(
                         text = "${username[0]}",
@@ -95,7 +96,7 @@ fun UserItemLayout(
                         acceptRequestEvent()
                     }
                 }else{
-                    UserItemButton(buttonText = "Request", backgroundColor = ThemeButtonBackground) {
+                    UserItemButton(buttonText = "Request", backgroundColor = ThemePicker.themeButtonBackgroundColor.value) {
                         view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                         playRequestEvent()
                     }

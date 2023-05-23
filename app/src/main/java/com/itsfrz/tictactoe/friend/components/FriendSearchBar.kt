@@ -17,6 +17,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.ui.theme.*
 
 @Composable
@@ -47,24 +48,24 @@ fun FriendSearchBar(
                 },
             value = username,
             placeholder = { Text(
-                color = if (isFocussed.value) LightWhite else ThemeBlue,
+                color = if (isFocussed.value) LightWhite else ThemePicker.secondaryColor.value,
                 text = "Paste UserId ...",
             )},
             onValueChange = {inputData -> onUserNameChange(inputData)},
             leadingIcon = {
-                Icon(imageVector = Icons.Default.Search, contentDescription = "Search Bar Icon", tint = ThemeBlue)
+                Icon(imageVector = Icons.Default.Search, contentDescription = "Search Bar Icon", tint = ThemePicker.secondaryColor.value)
             },
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 textColor = Color.White,
-                cursorColor = ThemeBlue,
-                backgroundColor = PrimaryMain,
-                focusedLabelColor = ThemeBlue,
-                leadingIconColor = ThemeBlue,
-                focusedBorderColor = ThemeBlue,
+                cursorColor = ThemePicker.secondaryColor.value,
+                backgroundColor = ThemePicker.primaryColor.value,
+                focusedLabelColor = ThemePicker.secondaryColor.value,
+                leadingIconColor = ThemePicker.secondaryColor.value,
+                focusedBorderColor = ThemePicker.secondaryColor.value,
                 disabledTextColor = LightWhite,
-                disabledLeadingIconColor = ThemeButtonBackgroundDisabled,
-                unfocusedBorderColor = ThemeButtonBackgroundDisabled,
+                disabledLeadingIconColor = ThemePicker.themeButtonBackgroundColor.value,
+                unfocusedBorderColor = ThemePicker.themeButtonBackgroundDisabled.value,
 
             )
         )
@@ -74,15 +75,15 @@ fun FriendSearchBar(
         Button(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = if (username.isEmpty()) ThemeButtonBackgroundDisabled else ThemeButtonBackground, shape = RoundedCornerShape(8.dp)),
+                .background(color = if (username.isEmpty()) ThemePicker.themeButtonBackgroundDisabled.value else ThemePicker.themeButtonBackgroundColor.value, shape = RoundedCornerShape(8.dp)),
             onClick = {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 onAddEvent() },
             enabled = username.isNotEmpty(),
             border = BorderStroke(width = 0.4.dp, color = ThemeButtonBorder),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = ThemeButtonBackground,
-                disabledBackgroundColor = ThemeButtonBackgroundDisabled
+                backgroundColor = ThemePicker.themeButtonBackgroundColor.value,
+                disabledBackgroundColor = ThemePicker.themeButtonBackgroundDisabled.value
             )
         ) {
             Text(

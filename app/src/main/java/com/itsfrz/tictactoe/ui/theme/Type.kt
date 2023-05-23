@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 
 // Set of Material typography styles to start with
 val Typography = Typography(
@@ -55,7 +56,7 @@ val headerTitle = TextStyle(
 
 val headerSubTitle = TextStyle(
     fontSize = 12.sp,
-    color = ThemeBlue,
+    color = ThemePicker.secondaryColor.value,
     fontFamily = fontFamily,
     fontWeight = FontWeight.Medium,
     lineHeight = 10.sp,

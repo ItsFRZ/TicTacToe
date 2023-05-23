@@ -29,7 +29,9 @@ import com.itsfrz.tictactoe.common.enums.BoardType
 import com.itsfrz.tictactoe.common.enums.GameLevel
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.PlayerCount
+import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.NavOptions
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.usecase.CommonUseCase
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.emoji.components.EmojiDialogue
@@ -39,8 +41,6 @@ import com.itsfrz.tictactoe.emoji.viewmodel.EmojiPickerViewModelFactory
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModel
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModelFactory
-import com.itsfrz.tictactoe.ui.theme.PrimaryMain
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 import com.itsfrz.tictactoe.userregistration.usecase.UserRegistrationUseCase
 
@@ -49,12 +49,13 @@ class EmojiPickerFragment : Fragment() {
     private lateinit var commonViewModel: CommonViewModel
     private lateinit var gameMode : GameMode
     private lateinit var playerCount: PlayerCount
-
+    private lateinit var gameSound: GameSound
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModelFactory = EmojiPickerViewModelFactory()
         viewmodel = ViewModelProvider(this,viewModelFactory)[EmojiPickerViewModel::class.java]
         commonViewModel = CommonViewModel.getInstance()
+        gameSound = commonViewModel.gameSound
         viewmodel.onEvent(EmojiPickerUseCase.FillEmojiData(commonViewModel.emojiDataList))
         commonViewModel.onEvent(CommonUseCase.ResetSelectEmojiData)
         setUpNavArgs()
@@ -100,7 +101,7 @@ class EmojiPickerFragment : Fragment() {
                 val sessionid = viewmodel.gameSessionId.value
                 Column(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = PrimaryMain),
+                    .background(color = ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier
@@ -109,7 +110,7 @@ class EmojiPickerFragment : Fragment() {
                     Text(
                         text = buildAnnotatedString {
                             append("Choose")
-                            withStyle(style = SpanStyle(color = ThemeBlue)){
+                            withStyle(style = SpanStyle(color = ThemePicker.secondaryColor.value)){
                                 append(" Emoji")
                             }
                         },
@@ -123,23 +124,28 @@ class EmojiPickerFragment : Fragment() {
                     EmojiDialogue(
                         emojiList = allEmojiList,
                         onSelectedEmojiChange = {
+                             gameSound.selectSound()
                              viewmodel.onEvent(EmojiPickerUseCase.OnSelectedEmojiChange(it))
                              commonViewModel.onEvent(CommonUseCase.OnSelectedEmojiChange(it))
                         },
                         onRemoveEmojiChange = {
+                            gameSound.selectSound()
                             viewmodel.onEvent(EmojiPickerUseCase.OnRemovedEmojiChange(it))
                             commonViewModel.onEvent(CommonUseCase.OnRemovedEmojiChange(it))
                         },
                         playerCount = playerCountValue,
                         playerCountReachedPopUp = {
                             Toast.makeText(requireContext(), "All player's selected!", Toast.LENGTH_SHORT).show()
-                        }
+                        },
+                        selectedEmojiListCount = selectedEmojiList.size+1
                     )
                     Spacer(modifier = Modifier
                         .height(20.dp)
                         .fillMaxWidth())
                     CustomButton(
                         onButtonClick = {
+                            commonViewModel.performHapticVibrate(requireView())
+                            gameSound.clickSound()
                             gameBundle.putSerializable(BundleKey.GAME_MODE, gameMode)
                             gameBundle.putSerializable(BundleKey.PLAYER_COUNT,playerCount)
                             findNavController().navigate(

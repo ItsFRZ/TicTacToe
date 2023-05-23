@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.emoji.components
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,9 +17,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 import com.itsfrz.tictactoe.ui.theme.ThemeButtonBackground
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.state.EmojiState
 
 @Composable
@@ -27,10 +28,11 @@ fun EmojiDialogue(
     onSelectedEmojiChange : (selectedEmoji : Int) -> Unit,
     onRemoveEmojiChange : (removedEmoji : Int) -> Unit,
     playerCount : Int,
-    playerCountReachedPopUp : () -> Unit
+    playerCountReachedPopUp : () -> Unit,
+    selectedEmojiListCount: Int
 ) {
     var selectedPlayer by remember {
-        mutableStateOf(1)
+        mutableStateOf(selectedEmojiListCount)
     }
     Card(
         modifier = Modifier
@@ -39,8 +41,8 @@ fun EmojiDialogue(
             .height(400.dp)
             .padding(4.dp),
         elevation = 8.dp,
-        backgroundColor = ThemeButtonBackground,
-        border = BorderStroke(width = 0.4.dp, color = ThemeBlue),
+        backgroundColor = ThemePicker.themeBoardBackground.value,
+        border = BorderStroke(width = 0.4.dp, color = ThemePicker.themeButtonBorder.value),
         shape = RoundedCornerShape(8.dp)
     ) {
         LazyVerticalGrid(
@@ -49,9 +51,8 @@ fun EmojiDialogue(
         ){
             itemsIndexed(
                 items = emojiList,
-                key = {index: Int, item: EmojiState ->  item.emojiResourceId}
+                key = {index: Int, item: EmojiState ->  item.emojiResourceId }
             ){ index: Int, item: EmojiState ->
-
                 Box(modifier = Modifier.clickable {
                     if (item.isSelected){
                         onRemoveEmojiChange(index)

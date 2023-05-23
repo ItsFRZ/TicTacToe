@@ -9,7 +9,7 @@ import com.itsfrz.tictactoe.common.functionality.Generate
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import com.itsfrz.tictactoe.userregistration.usecase.UserRegistrationUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,7 +45,7 @@ class UserRegistrationViewModel(
             val uuid = "${(0..10000).random()}${_usernameValue.value.hashCode()}${System.currentTimeMillis()}"
             val secret = Generate.uniqueId(uuid.lowercase())
             val userProfile = UserProfile(userId = secret, username = _usernameValue.value)
-            val userPlayground = Playground().copy(userId = secret, online = true)
+            val userPlayground = Playground().copy(userId = secret, online = true, randomSearch = false)
             launch(Dispatchers.IO) {
                 gameStoreRepository.updateUserInfo(secret)
                 gameStoreRepository.updateUserProfile(userProfile)

@@ -11,7 +11,7 @@ data class BoardState(
     @SerialName("gameWinnerId") val gameWinnerId : String = "",
     @SerialName("resetTimer") val resetTimer : Boolean = false,
     @SerialName("gameDraw") val gameDraw : Boolean = false,
-    @SerialName("playAgain") val playAgain : PlayRequest? = null,
+    @SerialName("playAgain") val playAgain : PlayRequest? = null
 
 ){
     @Serializable
