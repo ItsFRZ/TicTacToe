@@ -12,7 +12,6 @@ import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.IGameStoreRepository
 import com.itsfrz.tictactoe.goonline.datastore.setting.ISettingRepository
 import com.itsfrz.tictactoe.goonline.datastore.setting.SettingDataStore
-import com.itsfrz.tictactoe.goonline.datastore.setting.SettingRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
@@ -23,9 +22,12 @@ class MainActivity : AppCompatActivity(){
     private var job : Job? = null
     private var commonViewModel: CommonViewModel? = null
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Log.i("VM_CHECK", "onCreate: MainActivity Created")
         val storeRepo : GameStoreRepository = IGameStoreRepository(GameDataStore.getDataStore(this))
         val settingRepository = ISettingRepository(SettingDataStore.getDataStore(this))
         runBlocking {
@@ -65,22 +67,33 @@ class MainActivity : AppCompatActivity(){
         super.onResume()
         try {
             commonViewModel = CommonViewModel.getInstance()
-            commonViewModel?.let {
-                it.gameSound.resumeBackgroundMusic()
-            }
-        }catch (e : UninitializedPropertyAccessException){
-            Log.e(TAG, "onResume: $e" )
+            commonViewModel?.gameSound?.resumeBackgroundMusic()
+        }catch (e : Exception){
+            e.printStackTrace()
         }
     }
 
     override fun onStop() {
         super.onStop()
-        commonViewModel = CommonViewModel.getInstance()
-        Log.i(TAG, "onStop: MainActivity")
+        Log.i("VM_CHECK", "onStop: MainActivity Stop")
+        try {
+            commonViewModel = CommonViewModel.getInstance()
+            commonViewModel?.gameSound?.pauseBackgroundMusic()
+        }catch (e : Exception){
+            e.printStackTrace()
+        }
+
     }
 
     override fun onDestroy() {
+        Log.i("VM_CHECK", "onDestroy: MainActivity Destroyed")
         super.onDestroy()
         job?.cancel()
+        try {
+            commonViewModel = CommonViewModel.getInstance()
+            commonViewModel?.gameSound?.releaseAllMusic()
+        }catch (e : Exception){
+            e.printStackTrace()
+        }
     }
 }

@@ -1,8 +1,11 @@
 package com.itsfrz.tictactoe.common.functionality
 
 import android.media.MediaPlayer
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.itsfrz.tictactoe.R
 
 
 class GameSound(
@@ -25,10 +28,14 @@ class GameSound(
     }
     
     fun startBackgroundMusic(){
-        if (isMusicEnabled.value){
-            player.setVolume(0.2f,0.2f)
-            player.isLooping = true
-            player.start()
+        try {
+            if (isMusicEnabled.value && !player.isPlaying){
+                player.setVolume(0.2f,0.2f)
+                player.isLooping = true
+                player.start()
+            }
+        }catch (e : Exception){
+            e.printStackTrace()
         }
     }
 
@@ -43,28 +50,20 @@ class GameSound(
         }
     }
 
-    fun pauseBackgroundMusic(){
-        player.pause()
-    }
-
-
     fun resumeBackgroundMusic(){
-        startBackgroundMusic()
+        Log.i("MUSIC", "resumeBackgroundMusic: Started Playing")
+        if (!player.isPlaying){
+            startBackgroundMusic()
+        }
     }
 
-    fun stopBackgroundMusic(){
-        player.release()
-        player.stop()
+    fun pauseBackgroundMusic(){
+        if (player.isPlaying){
+            player.pause()
+        }
     }
 
-    fun stopAllMusic(){
-        player.release()
-        popUpSoundPlayer.release()
-        clickSoundPlayer.release()
-        selectSoundPlayer.release()
-        pieceSoundClick1Player.release()
-        pieceSoundClick2Player.release()
-        starSoundPlayer.release()
+    suspend fun stopAllMusic(){
         player.stop()
         popUpSoundPlayer.stop()
         clickSoundPlayer.stop()
@@ -74,6 +73,15 @@ class GameSound(
         starSoundPlayer.stop()
     }
 
+    fun releaseAllMusic(){
+        player.release()
+        popUpSoundPlayer.release()
+        clickSoundPlayer.release()
+        selectSoundPlayer.release()
+        pieceSoundClick1Player.release()
+        pieceSoundClick2Player.release()
+        starSoundPlayer.release()
+    }
     fun triggerPopSound(){
         if (isSoundEnabled.value){
             popUpSoundPlayer.setVolume(100F,100F)

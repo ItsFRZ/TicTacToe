@@ -3,12 +3,17 @@ package com.itsfrz.tictactoe.home
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.AssetFileDescriptor
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -52,6 +57,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.io.InputStream
 
 class HomeFragment : Fragment() {
 
@@ -66,7 +72,6 @@ class HomeFragment : Fragment() {
     private lateinit var gameLossSoundPlayer : MediaPlayer
     private lateinit var coinAccumulateSoundPlayer : MediaPlayer
     private lateinit var gameSound: GameSound
-
     private lateinit var viewModel: HomePageViewModel
     private lateinit var cloudRepository: CloudRepository
     private lateinit var dataStoreRepository  : GameStoreRepository
@@ -78,6 +83,7 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("VM_CHECK", "onCreate: Fragment Created")
         commonViewModel = CommonViewModel.getInstance()
         setupGameSound()
         setUpOnlineConfig()
@@ -152,7 +158,7 @@ class HomeFragment : Fragment() {
                         lineHeight = 30.sp
                     )
                     Spacer(modifier = Modifier
-                        .height(48.dp)
+                        .height(60.dp)
                         .fillMaxWidth())
                     LazyColumn(
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -205,33 +211,36 @@ class HomeFragment : Fragment() {
                                 },
                                 buttonText = "4 Player"
                             )
+//                            Spacer(modifier = Modifier
+//                                .height(20.dp)
+//                                .fillMaxWidth())
+//                            CustomOutlinedButton(
+//                                buttonClick = {
+//                                    gameSound.clickSound()
+//                                    commonViewModel.performHapticVibrate(requireView())
+//                                    findNavController().navigate(
+//                                        resId = R.id.onlineModeFragment,
+//                                        args = null,
+//                                        navOptions = NavOptions.navOptionStack
+//                                    )
+//                                },
+//                                buttonText = "Online"
+//                            )
                             Spacer(modifier = Modifier
-                                .height(20.dp)
-                                .fillMaxWidth())
-                            CustomOutlinedButton(
-                                buttonClick = {
-                                    gameSound.clickSound()
-                                    commonViewModel.performHapticVibrate(requireView())
-                                    findNavController().navigate(
-                                        resId = R.id.onlineModeFragment,
-                                        args = null,
-                                        navOptions = NavOptions.navOptionStack
-                                    )
-                                },
-                                buttonText = "Online"
-                            )
-                            Spacer(modifier = Modifier
-                                .height(40.dp)
+                                .height(60.dp)
                                 .fillMaxWidth())
                             CustomCircleIconButton(iconButtonClick = {
                                 gameSound.clickSound()
                                 commonViewModel.performHapticVibrate(requireView())
-                                gameBundle.putSerializable(BundleKey.USER_ID,userId)
-                                findNavController().navigate(
-                                    resId = R.id.statsFragment,
-                                    args = gameBundle,
-                                    navOptions = NavOptions.navOptionStack
-                                )
+//                                gameBundle.putSerializable(BundleKey.USER_ID,userId)
+//                                findNavController().navigate(
+//                                    resId = R.id.statsFragment,
+//                                    args = gameBundle,
+//                                    navOptions = NavOptions.navOptionStack
+//                                )
+                                scope.launch(Dispatchers.Main) {
+                                    Toast.makeText(requireActivity(), "Nothing to display, come back later :P)", Toast.LENGTH_SHORT).show()
+                                }
                             }, buttonIcon = R.drawable.ic_stats)
                             Spacer(modifier = Modifier
                                 .height(10.dp)
@@ -277,9 +286,9 @@ class HomeFragment : Fragment() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
-        gameSound.resumeBackgroundMusic()
         commonViewModel.updateOnlineStatus(isOnline = InternetHelper.isOnline(requireContext()))
     }
 
@@ -293,7 +302,7 @@ class HomeFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        gameSound.pauseBackgroundMusic()
+//        gameSound.pauseBackgroundMusic()
     }
 
 }

@@ -19,16 +19,12 @@ class SettingViewModel(
 
 ) : ViewModel() {
 
-    private lateinit var settingRepository: SettingRepository
-
 
     companion object{
         private var instance : SettingViewModel? = null
-
+        private lateinit var settingRepository: SettingRepository
         fun registerSettingViewModel(settingRepository: SettingRepository){
-            instance?.let {
-                it.settingRepository = settingRepository
-            }
+            this.settingRepository = settingRepository
         }
 
         fun getInstance() : SettingViewModel{

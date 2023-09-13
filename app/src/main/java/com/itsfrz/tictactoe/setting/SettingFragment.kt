@@ -49,12 +49,12 @@ class SettingFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         commonViewModel = CommonViewModel.getInstance()
-        viewmodel = SettingViewModel.getInstance()
         SettingViewModel.registerSettingViewModel(commonViewModel.settingRepository)
+        viewmodel = SettingViewModel.getInstance()
         gameSound = commonViewModel.gameSound
         CoroutineScope(Dispatchers.IO).launch {
             commonViewModel.loadUserPreference()
-            gameSound.toggleBackgroundMusic()
+//            gameSound.toggleBackgroundMusic()
         }
     }
 
@@ -148,18 +148,18 @@ class SettingFragment : Fragment() {
                             Spacer(modifier = Modifier
                                 .height(16.dp)
                                 .fillMaxWidth())
-                            SettingItem(icon = R.drawable.ic_language, title = "Language", isToggled = true, toggleButtonEvent = {
-                            }, isAdvance = true, buttonEvent = {
-                                gameSound.clickSound()
-                                commonViewModel.performHapticVibrate(requireView())
-                                val bundle = bundleOf()
-                                bundle.putSerializable(BundleKey.SETTING_TYPE,SettingType.LANGUAGE)
-                                findNavController().navigate(
-                                    resId = R.id.settingContainerFragment2,
-                                    args = bundle,
-                                    navOptions = NavOptions.navOptionStack
-                                )
-                            })
+//                            SettingItem(icon = R.drawable.ic_language, title = "Language", isToggled = true, toggleButtonEvent = {
+//                            }, isAdvance = true, buttonEvent = {
+//                                gameSound.clickSound()
+//                                commonViewModel.performHapticVibrate(requireView())
+//                                val bundle = bundleOf()
+//                                bundle.putSerializable(BundleKey.SETTING_TYPE,SettingType.LANGUAGE)
+//                                findNavController().navigate(
+//                                    resId = R.id.settingContainerFragment2,
+//                                    args = bundle,
+//                                    navOptions = NavOptions.navOptionStack
+//                                )
+//                            })
                         }
 
                     }
@@ -169,10 +169,9 @@ class SettingFragment : Fragment() {
     }
 
     private fun restartApplication() {
-        CoroutineScope(Dispatchers.Main).launch {
-            val intent = requireActivity().intent
-            requireActivity().finish()
-            startActivity(intent)
-        }
+        requireActivity().recreate()
+//        requireActivity().finish()
+//        val intent = Intent(requireContext(),MainActivity::class.java)
+//        startActivity(intent)
     }
 }

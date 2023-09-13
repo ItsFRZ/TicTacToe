@@ -44,7 +44,6 @@ fun GameBoard(
     currentUserId : String,
     @DrawableRes playerIcons : List<Int>
 ) {
-
     var playerOneIcon by remember {
         mutableStateOf(0)
     }
@@ -57,10 +56,6 @@ fun GameBoard(
     var playerFourIcon by remember {
         mutableStateOf(0)
     }
-
-
-
-
     if (gameMode == GameMode.AI){
         playerOneIcon = playerIcons.get(0)
         playerTwoIcon = R.drawable.ic_ai_emoji
@@ -77,7 +72,6 @@ fun GameBoard(
         playerOneIcon = R.drawable.ic_tick_i
         playerTwoIcon = R.drawable.ic_cross_i
     }
-
     if (isWinner){
         Log.i("CHECK_WINNNER", "GameBoard: Winner Index ${winnerIndexList}")
 
@@ -146,5 +140,4 @@ fun GameBoard(
             }
         }
     )
-    
 }

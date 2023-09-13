@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.home.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +27,7 @@ class HomePageViewModel(
     val shareFriendDetails : State<String> = _shareFriendDetails
 
     init {
+        Log.i("VM_CHECK", "onCreate: Viewmodel Created")
         viewModelScope.launch(Dispatchers.IO) {
             gameStoreRepository.fetchPreference().collect{
                 _userId.value = it.userId

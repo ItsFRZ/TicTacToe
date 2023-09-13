@@ -208,7 +208,7 @@ class GameFragment : Fragment(){
                         columnCount = calculateBoardColumnCount(),
                         boardHeight = calculateBoardHeight(),
                         winnerIndexList = if (boardType == BoardType.THREEX3) winnerIndexList else GameWinner.winnerIndexList.value,
-                        isWinner = gameResult != GameResult.NONE,
+                        isWinner = gameResult != GameResult.NONE && gameResult != GameResult.DRAW,
                         isPlayerMoved = !playerTurns,
                         onMove = { index ->
                             Log.i("HIDDEN_BUG", "onCreateView: ${index}")
@@ -459,5 +459,4 @@ class GameFragment : Fragment(){
         viewModel.onEvent(GameUsecase.GameExitEvent)
         job?.cancel()
     }
-
 }

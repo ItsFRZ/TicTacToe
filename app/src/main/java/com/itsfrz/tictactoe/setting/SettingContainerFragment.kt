@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.setting
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,11 +13,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import com.itsfrz.tictactoe.MainActivity
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.SettingType
+import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.setting.components.SettingColorPickerComponent
@@ -130,8 +135,9 @@ class SettingContainerFragment : Fragment() {
 
     private fun restartApplication() {
         CoroutineScope(Dispatchers.Main).launch {
-            val intent = requireActivity().intent
             requireActivity().finish()
+            val intent = Intent(requireContext(),MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
         }
     }
