@@ -36,7 +36,6 @@ import com.itsfrz.tictactoe.common.functionality.InternetHelper
 import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
-import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
@@ -99,11 +98,9 @@ class OnlineModeFragment : Fragment() {
     }
 
     private fun setUpOnlineConfig() {
-        val database = FirebaseDB
         val gameStore =  GameDataStore.getDataStore(requireContext())
         dataStoreRepository = IGameStoreRepository(gameStore)
         cloudRepository = CloudRepository(
-            database = database,
             dataStoreRepository = dataStoreRepository,
             scope = CoroutineScope(Dispatchers.IO)
         )

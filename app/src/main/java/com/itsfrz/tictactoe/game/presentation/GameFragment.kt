@@ -35,7 +35,6 @@ import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.game.presentation.components.ProgressTimer
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModel
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModelFactory
-import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
@@ -103,6 +102,15 @@ class GameFragment : Fragment(){
         }
     }
 
+    private fun setUpOnlineConfig() {
+        val gameStore =  GameDataStore.getDataStore(requireContext())
+        dataStoreRepository = IGameStoreRepository(gameStore)
+        cloudRepository = CloudRepository(
+            dataStoreRepository = dataStoreRepository,
+            scope = CoroutineScope(Dispatchers.IO)
+        )
+    }
+
     private fun setUpNavArgs() {
         val friendUserId = requireArguments().getString(BundleKey.FRIEND_ID)
         friendUserId?.let {
@@ -122,17 +130,6 @@ class GameFragment : Fragment(){
             }
         }
         Log.i("ID_CHECK", "setUpNavArgs: Friend User ID ${friendUserId} Session Id ${gameSessionId} User Id ${userId}")
-    }
-
-    private fun setUpOnlineConfig() {
-        val database = FirebaseDB
-        val gameStore =  GameDataStore.getDataStore(requireContext())
-        dataStoreRepository = IGameStoreRepository(gameStore)
-        cloudRepository = CloudRepository(
-            database = database,
-            dataStoreRepository = dataStoreRepository,
-            scope = CoroutineScope(Dispatchers.IO)
-        )
     }
 
     override fun onCreateView(

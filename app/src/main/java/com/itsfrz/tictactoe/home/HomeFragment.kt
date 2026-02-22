@@ -44,7 +44,6 @@ import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.PlayerCount
 import com.itsfrz.tictactoe.common.functionality.*
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
-import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
@@ -101,6 +100,17 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun setUpOnlineConfig() {
+        val gameStore =  GameDataStore.getDataStore(requireContext())
+        dataStoreRepository = IGameStoreRepository(gameStore)
+        cloudRepository = CloudRepository(
+            dataStoreRepository = dataStoreRepository,
+            scope = CoroutineScope(Dispatchers.IO)
+        )
+        val settingStore = SettingDataStore.getDataStore(requireContext())
+        settingRepository = ISettingRepository(settingStore)
+    }
+
     private fun setupGameSound() {
         backgroundPlayer = MediaPlayer.create(requireContext(),R.raw.background_track)
         popUpSoundPlayer = MediaPlayer.create(requireContext(),R.raw.popup_sound)
@@ -112,19 +122,6 @@ class HomeFragment : Fragment() {
         gameSound = GameSound(backgroundPlayer,popUpSoundPlayer,clickSoundPlayer,selectSoundPlayer,pieceSoundClick1Player,pieceSoundClick2Player,starSoundPlayer)
         gameSound.startBackgroundMusic()
         GameDialogue.setDialogSound(gameSound)
-    }
-
-    private fun setUpOnlineConfig() {
-        val database = FirebaseDB
-        val gameStore =  GameDataStore.getDataStore(requireContext())
-        dataStoreRepository = IGameStoreRepository(gameStore)
-        cloudRepository = CloudRepository(
-            database = database,
-            dataStoreRepository = dataStoreRepository,
-            scope = CoroutineScope(Dispatchers.IO)
-        )
-        val settingStore = SettingDataStore.getDataStore(requireContext())
-        settingRepository = ISettingRepository(settingStore)
     }
 
     @SuppressLint("ServiceCast")

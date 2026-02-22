@@ -41,7 +41,6 @@ import com.itsfrz.tictactoe.friend.components.FriendSearchBar
 import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 import com.itsfrz.tictactoe.friend.viewmodel.FriendPageViewModel
 import com.itsfrz.tictactoe.friend.viewmodel.FriendPageViewModelFactory
-import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
@@ -85,11 +84,9 @@ class FriendFragment : Fragment() {
     }
 
     private fun setUpOnlineConfig() {
-        val database = FirebaseDB
         val gameStore =  GameDataStore.getDataStore(requireContext())
         dataStoreRepository = IGameStoreRepository(gameStore)
         cloudRepository = CloudRepository(
-            database = database,
             dataStoreRepository = dataStoreRepository,
             scope = CoroutineScope(Dispatchers.IO)
         )

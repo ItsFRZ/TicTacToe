@@ -25,7 +25,6 @@ import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.CustomButton
 import com.itsfrz.tictactoe.common.components.TextFieldWithValidation
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
-import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
@@ -47,18 +46,15 @@ class UserRegistrationFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setUpOnlineConfig()
         val viewModelFactory = UserRegistrationViewModelFactory(cloudRepository,dataStoreRepository)
         viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[UserRegistrationViewModel::class.java]
     }
 
     private fun setUpOnlineConfig() {
-        val database = FirebaseDB
         val gameStore =  GameDataStore.getDataStore(requireContext())
         dataStoreRepository = IGameStoreRepository(gameStore)
         cloudRepository = CloudRepository(
-            database = database,
             dataStoreRepository = dataStoreRepository,
             scope = CoroutineScope(Dispatchers.IO)
         )
