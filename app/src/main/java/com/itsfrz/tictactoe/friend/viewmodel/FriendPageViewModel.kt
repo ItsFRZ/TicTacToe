@@ -6,14 +6,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.itsfrz.tictactoe.common.functionality.ShareInfo
 import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
-import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collectLatest
 
 class FriendPageViewModel(
     private val cloudRepository: CloudRepository,
@@ -58,7 +57,7 @@ class FriendPageViewModel(
     fun onEvent(event : FriendPageUseCase){
         when(event){
             is FriendPageUseCase.OnUserIdChange -> {
-                _usernameSearchId.value = event.userInput
+                _usernameSearchId.value = ShareInfo.getUserIdFromTemplate(event.userInput)
             }
             is FriendPageUseCase.SearchUserEvent -> {
                 searchAndAddUser()
@@ -82,6 +81,9 @@ class FriendPageViewModel(
             }
             is FriendPageUseCase.OnUpdateUserInGameInfo -> {
                 _inGameState.value = event.value
+            }
+            is FriendPageUseCase.AddFriendDeepLink -> {
+                onEvent(FriendPageUseCase.OnUserIdChange(event.userId))
             }
             is FriendPageUseCase.RefreshPlaygroundData -> {
             }
@@ -142,6 +144,15 @@ class FriendPageViewModel(
         activeRequest?.let {
             Log.i(TAG, "updateActiveRequestList: ${activeRequest}")
             _playRequestList.value = activeRequest.sortedWith(compareBy<Playground.ActiveRequest>({!it.online}).thenBy { it.requesterUsername }).toSet().toList()
+        }
+    }
+
+    public fun clearGameSession(){
+        viewModelScope.launch(Dispatchers.IO) {
+            cloudRepository.removeGameBoard(_userId.value)
+        }
+        viewModelScope.launch {
+            gameStoreRepository.clearGameBoard()
         }
     }
 

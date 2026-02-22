@@ -9,6 +9,7 @@ data class Playground(
     @SerialName("totalWins")val totalWins : Long? = 0L,
     @SerialName("totalLose")val totalLose : Long? = 0L,
     @SerialName("inGame")val inGame : Boolean = false,
+    @SerialName("randomSearch")val randomSearch : Boolean = false,
     @SerialName("online")val online : Boolean = false,
     @SerialName("totalCoins")val totalCoins : Long = 0L,
     @SerialName("activeRequest")val activeRequest : List<ActiveRequest> = emptyList(),

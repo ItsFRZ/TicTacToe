@@ -5,10 +5,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.itsfrz.tictactoe.common.functionality.Generate
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import com.itsfrz.tictactoe.userregistration.usecase.UserRegistrationUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,11 +42,12 @@ class UserRegistrationViewModel(
 
     private fun setupUser() {
         viewModelScope.launch(Dispatchers.IO) {
-            val secret = "${(0..10000).random()}${_usernameValue.value.hashCode()}${System.currentTimeMillis()}"
-            val userProfile = UserProfile(userId = secret.lowercase(), username = _usernameValue.value)
-            val userPlayground = Playground().copy(userId = secret.lowercase(), online = true)
+            val uuid = "${(0..10000).random()}${_usernameValue.value.hashCode()}${System.currentTimeMillis()}"
+            val secret = Generate.uniqueId(uuid.lowercase())
+            val userProfile = UserProfile(userId = secret, username = _usernameValue.value)
+            val userPlayground = Playground().copy(userId = secret, online = true, randomSearch = false)
             launch(Dispatchers.IO) {
-                gameStoreRepository.updateUserInfo(secret.lowercase())
+                gameStoreRepository.updateUserInfo(secret)
                 gameStoreRepository.updateUserProfile(userProfile)
             }
             launch(Dispatchers.IO) {
@@ -53,7 +55,7 @@ class UserRegistrationViewModel(
                 cloudRepository.updatePlayground(userPlayground)
             }
             launch(Dispatchers.IO) {
-                gameStoreRepository.updatePlayground(Playground(userId = secret.lowercase()))
+                gameStoreRepository.updatePlayground(Playground(userId = secret))
             }
         }
     }

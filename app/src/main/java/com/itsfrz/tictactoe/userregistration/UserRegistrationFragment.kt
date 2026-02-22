@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -23,11 +24,12 @@ import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.CustomButton
 import com.itsfrz.tictactoe.common.components.TextFieldWithValidation
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.goonline.data.firebase.FirebaseDB
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
-import com.itsfrz.tictactoe.goonline.datastore.GameDataStore
-import com.itsfrz.tictactoe.goonline.datastore.GameStoreRepository
-import com.itsfrz.tictactoe.goonline.datastore.IGameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
+import com.itsfrz.tictactoe.goonline.datastore.gamestore.IGameStoreRepository
 import com.itsfrz.tictactoe.ui.theme.*
 import com.itsfrz.tictactoe.userregistration.usecase.UserRegistrationUseCase
 import com.itsfrz.tictactoe.userregistration.viewmodel.UserRegistrationViewModel
@@ -73,19 +75,21 @@ class UserRegistrationFragment : Fragment() {
 
                 Column(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = PrimaryLight),
+                    .background(color = ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier
                         .height(100.dp)
                         .fillMaxWidth())
                     Text(
-                        style = headerTitle,
+                        style = headerTitle.copy(
+                            color = Color.White
+                        ),
                         text = buildAnnotatedString {
                             append("You must register\n")
                             withStyle(
                                 style = SpanStyle(
-                                    color = ThemeBlue,
+                                    color = ThemePicker.secondaryColor.value,
                                     fontFamily = headerTitle.fontFamily,
                                     fontSize = headerTitle.fontSize,
                                     fontWeight = headerTitle.fontWeight

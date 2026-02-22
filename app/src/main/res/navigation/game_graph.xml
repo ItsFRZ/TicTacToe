@@ -11,12 +11,8 @@
         android:label="fragment_user_registration"/>
     <fragment
         android:id="@+id/homePage"
-        android:name="com.itsfrz.tictactoe.homepage.HomePageFragment"
+        android:name="com.itsfrz.tictactoe.home.HomeFragment"
         android:label="fragment_home_page">
-
-        <argument
-            android:name="gameMode"
-            app:argType="com.itsfrz.tictactoe.common.enums.GameMode" />
     </fragment>
     <fragment
         android:id="@+id/onlineModeFragment"
@@ -29,5 +25,27 @@
     <fragment
         android:id="@+id/friendFragment"
         android:name="com.itsfrz.tictactoe.friend.FriendFragment"
-        android:label="FriendFragment" />
+        android:label="FriendFragment"/>
+    <fragment
+        android:id="@+id/selectBoard"
+        android:name="com.itsfrz.tictactoe.board.SelectBoardFragment"
+        android:label="fragment_select_board">
+
+    </fragment>
+    <fragment
+        android:id="@+id/emojiPickerFragment"
+        android:name="com.itsfrz.tictactoe.emoji.EmojiPickerFragment"
+        android:label="fragment_emoji_picker" />
+    <fragment
+        android:id="@+id/settingContainerFragment"
+        android:name="com.itsfrz.tictactoe.setting.SettingFragment"
+        android:label="SettingContainerFragment" />
+    <fragment
+        android:id="@+id/settingContainerFragment2"
+        android:name="com.itsfrz.tictactoe.setting.SettingContainerFragment"
+        android:label="SettingContainerFragment" />
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.itsfrz.tictactoe.stats.StatsFragment"
+        android:label="StatsFragment" />
 </navigation>
