@@ -1,8 +1,8 @@
 package com.itsfrz.tictactoe.setting
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,30 +13,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavOptionsBuilder
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import com.itsfrz.tictactoe.MainActivity
-import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.constants.BundleKey
-import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.SettingType
-import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.setting.components.SettingColorPickerComponent
 import com.itsfrz.tictactoe.setting.components.SettingHeader
-import com.itsfrz.tictactoe.setting.components.SettingItem
-import com.itsfrz.tictactoe.setting.components.SettingSubHeader
 import com.itsfrz.tictactoe.setting.usecase.SettingUseCase
 import com.itsfrz.tictactoe.setting.viewmodel.SettingViewModel
 import com.itsfrz.tictactoe.ui.theme.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+
 
 class SettingContainerFragment : Fragment() {
-
     private lateinit var viewmodel : SettingViewModel
     private lateinit var commonViewModel: CommonViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -134,12 +124,12 @@ class SettingContainerFragment : Fragment() {
     }
 
     private fun restartApplication() {
-        CoroutineScope(Dispatchers.Main).launch {
-            requireActivity().finish()
-            val intent = Intent(requireContext(),MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
-        }
+        val ctx: Context = requireActivity().applicationContext
+        val pm = ctx.getPackageManager()
+        val intent = pm.getLaunchIntentForPackage(ctx.getPackageName())
+        val mainIntent = Intent.makeRestartActivityTask(intent!!.getComponent())
+        ctx.startActivity(mainIntent)
+        Runtime.getRuntime().exit(0)
     }
 
 }

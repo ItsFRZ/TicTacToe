@@ -1,10 +1,16 @@
 package com.itsfrz.tictactoe.goonline.data.firebase
 
+import android.annotation.SuppressLint
+import android.content.Context
+import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 object FirebaseDB {
 
+    fun init(context: Context){
+        FirebaseApp.initializeApp(context)
+    }
     fun getInstance() : FirebaseDatabase{
         return FirebaseDatabase.getInstance()
     }
