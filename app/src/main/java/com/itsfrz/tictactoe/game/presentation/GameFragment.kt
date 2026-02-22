@@ -3,13 +3,27 @@ package com.itsfrz.tictactoe.game.presentation
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.Fragment
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -17,21 +31,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.constants.BundleKey
-import com.itsfrz.tictactoe.common.enums.*
+import com.itsfrz.tictactoe.common.enums.BoardType
+import com.itsfrz.tictactoe.common.enums.GameLevel
+import com.itsfrz.tictactoe.common.enums.GameMode
+import com.itsfrz.tictactoe.common.enums.GameResult
+import com.itsfrz.tictactoe.common.enums.PlayerTurn
 import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.GameWinner
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.state.EssentialInfo
 import com.itsfrz.tictactoe.common.state.IEssentialInfo
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
+import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.game.presentation.components.GameBoard
 import com.itsfrz.tictactoe.game.presentation.components.GameDivider
-import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.game.presentation.components.ProgressTimer
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModel
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModelFactory
@@ -39,28 +58,32 @@ import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.IGameStoreRepository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-class GameFragment : Fragment(){
+class GameFragment : Fragment() {
 
-    private var job : Job? = null
+    private var job: Job? = null
     private lateinit var viewModel: GameViewModel
     private lateinit var commonViewModel: CommonViewModel
-    private lateinit var gameMode : GameMode
-    private lateinit var gameLevel : GameLevel
+    private lateinit var gameMode: GameMode
+    private lateinit var gameLevel: GameLevel
     private lateinit var boardType: BoardType
     private lateinit var cloudRepository: CloudRepository
-    private lateinit var dataStoreRepository  : GameStoreRepository
+    private lateinit var dataStoreRepository: GameStoreRepository
     private lateinit var gameSound: GameSound
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         requireActivity().onBackPressedDispatcher.addCallback(
             this,
-            object : OnBackPressedCallback(true){
+            object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                   viewModel.onEvent(GameUsecase.OnBackPress(true))
+                    viewModel.onEvent(GameUsecase.OnBackPress(true))
                 }
             }
         )
@@ -72,15 +95,19 @@ class GameFragment : Fragment(){
         gameMode = requireArguments().getSerializable(BundleKey.GAME_MODE) as GameMode
         gameLevel = requireArguments().getSerializable(BundleKey.SELECTED_LEVEL) as GameLevel
         boardType = requireArguments().getSerializable(BundleKey.BOARD_TYPE) as BoardType
-        Log.i("GAME_MODE", "onCreate: Game Mode ${gameMode}, Selected Level ${gameLevel}, Board Type ${boardType}")
-        val essentialInfo : EssentialInfo = IEssentialInfo(gameMode, gameLevel, boardType)
-        val viewModelFactory = GameViewModelFactory(cloudRepository,dataStoreRepository,essentialInfo)
-        viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[GameViewModel::class.java]
+        Log.i(
+            "GAME_MODE",
+            "onCreate: Game Mode ${gameMode}, Selected Level ${gameLevel}, Board Type ${boardType}"
+        )
+        val essentialInfo: EssentialInfo = IEssentialInfo(gameMode, gameLevel, boardType)
+        val viewModelFactory =
+            GameViewModelFactory(cloudRepository, dataStoreRepository, essentialInfo)
+        viewModel = ViewModelProvider(viewModelStore, viewModelFactory)[GameViewModel::class.java]
         commonViewModel = CommonViewModel.getInstance()
         gameSound = commonViewModel.gameSound
         viewModel.setAITurn()
         setUpNavArgs()
-        if (gameMode == GameMode.RANDOM || gameMode == GameMode.FRIEND){
+        if (gameMode == GameMode.RANDOM || gameMode == GameMode.FRIEND) {
             job = CoroutineScope(Dispatchers.IO).launch {
                 dataStoreRepository.fetchPreference().collectLatest {
                     viewModel.onEvent(GameUsecase.UpdateUserId(it.userProfile?.userId ?: ""))
@@ -97,13 +124,13 @@ class GameFragment : Fragment(){
                 }
             }
         }
-        if (gameMode == GameMode.FOUR_PLAYER){
+        if (gameMode == GameMode.FOUR_PLAYER) {
             viewModel.setMultiplayerRandomTurn()
         }
     }
 
     private fun setUpOnlineConfig() {
-        val gameStore =  GameDataStore.getDataStore(requireContext())
+        val gameStore = GameDataStore.getDataStore(requireContext())
         dataStoreRepository = IGameStoreRepository(gameStore)
         cloudRepository = CloudRepository(
             dataStoreRepository = dataStoreRepository,
@@ -129,7 +156,10 @@ class GameFragment : Fragment(){
                 viewModel.onEvent(GameUsecase.OnUpdateCurrentUserId(it))
             }
         }
-        Log.i("ID_CHECK", "setUpNavArgs: Friend User ID ${friendUserId} Session Id ${gameSessionId} User Id ${userId}")
+        Log.i(
+            "ID_CHECK",
+            "setUpNavArgs: Friend User ID ${friendUserId} Session Id ${gameSessionId} User Id ${userId}"
+        )
     }
 
     override fun onCreateView(
@@ -151,7 +181,7 @@ class GameFragment : Fragment(){
                 val userTimeOutPulsatingWarning by rememberInfiniteTransition().animateFloat(
                     initialValue = if (userTimeOutWarning) 20F else 23F,
                     targetValue = 23F,
-                    animationSpec = infiniteRepeatable(tween(200),RepeatMode.Reverse)
+                    animationSpec = infiniteRepeatable(tween(200), RepeatMode.Reverse)
                 )
                 val timeLimitAnimation by animateFloatAsState(
                     targetValue = userTimeLimit,
@@ -167,32 +197,45 @@ class GameFragment : Fragment(){
                 val requestDialogState = viewModel.requestDialogState.value
                 val acceptDialogState = viewModel.acceptDialogState.value
 
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = ThemePicker.primaryColor.value),
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(10.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(10.dp)
+                    )
 
                     ProgressTimer(
                         userTimeOutPulsatingWarning = userTimeOutPulsatingWarning,
                         timeLimitAnimation = timeLimitAnimation,
                         playerTurns = playerTurns,
-                        avatar = getCurrentAvatar(gameMode,currentUserId,friendUserId,playerTurns,multiplayerTurn),
+                        avatar = getCurrentAvatar(
+                            gameMode,
+                            currentUserId,
+                            friendUserId,
+                            playerTurns,
+                            multiplayerTurn
+                        ),
                         currentUserId = currentUserId,
                         gameMode = gameMode,
                         userId = userId,
                         playerTurn = multiplayerTurn,
                     )
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(20.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(20.dp)
+                    )
                     GameDivider()
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                    )
                     GameBoard(
                         crossList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerTwoData else playerOneData,
                         rightList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerOneData else playerTwoData,
@@ -211,7 +254,7 @@ class GameFragment : Fragment(){
                             Log.i("HIDDEN_BUG", "onCreateView: ${index}")
                             gameSound.pieceClick1MovingSound()
                             viewModel.onEvent(GameUsecase.OnUserTick(index))
-                                 },
+                        },
                         onAIMove = {
                             Log.i("AI_MOVE", "onCreateView: On AI Move")
                             gameSound.pieceClick2MovingSound()
@@ -219,37 +262,41 @@ class GameFragment : Fragment(){
                         },
                         playerIcons = commonViewModel.getResourceIdList(),
                     )
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                    )
                     GameDivider()
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(20.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(20.dp)
+                    )
                 }
-                if (gameResult != GameResult.NONE){
-                    LaunchedEffect(Unit){
+                if (gameResult != GameResult.NONE) {
+                    LaunchedEffect(Unit) {
                         if (gameResult == GameResult.DRAW || gameResult == GameResult.WIN)
                             delay(1000)
                         else delay(2000)
                         viewModel.onEvent(GameUsecase.OnDelayLaunch(true))
                     }
                 }
-                if (gameResult != GameResult.NONE && isDelayed){
+                if (gameResult != GameResult.NONE && isDelayed) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(color = ThemePicker.primaryColor.value)
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            when(gameResult){
+                            when (gameResult) {
                                 GameResult.WIN -> {
                                     GameDialogue.GameWinDialogue(
                                         winnerUsername = getWinnerName(playerTurns),
@@ -266,8 +313,9 @@ class GameFragment : Fragment(){
                                             viewModel.onEvent(GameUsecase.OnClearGameBoard)
                                     }
                                 }
-                                GameResult.DRAW,GameResult.LOSE -> {
-                                    if (!acceptDialogState){
+
+                                GameResult.DRAW, GameResult.LOSE -> {
+                                    if (!acceptDialogState) {
                                         GameDialogue.GameDrawLoseDialogue(
                                             gameResult = gameResult,
                                             commonViewModel = commonViewModel,
@@ -283,12 +331,13 @@ class GameFragment : Fragment(){
                                         }
                                     }
                                 }
+
                                 else -> {}
                             }
                         }
                     }
                 }
-                if (onBackPress || !inGame){
+                if (onBackPress || !inGame) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -296,7 +345,7 @@ class GameFragment : Fragment(){
                             .clickable { }
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize(),
@@ -319,7 +368,7 @@ class GameFragment : Fragment(){
                         }
                     }
                 }
-                if (requestDialogState){
+                if (requestDialogState) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -327,22 +376,24 @@ class GameFragment : Fragment(){
                             .clickable { }
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            GameDialogue.PlayRequestBox(commonViewModel = commonViewModel, onCloseClick = {
-                                viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
-                                viewModel.onEvent(GameUsecase.OnClearGameBoard)
-                                findNavController().navigateUp()
-                            })
+                            GameDialogue.PlayRequestBox(
+                                commonViewModel = commonViewModel,
+                                onCloseClick = {
+                                    viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
+                                    viewModel.onEvent(GameUsecase.OnClearGameBoard)
+                                    findNavController().navigateUp()
+                                })
                         }
                     }
                 }
-                if (acceptDialogState){
+                if (acceptDialogState) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -350,7 +401,7 @@ class GameFragment : Fragment(){
                             .clickable { }
                             .padding(horizontal = 30.dp),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize(),
@@ -378,63 +429,69 @@ class GameFragment : Fragment(){
         }
     }
 
-    private fun getCurrentAvatar(gameMode: GameMode, currentUserId: String, friendUserId: String, playerTurns: Boolean, multiplayerTurn: PlayerTurn): Int {
-        return if (gameMode == GameMode.FOUR_PLAYER){
-            when (multiplayerTurn){
-                PlayerTurn.ONE ->  commonViewModel.getResourceIdList()[0]
-                PlayerTurn.TWO ->  commonViewModel.getResourceIdList()[1]
-                PlayerTurn.THREE ->  commonViewModel.getResourceIdList()[2]
-                PlayerTurn.FOUR ->  commonViewModel.getResourceIdList()[3]
+    private fun getCurrentAvatar(
+        gameMode: GameMode,
+        currentUserId: String,
+        friendUserId: String,
+        playerTurns: Boolean,
+        multiplayerTurn: PlayerTurn
+    ): Int {
+        return if (gameMode == GameMode.FOUR_PLAYER) {
+            when (multiplayerTurn) {
+                PlayerTurn.ONE -> commonViewModel.getResourceIdList()[0]
+                PlayerTurn.TWO -> commonViewModel.getResourceIdList()[1]
+                PlayerTurn.THREE -> commonViewModel.getResourceIdList()[2]
+                PlayerTurn.FOUR -> commonViewModel.getResourceIdList()[3]
                 else -> commonViewModel.getResourceIdList()[0]
             }
-        }else{
-            if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
+        } else {
+            if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM) {
                 if (currentUserId == friendUserId) {
                     R.drawable.ic_cross_i
-                }else{
+                } else {
                     R.drawable.ic_tick_i
                 }
-            }else if(gameMode == GameMode.AI){
-                if(!playerTurns){
+            } else if (gameMode == GameMode.AI) {
+                if (!playerTurns) {
                     R.drawable.ic_ai_emoji
-                }else{
+                } else {
                     commonViewModel.getResourceIdList()[0]
                 }
-            }else if (gameMode == GameMode.TWO_PLAYER){
-                if (!playerTurns){
+            } else if (gameMode == GameMode.TWO_PLAYER) {
+                if (!playerTurns) {
                     commonViewModel.getResourceIdList()[0]
-                }else
+                } else
                     commonViewModel.getResourceIdList()[1]
-            }else{
+            } else {
                 R.drawable.ic_tick_i
             }
         }
     }
 
     private fun getWinnerName(playerTurns: Boolean): String {
-        return if(gameMode == GameMode.AI && !playerTurns) "You Win"
+        return if (gameMode == GameMode.AI && !playerTurns) "You Win"
         else if (gameMode == GameMode.FRIEND && !playerTurns) "You Win"
         else if (playerTurns) "Player 1" else "Player 2"
     }
 
-    private fun calculateCellList() : List<Int>{
-        return when(boardType){
+    private fun calculateCellList(): List<Int> {
+        return when (boardType) {
             BoardType.THREEX3 -> (1..9).toList()
             BoardType.FOURX4 -> (1..25).toList()
             BoardType.FIVEX5 -> (1..36).toList()
         }
     }
 
-    private fun calculateBoardColumnCount() : Int {
-        return when(boardType){
+    private fun calculateBoardColumnCount(): Int {
+        return when (boardType) {
             BoardType.THREEX3 -> 3
             BoardType.FOURX4 -> 5
             BoardType.FIVEX5 -> 6
         }
     }
 
-    private fun calculateBoardHeight() : Dp {
-        return when(boardType){
+    private fun calculateBoardHeight(): Dp {
+        return when (boardType) {
             BoardType.THREEX3 -> 100.dp
             BoardType.FOURX4 -> 70.dp
             BoardType.FIVEX5 -> 55.dp

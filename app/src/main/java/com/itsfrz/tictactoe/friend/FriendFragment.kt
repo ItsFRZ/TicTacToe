@@ -1,7 +1,6 @@
 package com.itsfrz.tictactoe.friend
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
@@ -51,18 +51,19 @@ import kotlinx.coroutines.flow.collectLatest
 
 class FriendFragment : Fragment() {
     private val TAG = "FRIEND_FRAG"
-    private var job : Job? = null
+    private var job: Job? = null
     private lateinit var viewModel: FriendPageViewModel
     private lateinit var cloudRepository: CloudRepository
-    private lateinit var dataStoreRepository  : GameStoreRepository
+    private lateinit var dataStoreRepository: GameStoreRepository
     private lateinit var commonViewModel: CommonViewModel
     private lateinit var gameSound: GameSound
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpOnlineConfig()
-        val viewModelFactory = FriendPageViewModelFactory(cloudRepository,dataStoreRepository)
-        viewModel = ViewModelProvider(viewModelStore,viewModelFactory)[FriendPageViewModel::class.java]
+        val viewModelFactory = FriendPageViewModelFactory(cloudRepository, dataStoreRepository)
+        viewModel =
+            ViewModelProvider(viewModelStore, viewModelFactory)[FriendPageViewModel::class.java]
         commonViewModel = CommonViewModel.getInstance()
         gameSound = commonViewModel.gameSound
         setupGameEngine()
@@ -71,10 +72,14 @@ class FriendFragment : Fragment() {
     }
 
 
-    fun setupGameEngine(){
+    fun setupGameEngine() {
         job = CoroutineScope(Dispatchers.IO).launch {
             dataStoreRepository.fetchPreference().collectLatest {
-                viewModel.userId.value.let { if (it.isNotEmpty()) { cloudRepository.fetchPlaygroundInfoAndStore(it) } }
+                viewModel.userId.value.let {
+                    if (it.isNotEmpty()) {
+                        cloudRepository.fetchPlaygroundInfoAndStore(it)
+                    }
+                }
                 viewModel.setupUserDetail(it.userProfile)
                 viewModel.updateFriendList(it.playGround?.friendList)
                 viewModel.updateActiveRequestList(it.playGround?.activeRequest)
@@ -84,7 +89,7 @@ class FriendFragment : Fragment() {
     }
 
     private fun setUpOnlineConfig() {
-        val gameStore =  GameDataStore.getDataStore(requireContext())
+        val gameStore = GameDataStore.getDataStore(requireContext())
         dataStoreRepository = IGameStoreRepository(gameStore)
         cloudRepository = CloudRepository(
             dataStoreRepository = dataStoreRepository,
@@ -104,15 +109,15 @@ class FriendFragment : Fragment() {
                 val requestList = viewModel.playRequestList.value
                 val isLoaderActive = viewModel.loaderState.value
                 val playRequestLoader = viewModel.playRequestLoader.value
-                if (viewModel.inGameState.value){
+                if (viewModel.inGameState.value) {
                     val gameBundle = bundleOf()
                     gameBundle.putSerializable(BundleKey.GAME_MODE, GameMode.FRIEND)
                     gameBundle.putSerializable(BundleKey.BOARD_TYPE, BoardType.THREEX3)
-                    gameBundle.putSerializable(BundleKey.SELECTED_LEVEL,GameLevel.NONE)
-                    gameBundle.putString(BundleKey.USER_ID,viewModel.userId.value)
-                    gameBundle.putString(BundleKey.FRIEND_ID,viewModel.friendRequestId.value)
-                    gameBundle.putString(BundleKey.SESSION_ID,viewModel.gameSessionId.value)
-                    findNavController().navigate(R.id.gameFragment,gameBundle)
+                    gameBundle.putSerializable(BundleKey.SELECTED_LEVEL, GameLevel.NONE)
+                    gameBundle.putString(BundleKey.USER_ID, viewModel.userId.value)
+                    gameBundle.putString(BundleKey.FRIEND_ID, viewModel.friendRequestId.value)
+                    gameBundle.putString(BundleKey.SESSION_ID, viewModel.gameSessionId.value)
+                    findNavController().navigate(R.id.gameFragment, gameBundle)
                     viewModel.onEvent(FriendPageUseCase.OnRequestLoaderVisibilityToggle(false))
                     viewModel.onEvent(FriendPageUseCase.OnUpdateUserInGameInfo(false))
                     viewModel.onEvent(FriendPageUseCase.OnCancelPlayRequest)
@@ -120,7 +125,7 @@ class FriendFragment : Fragment() {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
-                ){
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -134,10 +139,14 @@ class FriendFragment : Fragment() {
                             },
                             onAddEvent = {
                                 gameSound.clickSound()
-                                if (InternetHelper.isOnline(requireContext())){
+                                if (InternetHelper.isOnline(requireContext())) {
                                     viewModel.onEvent(FriendPageUseCase.SearchUserEvent)
-                                }else{
-                                    Toast.makeText(requireContext(), getString(R.string.internet_not_available), Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        getString(R.string.internet_not_available),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         )
@@ -147,16 +156,21 @@ class FriendFragment : Fragment() {
                                 .padding(horizontal = 15.dp, vertical = 10.dp)
                                 .fillMaxWidth(),
                             text = "Friend List",
-                            style = headerTitle.copy(fontSize = 15.sp, color = ThemePicker.secondaryColor.value, textAlign = TextAlign.Start, fontWeight = FontWeight.SemiBold)
+                            style = headerTitle.copy(
+                                fontSize = 15.sp,
+                                color = ThemePicker.secondaryColor.value,
+                                textAlign = TextAlign.Start,
+                                fontWeight = FontWeight.SemiBold
+                            )
                         )
                         Column(modifier = Modifier.fillMaxSize()) {
                             LazyColumn(
                                 modifier = Modifier.weight(1F),
-                            ){
+                            ) {
                                 itemsIndexed(
                                     items = friendList,
-                                    key = { index, item -> item.userId.hashCode()+index }
-                                ){ index,item ->
+                                    key = { index, item -> item.userId.hashCode() + index }
+                                ) { index, item ->
                                     UserItemLayout(
                                         modifier = Modifier.animateItemPlacement(
                                             animationSpec = tween(durationMillis = 600)
@@ -164,17 +178,33 @@ class FriendFragment : Fragment() {
                                         username = item.username,
                                         isUserOnline = item.online,
                                         playRequestEvent = {
-                                            if (InternetHelper.isOnline(requireContext())){
-                                                viewModel.onEvent(FriendPageUseCase.OnRequestFriendEvent(index))
-                                            }else{
-                                                Toast.makeText(requireContext(), getString(R.string.internet_not_available), Toast.LENGTH_SHORT).show()
+                                            if (InternetHelper.isOnline(requireContext())) {
+                                                viewModel.onEvent(
+                                                    FriendPageUseCase.OnRequestFriendEvent(
+                                                        index
+                                                    )
+                                                )
+                                            } else {
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    getString(R.string.internet_not_available),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         },
                                         acceptRequestEvent = {
-                                            if (InternetHelper.isOnline(requireContext())){
-                                                viewModel.onEvent(FriendPageUseCase.OnAcceptFriendRequestEvent(index))
-                                            }else{
-                                                Toast.makeText(requireContext(), getString(R.string.internet_not_available), Toast.LENGTH_SHORT).show()
+                                            if (InternetHelper.isOnline(requireContext())) {
+                                                viewModel.onEvent(
+                                                    FriendPageUseCase.OnAcceptFriendRequestEvent(
+                                                        index
+                                                    )
+                                                )
+                                            } else {
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    getString(R.string.internet_not_available),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         },
                                         isRequested = item.playRequest
@@ -194,16 +224,18 @@ class FriendFragment : Fragment() {
                         }
                     }
 
-                    if (playRequestLoader){
+                    if (playRequestLoader) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clickable { },
                             contentAlignment = Alignment.Center
                         ) {
-                            GameDialogue.PlayRequestBox(commonViewModel = commonViewModel, onCloseClick = {
-                                viewModel.onEvent(FriendPageUseCase.OnCancelPlayRequest)
-                            })
+                            GameDialogue.PlayRequestBox(
+                                commonViewModel = commonViewModel,
+                                onCloseClick = {
+                                    viewModel.onEvent(FriendPageUseCase.OnCancelPlayRequest)
+                                })
                         }
                     }
                 }
@@ -217,6 +249,7 @@ class FriendFragment : Fragment() {
         commonViewModel.updateOnlineStatus(InternetHelper.isOnline(requireContext()))
         setupGameEngine()
     }
+
     override fun onStop() {
         super.onStop()
         commonViewModel.updateOnlineStatus(isOnline = false)

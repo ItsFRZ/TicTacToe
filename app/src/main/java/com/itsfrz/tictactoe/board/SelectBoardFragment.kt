@@ -1,7 +1,6 @@
 package com.itsfrz.tictactoe.board
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,10 +22,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import com.itsfrz.tictactoe.board.components.BoardTypeComponent
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.board.components.BoardTypeComponent
 import com.itsfrz.tictactoe.board.components.SelectedBoardIndicator
 import com.itsfrz.tictactoe.board.usecase.SelectBoardUseCase
 import com.itsfrz.tictactoe.common.components.CustomButton
@@ -40,19 +40,18 @@ import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModel
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModelFactory
-import com.itsfrz.tictactoe.ui.theme.ThemeButtonBackground
 import com.itsfrz.tictactoe.ui.theme.headerTitle
 
 class SelectBoardFragment : Fragment() {
 
-    private lateinit var viewmodel : BoardViewModel
+    private lateinit var viewmodel: BoardViewModel
     private lateinit var commonViewModel: CommonViewModel
     private lateinit var gameSound: GameSound
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModelFactory = BoardViewModelFactory()
-        viewmodel = ViewModelProvider(this,viewModelFactory)[BoardViewModel::class.java]
+        viewmodel = ViewModelProvider(this, viewModelFactory)[BoardViewModel::class.java]
         val gameMode = requireArguments().getSerializable(BundleKey.GAME_MODE) as GameMode
         val playerCount = requireArguments().getSerializable(BundleKey.PLAYER_COUNT) as PlayerCount
         viewmodel.onEvent(SelectBoardUseCase.OnGameModeEvent(gameMode))
@@ -74,23 +73,28 @@ class SelectBoardFragment : Fragment() {
                 val gameMode = viewmodel.gameMode.value
                 val playerCount = viewmodel.playerCount.value
                 val listState = rememberLazyListState()
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = ThemePicker.primaryColor.value),
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(25.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(25.dp)
+                    )
                     Text(modifier = Modifier.fillMaxWidth(), text = buildAnnotatedString {
                         append("Choose")
-                        withStyle(style = SpanStyle(color = ThemePicker.secondaryColor.value)){
+                        withStyle(style = SpanStyle(color = ThemePicker.secondaryColor.value)) {
                             append(" Board")
                         }
                     }, style = headerTitle.copy(color = Color.White))
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    )
                     BoxWithConstraints {
                         LazyRow(
                             modifier = Modifier
@@ -99,9 +103,9 @@ class SelectBoardFragment : Fragment() {
                             horizontalArrangement = Arrangement.Center,
                             state = listState,
                             flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
-                        ){
+                        ) {
                             item {
-                                if (gameMode != GameMode.FOUR_PLAYER){
+                                if (gameMode != GameMode.FOUR_PLAYER) {
                                     BoardTypeComponent(
                                         modifier = Modifier
                                             .padding(horizontal = 20.dp, vertical = 15.dp)
@@ -111,17 +115,27 @@ class SelectBoardFragment : Fragment() {
                                         boardLevelText = "Rookie",
                                         boardSizeText = "3x3",
                                         boardTypeVisual = R.drawable.ic_board_size_3,
-                                        selectedIndex = isIndexSelected(selectedIndex,boardType,BoardType.THREEX3),
+                                        selectedIndex = isIndexSelected(
+                                            selectedIndex,
+                                            boardType,
+                                            BoardType.THREEX3
+                                        ),
                                         onDifficultyEvent = { capsuleIndex ->
                                             gameSound.selectSound()
-                                            viewmodel.onEvent(SelectBoardUseCase.OnBoardInfoEvent(Pair(BoardType.THREEX3,capsuleIndex)))
-                                                            },
+                                            viewmodel.onEvent(
+                                                SelectBoardUseCase.OnBoardInfoEvent(
+                                                    Pair(BoardType.THREEX3, capsuleIndex)
+                                                )
+                                            )
+                                        },
                                         isAIMode = gameMode == GameMode.AI,
                                         gameBoardContentText = "Good to start with!"
                                     )
-                                    Spacer(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(12.dp))
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(12.dp)
+                                    )
                                 }
                             }
                             item {
@@ -134,14 +148,29 @@ class SelectBoardFragment : Fragment() {
                                     boardLevelText = "Seasoned",
                                     boardSizeText = "4x4",
                                     boardTypeVisual = R.drawable.ic_board_size_4,
-                                    selectedIndex = isIndexSelected(selectedIndex,boardType,BoardType.FOURX4),
-                                    onDifficultyEvent = { capsuleIndex -> viewmodel.onEvent(SelectBoardUseCase.OnBoardInfoEvent(Pair(BoardType.FOURX4,capsuleIndex))) },
+                                    selectedIndex = isIndexSelected(
+                                        selectedIndex,
+                                        boardType,
+                                        BoardType.FOURX4
+                                    ),
+                                    onDifficultyEvent = { capsuleIndex ->
+                                        viewmodel.onEvent(
+                                            SelectBoardUseCase.OnBoardInfoEvent(
+                                                Pair(
+                                                    BoardType.FOURX4,
+                                                    capsuleIndex
+                                                )
+                                            )
+                                        )
+                                    },
                                     isAIMode = false,
                                     gameBoardContentText = "Players with high IQ chooses this board!"
                                 )
-                                Spacer(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(12.dp))
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(12.dp)
+                                )
                             }
                             item {
                                 BoardTypeComponent(
@@ -153,36 +182,53 @@ class SelectBoardFragment : Fragment() {
                                     boardLevelText = "Pro",
                                     boardSizeText = "5x5",
                                     boardTypeVisual = R.drawable.ic_board_size_5,
-                                    selectedIndex = isIndexSelected(selectedIndex,boardType,BoardType.FIVEX5),
-                                    onDifficultyEvent = {capsuleIndex -> viewmodel.onEvent(SelectBoardUseCase.OnBoardInfoEvent(Pair(BoardType.FIVEX5,capsuleIndex))) },
+                                    selectedIndex = isIndexSelected(
+                                        selectedIndex,
+                                        boardType,
+                                        BoardType.FIVEX5
+                                    ),
+                                    onDifficultyEvent = { capsuleIndex ->
+                                        viewmodel.onEvent(
+                                            SelectBoardUseCase.OnBoardInfoEvent(
+                                                Pair(
+                                                    BoardType.FIVEX5,
+                                                    capsuleIndex
+                                                )
+                                            )
+                                        )
+                                    },
                                     isAIMode = false,
                                     gameBoardContentText = "Hokage like minded people chooses this board!"
                                 )
-                                Spacer(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(12.dp))
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(12.dp)
+                                )
                             }
                         }
                     }
                     SelectedBoardIndicator(
                         gameMode = gameMode,
                         selectedBoardIndex = listState.firstVisibleItemIndex
-                    ){
+                    ) {
                         viewmodel.onEvent(SelectBoardUseCase.OnBoardTypeChange(it))
                     }
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(15.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(15.dp)
+                    )
                     CustomButton(
                         isButtonEnabled = if (gameMode == GameMode.AI && boardType == BoardType.THREEX3) selectedIndex != -1 else true,
                         onButtonClick = {
                             gameSound.clickSound()
                             commonViewModel.performHapticVibrate(requireView())
                             val bundle = bundleOf()
-                            bundle.putSerializable(BundleKey.GAME_MODE,gameMode)
-                            bundle.putSerializable(BundleKey.SELECTED_LEVEL,selectedLevel)
-                            bundle.putSerializable(BundleKey.BOARD_TYPE,boardType)
-                            bundle.putSerializable(BundleKey.PLAYER_COUNT,playerCount)
+                            bundle.putSerializable(BundleKey.GAME_MODE, gameMode)
+                            bundle.putSerializable(BundleKey.SELECTED_LEVEL, selectedLevel)
+                            bundle.putSerializable(BundleKey.BOARD_TYPE, boardType)
+                            bundle.putSerializable(BundleKey.PLAYER_COUNT, playerCount)
                             findNavController().navigate(
                                 resId = R.id.gameFragment,
                                 args = bundle,
@@ -196,10 +242,14 @@ class SelectBoardFragment : Fragment() {
     }
 
     private fun calculateIndexFromOffset(offset: Int): Int {
-        return if (offset <= 500) 0 else if(offset in 501..600) 1 else 2
+        return if (offset <= 500) 0 else if (offset in 501..600) 1 else 2
     }
 
-    private fun isIndexSelected(selectedIndex: Int,selectedBoardType : BoardType,currentBoardType : BoardType): Int {
+    private fun isIndexSelected(
+        selectedIndex: Int,
+        selectedBoardType: BoardType,
+        currentBoardType: BoardType
+    ): Int {
         return if (selectedBoardType == currentBoardType) selectedIndex else -1;
     }
 

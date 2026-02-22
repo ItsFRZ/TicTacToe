@@ -7,7 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,11 +27,18 @@ import com.itsfrz.tictactoe.setting.components.SettingColorPickerComponent
 import com.itsfrz.tictactoe.setting.components.SettingHeader
 import com.itsfrz.tictactoe.setting.usecase.SettingUseCase
 import com.itsfrz.tictactoe.setting.viewmodel.SettingViewModel
-import com.itsfrz.tictactoe.ui.theme.*
+import com.itsfrz.tictactoe.ui.theme.DarkRedPrimary
+import com.itsfrz.tictactoe.ui.theme.DarkRedSecondary
+import com.itsfrz.tictactoe.ui.theme.DraculaGreenPrimary
+import com.itsfrz.tictactoe.ui.theme.DraculaGreenSecondary
+import com.itsfrz.tictactoe.ui.theme.PoppyOrangePrimary
+import com.itsfrz.tictactoe.ui.theme.PoppyOrangeSecondary
+import com.itsfrz.tictactoe.ui.theme.PrimaryMain
+import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 
 
 class SettingContainerFragment : Fragment() {
-    private lateinit var viewmodel : SettingViewModel
+    private lateinit var viewmodel: SettingViewModel
     private lateinit var commonViewModel: CommonViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,21 +63,25 @@ class SettingContainerFragment : Fragment() {
                         .background(ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier
-                        .height(18.dp)
-                        .fillMaxWidth())
+                    Spacer(
+                        modifier = Modifier
+                            .height(18.dp)
+                            .fillMaxWidth()
+                    )
                     SettingHeader(headerTitleText = if (settingTypeLayout == SettingType.COLOR) "Select Background Color" else "Select Language") {
                         findNavController().navigateUp()
                     }
-                    Spacer(modifier = Modifier
-                        .height(18.dp)
-                        .fillMaxWidth())
+                    Spacer(
+                        modifier = Modifier
+                            .height(18.dp)
+                            .fillMaxWidth()
+                    )
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
-                    ){
+                    ) {
                         item {
-                            if (settingTypeLayout == SettingType.COLOR){
+                            if (settingTypeLayout == SettingType.COLOR) {
                                 SettingColorPickerComponent(
                                     primaryColor = PrimaryMain,
                                     secondaryColor = ThemeBlue,
