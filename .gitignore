@@ -13,4 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
-/goonline/google-services.json
+gradle
+gradlew
+gradlew.bat
