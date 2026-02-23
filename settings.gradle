@@ -5,13 +5,7 @@ pluginManagement {
         mavenCentral()
     }
 }
-dependencyResolutionManagement {
-//    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+
 rootProject.name = "TicTacToe"
 include ':app'
 include ':minimax'
