@@ -11,4 +11,22 @@
 /captures
 .externalNativeBuild
 .cxx
+
+# Android Studio IDE
+.idea/
+.gradle/
+*.iws
+*.ipr
+
+# Build outputs
+build/
+*.apk
+
+# Local properties
 local.properties
+gradle.properties
+
+# Keystore (sensitive!)
+*.jks
+*.keystore
+release.keystore
