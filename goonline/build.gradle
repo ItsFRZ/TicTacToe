@@ -6,11 +6,17 @@ plugins {
 
 android {
     namespace 'com.itsfrz.goonline'
-    compileSdk 32
+    compileSdk 34
+    buildToolsVersion "35.0.0"
+
+    aaptOptions {
+        cruncherEnabled = false
+    }
 
     defaultConfig {
         minSdk 23
-        targetSdk 32
+        targetSdk 34
+        vectorDrawables.generatedDensities = []
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -18,6 +24,7 @@ android {
 
     buildTypes {
         release {
+            vcsInfo.include false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

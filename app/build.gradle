@@ -7,6 +7,11 @@ plugins {
 android {
     namespace 'com.itsfrz.tictactoe'
     compileSdk 34
+    buildToolsVersion "35.0.0"
+
+    aaptOptions {
+        cruncherEnabled = false
+    }
 
     defaultConfig {
         applicationId "com.itsfrz.tictactoe"
@@ -14,6 +19,7 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
+        vectorDrawables.generatedDensities = []
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -23,6 +29,7 @@ android {
 
     buildTypes {
         release {
+            vcsInfo.include false
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
