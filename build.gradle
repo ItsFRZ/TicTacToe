@@ -38,3 +38,4 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+println(com.android.tools.r8.Version.getVersionString())
