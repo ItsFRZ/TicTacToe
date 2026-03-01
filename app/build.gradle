@@ -7,10 +7,15 @@ plugins {
 android {
     namespace 'com.itsfrz.tictactoe'
     compileSdk 34
-    buildToolsVersion "35.0.0"
 
     aaptOptions {
         cruncherEnabled = false
+    }
+
+    packaging {
+        resources {
+            excludes += ['META-INF/com/android/build/gradle/app-metadata.properties']
+        }
     }
 
     defaultConfig {
@@ -51,7 +56,6 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
-        kotlinCompilerVersion kotlin_version
     }
 }
 
