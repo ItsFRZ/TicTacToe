@@ -60,7 +60,12 @@ android {
     }
 
     dexOptions {
-        preDexLibraries false
+        preDexLibraries = false
+    }
+
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 }
 
