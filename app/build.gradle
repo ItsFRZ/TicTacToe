@@ -27,12 +27,28 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            if (project.hasProperty("RELEASE_STORE_FILE")) {
+                storeFile file("RELEASE_STORE_FILE" ?: "")
+                storePassword findProperty("RELEASE_STORE_PASSWORD") ?: ""
+                keyAlias findProperty("RELEASE_KEY_ALIAS") ?: ""
+                keyPassword findProperty("RELEASE_KEY_PASSWORD") ?: ""
+                enableV1Signing = false   // disable v1 (jarsigner)
+                enableV2Signing = true    // enable v2
+                enableV3Signing = true    // enable v3
+            }
+
+        }
+    }
+
     buildTypes {
         release {
             vcsInfo.include false
             shrinkResources false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
@@ -53,6 +69,9 @@ android {
         kotlinCompilerExtensionVersion compose_version
         kotlinCompilerVersion kotlin_version
     }
+
+
+
 }
 
 tasks.whenTaskAdded { task ->
