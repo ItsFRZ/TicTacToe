@@ -58,6 +58,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
     }
+
+    dexOptions {
+        preDexLibraries false
+    }
 }
 
 tasks.whenTaskAdded { task ->
