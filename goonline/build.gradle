@@ -13,6 +13,12 @@ android {
         cruncherEnabled = false
     }
 
+    packaging {
+        resources {
+            excludes += ['META-INF/com/android/build/gradle/app-metadata.properties']
+        }
+    }
+
     defaultConfig {
         minSdk 23
         targetSdk 34
@@ -20,6 +26,9 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
 
     buildTypes {
@@ -37,6 +46,16 @@ android {
     kotlinOptions {
         jvmTarget = '21'
     }
+
+    buildFeatures{
+        compose false
+        buildConfig true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+    }
+
 }
 
 tasks.whenTaskAdded { task ->
@@ -52,7 +71,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
 
 //    // Datastore
     implementation "androidx.datastore:datastore-preferences:1.0.0"

@@ -28,6 +28,7 @@ android {
         vectorDrawables.generatedDensities = []
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
         vectorDrawables {
             useSupportLibrary true
         }
@@ -53,14 +54,11 @@ android {
 
     buildFeatures{
         compose true
+        buildConfig true
     }
 
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
-    }
-
-    dexOptions {
-        preDexLibraries = false
     }
 
     dependenciesInfo {
