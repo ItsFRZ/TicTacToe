@@ -50,6 +50,10 @@ android {
 
     kotlinOptions {
         jvmTarget = '21'
+        freeCompilerArgs += [
+                '-P',
+                'plugin:androidx.compose.compiler.plugins.kotlin:sourceInformation=false'
+        ]
     }
 
     buildFeatures{
