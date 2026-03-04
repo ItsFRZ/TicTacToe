@@ -104,28 +104,55 @@ private fun DifficultyCapsule(
         .background(color = ThemePicker.themeButtonBackgroundColor.value)
         .border(width = 1.dp, color = ThemeGreen, shape = RoundedCornerShape(20.dp))
     ) {
-        for (i in 0 until 3){
-            var borderColor = ThemePicker.themeButtonBackgroundColor.value
-            if (i == 1)
-                borderColor = ThemeGreen
-            Column(modifier = Modifier
-                .weight(1F)
-                .clip(
-                    if (i == 0) Shapes.leftRoundedCorners(12.dp) else if (i == 2) Shapes.rightRoundedCorners(
-                        12.dp
-                    ) else Shapes.zeroRoundedCorners()
-                )
-                .border(width = 1.dp, color = borderColor)
-                .background(color = if (selectedIndex == i) ThemeGreen else ThemePicker.themeButtonBackgroundColor.value)
-                .clickable { onDifficultyEvent(i) },
-               horizontalAlignment = Alignment.CenterHorizontally,
-               verticalArrangement = Arrangement.Center
-            ) {
-                Text(modifier = Modifier
-                    .padding(top = 6.dp)
-                    .fillMaxWidth(1F)
-                    .fillMaxHeight(),text = if (i == 0) "Easy" else if (i == 1) "Medium" else "Hard", style = headerSubTitle.copy(color = Color.White))
-            }
+        var borderColor = ThemePicker.themeButtonBackgroundColor.value
+        CapsuleShape(
+            currentIndex = 1,
+            selectedIndex = selectedIndex,
+            borderColor = ThemeGreen
+        ) {
+            onDifficultyEvent(1)
         }
+        CapsuleShape(
+            currentIndex = 2,
+            selectedIndex = selectedIndex,
+            borderColor
+        ) {
+            onDifficultyEvent(2)
+        }
+        CapsuleShape(
+            currentIndex = 3,
+            selectedIndex = selectedIndex,
+            borderColor
+        ) {
+            onDifficultyEvent(3)
+        }
+    }
+}
+
+@Composable
+private fun CapsuleShape(
+    currentIndex : Int,
+    selectedIndex : Int,
+    borderColor : Color,
+    onClickEvent : (index : Int) -> Unit,
+){
+    Column(modifier = Modifier
+        .fillMaxWidth(if (currentIndex == 1) .3F else if (currentIndex == 2) .4F else .6F)
+        .fillMaxHeight()
+        .clip(
+            if (currentIndex == 0) Shapes.leftRoundedCorners(12.dp) else if (currentIndex == 2) Shapes.rightRoundedCorners(
+                12.dp
+            ) else Shapes.zeroRoundedCorners()
+        )
+        .border(width = 1.dp, color = borderColor)
+        .background(color = if (selectedIndex == currentIndex) ThemeGreen else ThemePicker.themeButtonBackgroundColor.value)
+        .clickable { onClickEvent(currentIndex) },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(modifier = Modifier
+            .padding(top = 6.dp)
+            .fillMaxWidth(1F)
+            .fillMaxHeight(),text = if (currentIndex == 1) "Easy" else if (currentIndex == 2) "Medium" else "Hard", style = headerSubTitle.copy(color = Color.White))
     }
 }

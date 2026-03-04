@@ -14,7 +14,7 @@ val LightWhite = Color(0xFFCDCDCE)
 
 val ThemeBlueLight = Color(0xFFA9AEE0)
 val ThemeBlueDisabled = Color(0xFF5761BB)
-val ThemeGreen = Color(0xFF70EC8B)
+val ThemeGreen = Color(0xC613B631)
 val ThemeRed = Color(0xFFEF5151)
 
 val PrimaryMain = Color(0xFF202230)
