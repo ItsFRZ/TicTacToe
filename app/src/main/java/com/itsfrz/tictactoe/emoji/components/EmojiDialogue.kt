@@ -1,6 +1,5 @@
 package com.itsfrz.tictactoe.emoji.components
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -13,22 +12,20 @@ import androidx.compose.material.Card
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.itsfrz.tictactoe.ui.theme.ThemeButtonBackground
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.state.EmojiState
 
 @Composable
 fun EmojiDialogue(
-    emojiList : List<EmojiState>,
-    onSelectedEmojiChange : (selectedEmoji : Int) -> Unit,
-    onRemoveEmojiChange : (removedEmoji : Int) -> Unit,
-    playerCount : Int,
-    playerCountReachedPopUp : () -> Unit,
+    emojiList: List<EmojiState>,
+    onSelectedEmojiChange: (selectedEmoji: Int) -> Unit,
+    onRemoveEmojiChange: (removedEmoji: Int) -> Unit,
+    playerCount: Int,
+    playerCountReachedPopUp: () -> Unit,
     selectedEmojiListCount: Int
 ) {
     var selectedPlayer by remember {
@@ -48,43 +45,144 @@ fun EmojiDialogue(
         LazyVerticalGrid(
             modifier = Modifier.fillMaxSize(),
             columns = GridCells.Fixed(3),
-        ){
+        ) {
             itemsIndexed(
                 items = emojiList,
-                key = {index: Int, item: EmojiState ->  item.emojiResourceId }
-            ){ index: Int, item: EmojiState ->
-                Box(modifier = Modifier.clickable {
-                    if (item.isSelected){
+                key = { index: Int, item: EmojiState -> item.emojiResourceId }
+            ) { index: Int, item: EmojiState ->
+                EmojiGridItem(
+                    emojiState = item,
+                    index = index,
+                    selectedPlayer = selectedPlayer,
+                    playerCount = playerCount,
+                    onEmojiSelected = { newCount ->
+                        selectedPlayer = newCount
+                        onSelectedEmojiChange(index)
+                    },
+                    onEmojiRemoved = { newCount ->
+                        selectedPlayer = newCount
                         onRemoveEmojiChange(index)
-                        selectedPlayer-=1
-                    }else{
-                        if (selectedPlayer <= playerCount){
-                            onSelectedEmojiChange(index)
-                            selectedPlayer+=1
-                        }else{
-                            playerCountReachedPopUp()
-                        }
-                    }
-                },contentAlignment = Alignment.Center) {
-                    Image(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .padding(horizontal = 4.dp, vertical = 6.dp),
-                        painter = painterResource(id = item.emojiResourceId),
-                        contentDescription = "Emoji Icon",
-                        contentScale = ContentScale.Fit
-                    )
-                    if (item.isSelected){
-                        Image(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .padding(horizontal = 4.dp, vertical = 6.dp),
-                            painter = painterResource(id = R.drawable.ic_right),
-                            contentDescription = "Selected Emoji Icon"
-                        )
-                    }
-                }
+                    },
+                    onPlayerCountReached = playerCountReachedPopUp
+                )
             }
         }
     }
 }
+
+@Composable
+private fun EmojiGridItem(
+    emojiState: EmojiState,
+    index: Int,
+    selectedPlayer: Int,
+    playerCount: Int,
+    onEmojiSelected: (Int) -> Unit,
+    onEmojiRemoved: (Int) -> Unit,
+    onPlayerCountReached: () -> Unit
+) {
+    // Create stable callback using remember + dependencies
+    val onClick = remember(emojiState.isSelected, selectedPlayer, playerCount) {
+        {
+            if (emojiState.isSelected) {
+                onEmojiRemoved(selectedPlayer - 1)
+            } else {
+                if (selectedPlayer < playerCount) {  // Changed <= to <
+                    onEmojiSelected(selectedPlayer + 1)
+                } else {
+                    onPlayerCountReached()
+                }
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier.clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            modifier = Modifier
+                .size(60.dp)
+                .padding(horizontal = 4.dp, vertical = 6.dp),
+            painter = painterResource(id = emojiState.emojiResourceId),
+            contentDescription = "Emoji Icon",
+            contentScale = ContentScale.Fit
+        )
+
+        if (emojiState.isSelected) {
+            Image(
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(horizontal = 4.dp, vertical = 6.dp),
+                painter = painterResource(id = R.drawable.ic_right),
+                contentDescription = "Selected Emoji Icon"
+            )
+        }
+    }
+}
+
+//@Composable
+//fun EmojiDialogue(
+//    emojiList : List<EmojiState>,
+//    onSelectedEmojiChange : (selectedEmoji : Int) -> Unit,
+//    onRemoveEmojiChange : (removedEmoji : Int) -> Unit,
+//    playerCount : Int,
+//    playerCountReachedPopUp : () -> Unit,
+//    selectedEmojiListCount: Int
+//) {
+//    var selectedPlayer by remember {
+//        mutableStateOf(selectedEmojiListCount)
+//    }
+//    Card(
+//        modifier = Modifier
+//            .padding(horizontal = 20.dp)
+//            .fillMaxWidth()
+//            .height(400.dp)
+//            .padding(4.dp),
+//        elevation = 8.dp,
+//        backgroundColor = ThemePicker.themeBoardBackground.value,
+//        border = BorderStroke(width = 0.4.dp, color = ThemePicker.themeButtonBorder.value),
+//        shape = RoundedCornerShape(8.dp)
+//    ) {
+//        LazyVerticalGrid(
+//            modifier = Modifier.fillMaxSize(),
+//            columns = GridCells.Fixed(3),
+//        ){
+//            itemsIndexed(
+//                items = emojiList,
+//                key = {index: Int, item: EmojiState ->  item.emojiResourceId }
+//            ){ index: Int, item: EmojiState ->
+//                Box(modifier = Modifier.clickable {
+//                    if (item.isSelected){
+//                        onRemoveEmojiChange(index)
+//                        selectedPlayer-=1
+//                    }else{
+//                        if (selectedPlayer <= playerCount){
+//                            onSelectedEmojiChange(index)
+//                            selectedPlayer+=1
+//                        }else{
+//                            playerCountReachedPopUp()
+//                        }
+//                    }
+//                },contentAlignment = Alignment.Center) {
+//                    Image(
+//                        modifier = Modifier
+//                            .size(60.dp)
+//                            .padding(horizontal = 4.dp, vertical = 6.dp),
+//                        painter = painterResource(id = item.emojiResourceId),
+//                        contentDescription = "Emoji Icon",
+//                        contentScale = ContentScale.Fit
+//                    )
+//                    if (item.isSelected){
+//                        Image(
+//                            modifier = Modifier
+//                                .size(40.dp)
+//                                .padding(horizontal = 4.dp, vertical = 6.dp),
+//                            painter = painterResource(id = R.drawable.ic_right),
+//                            contentDescription = "Selected Emoji Icon"
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}

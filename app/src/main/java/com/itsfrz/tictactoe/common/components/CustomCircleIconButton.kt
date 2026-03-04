@@ -1,6 +1,5 @@
 package com.itsfrz.tictactoe.common.components
 
-import android.view.HapticFeedbackConstants
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -12,11 +11,9 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
-import com.itsfrz.tictactoe.ui.theme.ThemeButtonBackground
 import com.itsfrz.tictactoe.ui.theme.ThemeButtonBorder
 
 
@@ -37,9 +34,7 @@ fun CustomCircleIconButton(
         colors = ButtonDefaults.buttonColors(
             backgroundColor = ThemePicker.themeButtonBackgroundColor.value
         ),
-        onClick = {
-            iconButtonClick()
-        }) {
+        onClick = iconButtonClick) {
         Image(modifier = Modifier.size(22.dp), contentScale = ContentScale.Fit, painter = painterResource(id =buttonIcon), contentDescription = "Icon Button")
     }
 }

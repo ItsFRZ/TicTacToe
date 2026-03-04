@@ -191,6 +191,7 @@ class HomeFragment : Fragment() {
                     ) {
                         item {
                             CustomOutlinedButton(
+                                enabled = true,
                                 buttonClick = {
                                     gameSound.clickSound()
                                     commonViewModel.performHapticVibrate(requireView())
@@ -212,6 +213,7 @@ class HomeFragment : Fragment() {
                                     .fillMaxWidth()
                             )
                             CustomOutlinedButton(
+                                enabled = true,
                                 buttonClick = {
                                     gameSound.clickSound()
                                     commonViewModel.performHapticVibrate(requireView())
@@ -237,6 +239,7 @@ class HomeFragment : Fragment() {
                                     .fillMaxWidth()
                             )
                             CustomOutlinedButton(
+                                enabled = true,
                                 buttonClick = {
                                     gameSound.clickSound()
                                     commonViewModel.performHapticVibrate(requireView())

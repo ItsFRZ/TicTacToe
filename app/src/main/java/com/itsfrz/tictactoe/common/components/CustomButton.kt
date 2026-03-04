@@ -1,6 +1,5 @@
 package com.itsfrz.tictactoe.common.components
 
-import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,7 +12,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
@@ -39,8 +37,7 @@ fun CustomButton(
         colors = buttonColors,
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(width = 0.4.dp, color = ThemeButtonBorder),
-        onClick = {
-            onButtonClick() },
+        onClick = onButtonClick,
         enabled = isButtonEnabled
     ) {
         Text(

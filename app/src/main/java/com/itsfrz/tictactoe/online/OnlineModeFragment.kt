@@ -184,6 +184,7 @@ class OnlineModeFragment : Fragment() {
                                 .fillMaxWidth()
                         )
                         CustomOutlinedButton(
+                            enabled = true,
                             buttonClick = {
                                 if (InternetHelper.isOnline(requireContext())) {
                                     viewmodel.onEvent(OnlineModeUseCase.OnRandomPlayerSearch(true))
@@ -203,6 +204,7 @@ class OnlineModeFragment : Fragment() {
                                 .fillMaxWidth()
                         )
                         CustomOutlinedButton(
+                            enabled = true,
                             buttonClick = {
                                 gameSound.clickSound()
                                 findNavController()

@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -35,6 +36,13 @@ fun TextFieldWithValidation(
     val isFocussed = remember {
         mutableStateOf(false)
     }
+
+    val onFocusChangedCallback = remember(isFocussed) {
+        { focusState: FocusState ->
+            isFocussed.value = focusState.isFocused
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -42,9 +50,7 @@ fun TextFieldWithValidation(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
-            modifier = Modifier.onFocusChanged {
-                isFocussed.value = it.isFocused || it.hasFocus
-            },
+            modifier = Modifier.onFocusChanged( onFocusChangedCallback),
             label = { Text(text = label, color = if (isFocussed.value && !isValidationTriggered) ThemePicker.secondaryColor.value else if (isValidationTriggered) Color.Red else PrimaryDark) },
             value = fieldValue,
             onValueChange = {inputData -> onUsernameChange(inputData)},

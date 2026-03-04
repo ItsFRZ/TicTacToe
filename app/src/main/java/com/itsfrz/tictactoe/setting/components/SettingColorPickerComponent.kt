@@ -59,7 +59,7 @@ fun SettingColorPickerComponent(
 
         RadioButton(
             selected = isSelected,
-            onClick = { onUpdateTheme() },
+            onClick = onUpdateTheme,
             colors = RadioButtonDefaults.colors(
                 selectedColor = ThemePicker.secondaryColor.value,
                 unselectedColor = ThemeBlueLight

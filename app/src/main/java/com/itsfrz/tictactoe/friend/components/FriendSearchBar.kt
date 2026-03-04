@@ -72,13 +72,20 @@ fun FriendSearchBar(
         Spacer(modifier = Modifier
             .width(20.dp)
         )
+
+        val onClick = remember(onAddEvent) {
+            {
+                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                onAddEvent()
+            }
+        }
+
+
         Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = if (username.isEmpty()) ThemePicker.themeButtonBackgroundDisabled.value else ThemePicker.themeButtonBackgroundColor.value, shape = RoundedCornerShape(8.dp)),
-            onClick = {
-                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                onAddEvent() },
+            onClick = onClick,
             enabled = username.isNotEmpty(),
             border = BorderStroke(width = 0.4.dp, color = ThemeButtonBorder),
             colors = ButtonDefaults.buttonColors(
