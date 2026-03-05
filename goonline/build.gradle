@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'com.itsfrz.goonline'
-    compileSdk 34
+    compileSdk 35
     buildToolsVersion "35.0.0"
 
     aaptOptions {
@@ -53,7 +53,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 
 }
@@ -64,17 +64,25 @@ tasks.whenTaskAdded { task ->
     }
 }
 
-dependencies {
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        freeCompilerArgs += [
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
+        ]
+    }
+}
 
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+dependencies {
+    implementation "androidx.appcompat:appcompat:$app_compat_version"
+    implementation "androidx.core:core-ktx:$core_ktx_version"
+    testImplementation "junit:junit:$junit_test_version"
+    androidTestImplementation "androidx.test.ext:junit:$junit_implementation_version"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$expresso_core_version"
 
 //    // Datastore
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
-    implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
-    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    implementation "androidx.datastore:datastore-preferences:$datastore_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:$kotlinx_collections_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_json_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_json_converter_version"
 }
