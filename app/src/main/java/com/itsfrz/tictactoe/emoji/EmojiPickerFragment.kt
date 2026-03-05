@@ -169,5 +169,4 @@ class EmojiPickerFragment : Fragment() {
             }
         }
     }
-
 }

@@ -20,25 +20,22 @@ import com.itsfrz.tictactoe.ui.theme.headerTitle
 
 @Composable
 fun SettingItem(
-    @DrawableRes icon : Int,
-    title : String,
-    isToggled : Boolean,
-    toggleButtonEvent : (toggle : Boolean) -> Unit,
-    isAdvance : Boolean = false,
-    buttonEvent : () -> Unit = {}
+    @DrawableRes icon: Int,
+    title: String,
+    isToggled: Boolean,
+    toggleButtonEvent: (Boolean) -> Unit,
+    isAdvance: Boolean = false,
+    buttonEvent: () -> Unit = {}
 ) {
-    val onClick = remember(isAdvance, buttonEvent) {
-        {
-            if (isAdvance) {
-                buttonEvent()
-            }
-        }
-    }
+    val primaryColor = remember { ThemePicker.primaryColor.value }
+    val secondaryColor = remember { ThemePicker.secondaryColor.value }
+    val lightColor = remember { ThemeBlueLight }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .background(ThemePicker.primaryColor.value),
+            .clickable { if (isAdvance) buttonEvent() }
+            .background(primaryColor),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -47,23 +44,41 @@ fun SettingItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.width(10.dp))
-            Icon(modifier = Modifier.size(16.dp),painter = painterResource(id = icon), contentDescription = "Back Arrow Icon", tint = ThemePicker.secondaryColor.value)
+            Icon(
+                modifier = Modifier.size(16.dp),
+                painter = painterResource(id = icon),
+                contentDescription = "Icon",
+                tint = secondaryColor
+            )
             Spacer(modifier = Modifier.width(6.dp))
-            Text(text = title, style = headerTitle.copy(fontSize = 16.sp,color = Color.White))
+            Text(
+                text = title,
+                style = headerTitle.copy(fontSize = 16.sp, color = Color.White)
+            )
         }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (isAdvance){
-                Icon(modifier = Modifier.size(20.dp),painter = painterResource(id = R.drawable.ic_right_arrow), contentDescription = "Back Arrow Icon", tint = ThemePicker.secondaryColor.value)
-            }else{
+            if (isAdvance) {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(id = R.drawable.ic_right_arrow),
+                    contentDescription = "Arrow",
+                    tint = secondaryColor
+                )
+            } else {
                 Switch(
-                    colors = SwitchDefaults.colors(checkedThumbColor = ThemePicker.secondaryColor.value, checkedTrackColor = ThemePicker.secondaryColor.value, uncheckedThumbColor = ThemeBlueLight, uncheckedTrackColor = ThemeBlueLight),
-                    checked = isToggled, onCheckedChange = {
-                        toggleButtonEvent(it)
-                    }
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = secondaryColor,
+                        checkedTrackColor = secondaryColor,
+                        uncheckedThumbColor = lightColor,
+                        uncheckedTrackColor = lightColor
+                    ),
+                    checked = isToggled,
+                    onCheckedChange = toggleButtonEvent
                 )
             }
             Spacer(modifier = Modifier.width(22.dp))

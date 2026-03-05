@@ -1,5 +1,7 @@
 package com.itsfrz.tictactoe.setting
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -104,7 +106,7 @@ class SettingFragment : Fragment() {
                                     commonViewModel.performHapticVibrate(requireView())
                                     viewmodel.onEvent(SettingUseCase.OnMusicToggle(it))
                                     restartApplication()
-                                })
+                                }, buttonEvent = {})
                             Spacer(
                                 modifier = Modifier
                                     .height(4.dp)
@@ -118,7 +120,7 @@ class SettingFragment : Fragment() {
                                     gameSound.clickSound()
                                     commonViewModel.performHapticVibrate(requireView())
                                     viewmodel.onEvent(SettingUseCase.OnSoundToggle(it))
-                                })
+                                }, buttonEvent = {})
                             Spacer(
                                 modifier = Modifier
                                     .height(4.dp)
@@ -132,7 +134,7 @@ class SettingFragment : Fragment() {
                                     gameSound.clickSound()
                                     commonViewModel.performHapticVibrate(requireView())
                                     viewmodel.onEvent(SettingUseCase.OnVibrationToggle(it))
-                                })
+                                }, buttonEvent = {})
                             Spacer(
                                 modifier = Modifier
                                     .height(4.dp)
@@ -146,7 +148,7 @@ class SettingFragment : Fragment() {
                                     gameSound.clickSound()
                                     commonViewModel.performHapticVibrate(requireView())
                                     viewmodel.onEvent(SettingUseCase.OnNotificationToggle(it))
-                                })
+                                }, buttonEvent = {})
                         }
                         item {
                             Spacer(
@@ -185,18 +187,6 @@ class SettingFragment : Fragment() {
                                     .height(16.dp)
                                     .fillMaxWidth()
                             )
-//                            SettingItem(icon = R.drawable.ic_language, title = "Language", isToggled = true, toggleButtonEvent = {
-//                            }, isAdvance = true, buttonEvent = {
-//                                gameSound.clickSound()
-//                                commonViewModel.performHapticVibrate(requireView())
-//                                val bundle = bundleOf()
-//                                bundle.putSerializable(BundleKey.SETTING_TYPE,SettingType.LANGUAGE)
-//                                findNavController().navigate(
-//                                    resId = R.id.settingContainerFragment2,
-//                                    args = bundle,
-//                                    navOptions = NavOptions.navOptionStack
-//                                )
-//                            })
                         }
 
                     }
@@ -206,9 +196,11 @@ class SettingFragment : Fragment() {
     }
 
     private fun restartApplication() {
-        requireActivity().recreate()
-//        requireActivity().finish()
-//        val intent = Intent(requireContext(),MainActivity::class.java)
-//        startActivity(intent)
+        val ctx: Context = requireActivity().applicationContext
+        val pm = ctx.getPackageManager()
+        val intent = pm.getLaunchIntentForPackage(ctx.getPackageName())
+        val mainIntent = Intent.makeRestartActivityTask(intent!!.getComponent())
+        ctx.startActivity(mainIntent)
+        Runtime.getRuntime().exit(0)
     }
 }
