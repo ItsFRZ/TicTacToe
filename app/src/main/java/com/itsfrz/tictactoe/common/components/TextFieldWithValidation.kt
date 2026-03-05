@@ -26,22 +26,31 @@ import com.itsfrz.tictactoe.ui.theme.errorMessage
 
 @Composable
 fun TextFieldWithValidation(
-    fieldValue : String,
-    onUsernameChange : (inputData : String) -> Unit,
-    isValidationTriggered : Boolean,
-    validationMessage : String = "Username field should not be empty!",
-    @DrawableRes leadingIcon : Int = R.drawable.ic_username,
-    label : String = "Username"
+    fieldValue: String,
+    onUsernameChange: (inputData: String) -> Unit,
+    isValidationTriggered: Boolean,
+    validationMessage: String = "Username field should not be empty!",
+    @DrawableRes leadingIcon: Int = R.drawable.ic_username,
+    label: String = "Username"
 ) {
-    val isFocussed = remember {
-        mutableStateOf(false)
-    }
+    val isFocussed = remember { mutableStateOf(false) }
 
-    val onFocusChangedCallback = remember(isFocussed) {
+    val onFocusChangedCallback = remember {
         { focusState: FocusState ->
             isFocussed.value = focusState.isFocused
         }
     }
+
+    val labelColor = if (isFocussed.value && !isValidationTriggered) {
+        ThemePicker.secondaryColor.value
+    } else if (isValidationTriggered) {
+        Color.Red
+    } else {
+        PrimaryDark
+    }
+
+    val iconColor = labelColor
+    val textColor = if (isValidationTriggered) Color.Red else ThemePicker.secondaryColor.value
 
     Column(
         modifier = Modifier
@@ -50,16 +59,25 @@ fun TextFieldWithValidation(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
-            modifier = Modifier.onFocusChanged( onFocusChangedCallback),
-            label = { Text(text = label, color = if (isFocussed.value && !isValidationTriggered) ThemePicker.secondaryColor.value else if (isValidationTriggered) Color.Red else PrimaryDark) },
+            modifier = Modifier.onFocusChanged(onFocusChangedCallback),
+            label = {
+                Text(
+                    text = label,
+                    color = labelColor
+                )
+            },
             value = fieldValue,
-            onValueChange = {inputData -> onUsernameChange(inputData)},
+            onValueChange = onUsernameChange,
             leadingIcon = {
-                Image(colorFilter = ColorFilter.tint(color = if (isFocussed.value && !isValidationTriggered) ThemePicker.secondaryColor.value else if (isValidationTriggered) Color.Red else PrimaryDark), painter = painterResource(id = leadingIcon), contentDescription = "Username")
+                Image(
+                    colorFilter = ColorFilter.tint(color = iconColor),
+                    painter = painterResource(id = leadingIcon),
+                    contentDescription = "Username"
+                )
             },
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.textFieldColors(
-                textColor = if(isValidationTriggered) Color.Red else ThemePicker.secondaryColor.value,
+                textColor = textColor,
                 cursorColor = ThemePicker.secondaryColor.value,
                 backgroundColor = ThemePicker.primaryColor.value,
                 focusedLabelColor = ThemePicker.secondaryColor.value,
@@ -72,11 +90,12 @@ fun TextFieldWithValidation(
             isError = isValidationTriggered,
             singleLine = true
         )
+
         Spacer(modifier = Modifier
             .height(8.dp)
             .fillMaxWidth())
 
-        if (isValidationTriggered){
+        if (isValidationTriggered) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -91,6 +110,5 @@ fun TextFieldWithValidation(
             }
         }
     }
-
 }
 
