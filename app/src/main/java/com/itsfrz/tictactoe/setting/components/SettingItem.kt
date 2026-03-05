@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -27,23 +28,24 @@ fun SettingItem(
     isAdvance: Boolean = false,
     buttonEvent: () -> Unit = {}
 ) {
-    val primaryColor = remember { ThemePicker.primaryColor.value }
-    val secondaryColor = remember { ThemePicker.secondaryColor.value }
-    val lightColor = remember { ThemeBlueLight }
+    val primaryColor = ThemePicker.primaryColor.value
+    val secondaryColor = ThemePicker.secondaryColor.value
+    val lightColor = ThemeBlueLight
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { if (isAdvance) buttonEvent() }
-            .background(primaryColor),
+            .background(primaryColor)
+            .clickable(enabled = isAdvance) { if (isAdvance) buttonEvent() }
+            .padding(horizontal = 22.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(.7F),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
-            Spacer(modifier = Modifier.width(10.dp))
             Icon(
                 modifier = Modifier.size(16.dp),
                 painter = painterResource(id = icon),
@@ -57,31 +59,25 @@ fun SettingItem(
             )
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (isAdvance) {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter = painterResource(id = R.drawable.ic_right_arrow),
-                    contentDescription = "Arrow",
-                    tint = secondaryColor
-                )
-            } else {
-                Switch(
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = secondaryColor,
-                        checkedTrackColor = secondaryColor,
-                        uncheckedThumbColor = lightColor,
-                        uncheckedTrackColor = lightColor
-                    ),
-                    checked = isToggled,
-                    onCheckedChange = toggleButtonEvent
-                )
-            }
-            Spacer(modifier = Modifier.width(22.dp))
+        if (isAdvance) {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(id = R.drawable.ic_right_arrow),
+                contentDescription = "Arrow",
+                tint = secondaryColor
+            )
+        } else {
+            Switch(
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = secondaryColor,
+                    checkedTrackColor = secondaryColor,
+                    uncheckedThumbColor = lightColor,
+                    uncheckedTrackColor = lightColor
+                ),
+                checked = isToggled,
+                onCheckedChange = toggleButtonEvent,
+                modifier = Modifier.scale(0.8f)
+            )
         }
     }
 }
