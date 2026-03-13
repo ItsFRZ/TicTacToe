@@ -1,0 +1,7 @@
+Fix :
+* Squashed bugs
+* Performance optimization
+
+Feature :
+* Added scoring history
+* Coin based emoji store
