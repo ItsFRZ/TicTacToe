@@ -6,6 +6,7 @@ A free, open-source Android implementation of the classic noughts and crosses ga
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Android](https://img.shields.io/badge/Android-6.0%2B-green)](https://f-droid.org/packages/com.itsfrz.tictactoe/)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin-orange)](https://kotlinlang.org/)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=itsfrz.tictactoe&style=flat-square)
 
 ---
 
@@ -34,8 +35,11 @@ FOSS, primary distribution through F-Droid for more trasparent releases.
 The recommended installation method is through the F-Droid client, which handles signature verification and update notifications automatically.
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="75">](https://f-droid.org/packages/com.itsfrz.tictactoe/)
+[<img src="https://github.com/user-attachments/assets/da9ac9a0-b388-4b81-8b10-ca66690e7d91" alt="Get it on GitHub" height="60">](https://github.com/ItsFRZ/TicTacToe/releases)
 
-Direct APK downloads with PGP signatures are also available on the [F-Droid package page](https://f-droid.org/packages/com.itsfrz.tictactoe/) and [GitHub Releases](https://github.com/ItsFRZ/TicTacToe/releases). Manual installs will not receive automatic update notifications.
+
+Direct APK downloads with PGP signatures are also available on the [F-Droid package page](https://f-droid.org/packages/com.itsfrz.tictactoe/) and [GitHub Releases]
+(https://github.com/ItsFRZ/TicTacToe/releases). Manual installs will not receive automatic update notifications.
 
 **Requires:** Android 6.0 (API 23) or higher
 
