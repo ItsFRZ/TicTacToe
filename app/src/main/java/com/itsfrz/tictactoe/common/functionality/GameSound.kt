@@ -98,42 +98,42 @@ class GameSound(
     }
     fun triggerPopSound(){
         if (isSoundEnabled.value){
-            popUpSoundPlayer.setVolume(0.12f, 0.12f)
+            popUpSoundPlayer.setVolume(0.22f, 0.22f)
             popUpSoundPlayer.start()
         }
     }
 
     fun clickSound(){
         if (isSoundEnabled.value){
-            clickSoundPlayer.setVolume(0.05f, 0.05f)
+            clickSoundPlayer.setVolume(0.10f, 0.10f)
             clickSoundPlayer.start()
         }
     }
 
     fun selectSound(){
         if (isSoundEnabled.value){
-            selectSoundPlayer.setVolume(0.06f, 0.06f)
+            selectSoundPlayer.setVolume(0.12f, 0.12f)
             selectSoundPlayer.start()
         }
     }
 
     fun pieceClick1MovingSound(){
         if (isSoundEnabled.value){
-            pieceSoundClick1Player.setVolume(0.08f, 0.08f)
+            pieceSoundClick1Player.setVolume(0.12f, 0.12f)
             pieceSoundClick1Player.start()
         }
     }
 
     fun pieceClick2MovingSound(){
         if (isSoundEnabled.value){
-            pieceSoundClick2Player.setVolume(0.08f, 0.08f)
+            pieceSoundClick2Player.setVolume(0.12f, 0.12f)
             pieceSoundClick2Player.start()
         }
     }
 
     fun activeStarSound(){
         if (isSoundEnabled.value){
-            starSoundPlayer.setVolume(0.18f, 0.18f)
+            starSoundPlayer.setVolume(0.22f, 0.22f)
             starSoundPlayer.start()
         }
     }

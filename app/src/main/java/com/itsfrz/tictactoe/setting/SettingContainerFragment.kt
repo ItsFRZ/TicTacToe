@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import com.itsfrz.tictactoe.common.background.appBackground
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.SettingType
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
@@ -60,7 +61,8 @@ class SettingContainerFragment : Fragment() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(ThemePicker.primaryColor.value),
+                        .background(ThemePicker.primaryColor.value)
+                    ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(

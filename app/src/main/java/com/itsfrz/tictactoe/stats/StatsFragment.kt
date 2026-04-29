@@ -21,6 +21,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import com.itsfrz.tictactoe.common.background.appBackground
 import com.itsfrz.tictactoe.common.components.Separator
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.goonline.data.models.Stats

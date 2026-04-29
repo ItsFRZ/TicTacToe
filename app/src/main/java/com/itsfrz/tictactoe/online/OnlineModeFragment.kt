@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.background.appBackground
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.constants.BundleKey
@@ -146,7 +147,8 @@ class OnlineModeFragment : Fragment() {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = ThemePicker.primaryColor.value),
+                            .background(color = ThemePicker.primaryColor.value)
+                        ,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Spacer(

@@ -29,6 +29,7 @@ import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.board.components.BoardTypeComponent
 import com.itsfrz.tictactoe.board.components.SelectedBoardIndicator
 import com.itsfrz.tictactoe.board.usecase.SelectBoardUseCase
+import com.itsfrz.tictactoe.common.background.appBackground
 import com.itsfrz.tictactoe.common.components.CustomButton
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.BoardType
@@ -76,7 +77,9 @@ class SelectBoardFragment : Fragment() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = ThemePicker.primaryColor.value),
+//                        .background(color = ThemePicker.primaryColor.value)
+//                        .appBackground()
+                    ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(
