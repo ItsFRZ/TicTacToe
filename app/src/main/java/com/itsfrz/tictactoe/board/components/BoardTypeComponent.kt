@@ -139,20 +139,20 @@ private fun DifficultyCapsule(
         CapsuleShape(
             currentIndex = 1,
             selectedIndex = selectedIndex,
-            borderColor = ThemeGreen,
-            onClickEvent = onClickEasy  // ✅ Use memoized callback
+            borderColor = ThemePicker.themeButtonBackgroundColor.value,
+            onClickEvent = onClickEasy
         )
         CapsuleShape(
             currentIndex = 2,
             selectedIndex = selectedIndex,
-            borderColor = ThemePicker.themeButtonBackgroundColor.value,  // ✅ Direct reference
-            onClickEvent = onClickMedium  // ✅ Use memoized callback
+            borderColor = ThemePicker.themeButtonBackgroundColor.value,
+            onClickEvent = onClickMedium
         )
         CapsuleShape(
             currentIndex = 3,
             selectedIndex = selectedIndex,
-            borderColor = ThemePicker.themeButtonBackgroundColor.value,  // ✅ Direct reference
-            onClickEvent = onClickHard  // ✅ Use memoized callback
+            borderColor = ThemePicker.themeButtonBackgroundColor.value,
+            onClickEvent = onClickHard
         )
     }
 }
