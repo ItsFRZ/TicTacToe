@@ -188,7 +188,7 @@ class HomeFragment : Fragment() {
                                         navOptions = NavOptions.navOptionStack
                                     )
                                 },
-                                buttonText = "Robot"
+                                buttonText = "Computer"
                             )
                             Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
                             CustomOutlinedButton(
