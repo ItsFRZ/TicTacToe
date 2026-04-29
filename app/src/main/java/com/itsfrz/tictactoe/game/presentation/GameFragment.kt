@@ -105,6 +105,7 @@ class GameFragment : Fragment() {
         viewModel = ViewModelProvider(viewModelStore, viewModelFactory)[GameViewModel::class.java]
         commonViewModel = CommonViewModel.getInstance()
         gameSound = commonViewModel.gameSound
+        gameSound.updateRoomLockAttributes(requireContext(),true)
         viewModel.setAITurn()
         setUpNavArgs()
         if (gameMode == GameMode.RANDOM || gameMode == GameMode.FRIEND) {
@@ -510,6 +511,7 @@ class GameFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        gameSound.updateRoomLockAttributes(requireContext(),false)
         viewModel.onEvent(GameUsecase.GameExitEvent)
         job?.cancel()
     }
