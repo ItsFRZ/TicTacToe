@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +43,7 @@ import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.CustomCircleIconButton
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
 import com.itsfrz.tictactoe.common.components.GameDialogue
+import com.itsfrz.tictactoe.common.components.TitleTextComponent
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.PlayerCount
@@ -164,28 +166,9 @@ class HomeFragment : Fragment() {
                         .background(color = ThemePicker.primaryColor.value),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(
-                        modifier = Modifier
-                            .height(96.dp)
-                            .fillMaxWidth()
-                    )
-                    Text(
-                        style = headerTitle.copy(color = Color.White),
-                        text = buildAnnotatedString {
-                            append("Choose Your")
-                            withStyle(style = SpanStyle(color = ThemePicker.secondaryColor.value)) {
-                                append(" Play Mode")
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        lineHeight = 30.sp
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(60.dp)
-                            .fillMaxWidth()
-                    )
+                    Spacer(modifier = Modifier.fillMaxHeight(0.02F).fillMaxWidth())
+                    TitleTextComponent()
+                    Spacer(modifier = Modifier.fillMaxHeight(0.08F).fillMaxWidth())
                     LazyColumn(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
