@@ -166,7 +166,7 @@ class HomeFragment : Fragment() {
                 ) {
                     Spacer(
                         modifier = Modifier
-                            .height(80.dp)
+                            .height(96.dp)
                             .fillMaxWidth()
                     )
                     Text(
@@ -207,11 +207,7 @@ class HomeFragment : Fragment() {
                                 },
                                 buttonText = "Robot"
                             )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(20.dp)
-                                    .fillMaxWidth()
-                            )
+                            Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
                             CustomOutlinedButton(
                                 enabled = true,
                                 buttonClick = {
@@ -233,11 +229,7 @@ class HomeFragment : Fragment() {
                                 },
                                 buttonText = "2 Player"
                             )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(20.dp)
-                                    .fillMaxWidth()
-                            )
+                            Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
                             CustomOutlinedButton(
                                 enabled = true,
                                 buttonClick = {
@@ -259,21 +251,19 @@ class HomeFragment : Fragment() {
                                 },
                                 buttonText = "4 Player"
                             )
-//                            Spacer(modifier = Modifier
-//                                .height(20.dp)
-//                                .fillMaxWidth())
-//                            CustomOutlinedButton(
-//                                buttonClick = {
-//                                    gameSound.clickSound()
-//                                    commonViewModel.performHapticVibrate(requireView())
-//                                    findNavController().navigate(
-//                                        resId = R.id.onlineModeFragment,
-//                                        args = null,
-//                                        navOptions = NavOptions.navOptionStack
-//                                    )
-//                                },
-//                                buttonText = "Online"
-//                            )
+                            Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
+                            CustomOutlinedButton(
+                                buttonClick = {
+                                    gameSound.clickSound()
+                                    commonViewModel.performHapticVibrate(requireView())
+                                    findNavController().navigate(
+                                        resId = R.id.onlineModeFragment,
+                                        args = null,
+                                        navOptions = NavOptions.navOptionStack
+                                    )
+                                },
+                                buttonText = "Online"
+                            )
                             Spacer(
                                 modifier = Modifier
                                     .height(60.dp)
