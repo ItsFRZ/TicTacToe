@@ -12,36 +12,39 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Text
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
+import com.itsfrz.tictactoe.common.background.refined.AnimatedGameBackground
 import com.itsfrz.tictactoe.common.components.CustomCircleIconButton
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
 import com.itsfrz.tictactoe.common.components.GameDialogue
+import com.itsfrz.tictactoe.common.components.TitleTextComponent
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.PlayerCount
@@ -49,7 +52,7 @@ import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.InternetHelper
 import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.functionality.ShareInfo
-import com.itsfrz.tictactoe.common.functionality.ThemePicker
+import com.itsfrz.tictactoe.common.functionality.isScreenTV
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
@@ -61,7 +64,6 @@ import com.itsfrz.tictactoe.goonline.datastore.setting.SettingRepository
 import com.itsfrz.tictactoe.home.usecase.HomePageUseCase
 import com.itsfrz.tictactoe.home.viewmodel.HomePageViewModel
 import com.itsfrz.tictactoe.home.viewmodel.HomePageViewModelFactory
-import com.itsfrz.tictactoe.ui.theme.headerTitle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -158,192 +160,179 @@ class HomeFragment : Fragment() {
                 val gameBundle = bundleOf()
                 val userId = viewModel.userId.value
                 val scope = rememberCoroutineScope()
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = ThemePicker.primaryColor.value),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(
+                val infinite = rememberInfiniteTransition()
+                val t by infinite.animateFloat(
+                    initialValue = 0f,
+                    targetValue = (2f * Math.PI).toFloat(),
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(18000, easing = LinearEasing)
+                    )
+                )
+
+                Box {
+                    AnimatedGameBackground(modifier = Modifier.fillMaxSize())
+                    Column(
                         modifier = Modifier
-                            .height(80.dp)
-                            .fillMaxWidth()
-                    )
-                    Text(
-                        style = headerTitle.copy(color = Color.White),
-                        text = buildAnnotatedString {
-                            append("Choose Your")
-                            withStyle(style = SpanStyle(color = ThemePicker.secondaryColor.value)) {
-                                append(" Play Mode")
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        lineHeight = 30.sp
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(60.dp)
-                            .fillMaxWidth()
-                    )
-                    LazyColumn(
+                            .fillMaxSize()
+//                            .appBackgroundCompat(ThemePicker.primaryColor.value.copy(alpha = 0.95f),t)
+                        ,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        item {
-                            CustomOutlinedButton(
-                                enabled = true,
-                                buttonClick = {
+                        if (isScreenTV(requireContext())){
+                            Spacer(modifier = Modifier.fillMaxHeight(0.2F).fillMaxWidth())
+                        }else{
+                            Spacer(modifier = Modifier.fillMaxHeight(0.04F).fillMaxWidth())
+                        }
+                        TitleTextComponent()
+                        Spacer(modifier = Modifier.fillMaxHeight(0.08F).fillMaxWidth())
+                        LazyColumn(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            item {
+                                CustomOutlinedButton(
+                                    enabled = true,
+                                    buttonClick = {
+                                        gameSound.clickSound()
+                                        commonViewModel.performHapticVibrate(requireView())
+                                        gameBundle.putSerializable(BundleKey.GAME_MODE, GameMode.AI)
+                                        gameBundle.putSerializable(
+                                            BundleKey.PLAYER_COUNT,
+                                            PlayerCount.ONE
+                                        )
+                                        findNavController().navigate(
+                                            R.id.emojiPickerFragment, gameBundle,
+                                            navOptions = NavOptions.navOptionStack
+                                        )
+                                    },
+                                    buttonText = "Computer"
+                                )
+                                Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
+                                CustomOutlinedButton(
+                                    enabled = true,
+                                    buttonClick = {
+                                        gameSound.clickSound()
+                                        commonViewModel.performHapticVibrate(requireView())
+                                        gameBundle.putSerializable(
+                                            BundleKey.GAME_MODE,
+                                            GameMode.TWO_PLAYER
+                                        )
+                                        gameBundle.putSerializable(
+                                            BundleKey.PLAYER_COUNT,
+                                            PlayerCount.TWO
+                                        )
+                                        findNavController().navigate(
+                                            resId = R.id.emojiPickerFragment,
+                                            args = gameBundle,
+                                            navOptions = NavOptions.navOptionStack
+                                        )
+                                    },
+                                    buttonText = "2 Player"
+                                )
+                                Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
+                                CustomOutlinedButton(
+                                    enabled = true,
+                                    buttonClick = {
+                                        gameSound.clickSound()
+                                        commonViewModel.performHapticVibrate(requireView())
+                                        gameBundle.putSerializable(
+                                            BundleKey.GAME_MODE,
+                                            GameMode.FOUR_PLAYER
+                                        )
+                                        gameBundle.putSerializable(
+                                            BundleKey.PLAYER_COUNT,
+                                            PlayerCount.FOUR
+                                        )
+                                        findNavController().navigate(
+                                            resId = R.id.emojiPickerFragment,
+                                            args = gameBundle,
+                                            navOptions = NavOptions.navOptionStack
+                                        )
+                                    },
+                                    buttonText = "4 Player"
+                                )
+//                                Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
+//                                CustomOutlinedButton(
+//                                    buttonClick = {
+//                                        gameSound.clickSound()
+//                                        commonViewModel.performHapticVibrate(requireView())
+//                                        findNavController().navigate(
+//                                            resId = R.id.onlineModeFragment,
+//                                            args = null,
+//                                            navOptions = NavOptions.navOptionStack
+//                                        )
+//                                    },
+//                                    buttonText = "Online"
+//                                )
+                                Spacer(
+                                    modifier = Modifier
+                                        .height(60.dp)
+                                        .fillMaxWidth()
+                                )
+                                CustomCircleIconButton(iconButtonClick = {
                                     gameSound.clickSound()
                                     commonViewModel.performHapticVibrate(requireView())
-                                    gameBundle.putSerializable(BundleKey.GAME_MODE, GameMode.AI)
-                                    gameBundle.putSerializable(
-                                        BundleKey.PLAYER_COUNT,
-                                        PlayerCount.ONE
-                                    )
-                                    findNavController().navigate(
-                                        R.id.emojiPickerFragment, gameBundle,
-                                        navOptions = NavOptions.navOptionStack
-                                    )
-                                },
-                                buttonText = "Robot"
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(20.dp)
-                                    .fillMaxWidth()
-                            )
-                            CustomOutlinedButton(
-                                enabled = true,
-                                buttonClick = {
-                                    gameSound.clickSound()
-                                    commonViewModel.performHapticVibrate(requireView())
-                                    gameBundle.putSerializable(
-                                        BundleKey.GAME_MODE,
-                                        GameMode.TWO_PLAYER
-                                    )
-                                    gameBundle.putSerializable(
-                                        BundleKey.PLAYER_COUNT,
-                                        PlayerCount.TWO
-                                    )
-                                    findNavController().navigate(
-                                        resId = R.id.emojiPickerFragment,
-                                        args = gameBundle,
-                                        navOptions = NavOptions.navOptionStack
-                                    )
-                                },
-                                buttonText = "2 Player"
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(20.dp)
-                                    .fillMaxWidth()
-                            )
-                            CustomOutlinedButton(
-                                enabled = true,
-                                buttonClick = {
-                                    gameSound.clickSound()
-                                    commonViewModel.performHapticVibrate(requireView())
-                                    gameBundle.putSerializable(
-                                        BundleKey.GAME_MODE,
-                                        GameMode.FOUR_PLAYER
-                                    )
-                                    gameBundle.putSerializable(
-                                        BundleKey.PLAYER_COUNT,
-                                        PlayerCount.FOUR
-                                    )
-                                    findNavController().navigate(
-                                        resId = R.id.emojiPickerFragment,
-                                        args = gameBundle,
-                                        navOptions = NavOptions.navOptionStack
-                                    )
-                                },
-                                buttonText = "4 Player"
-                            )
-//                            Spacer(modifier = Modifier
-//                                .height(20.dp)
-//                                .fillMaxWidth())
-//                            CustomOutlinedButton(
-//                                buttonClick = {
-//                                    gameSound.clickSound()
-//                                    commonViewModel.performHapticVibrate(requireView())
-//                                    findNavController().navigate(
-//                                        resId = R.id.onlineModeFragment,
-//                                        args = null,
-//                                        navOptions = NavOptions.navOptionStack
-//                                    )
-//                                },
-//                                buttonText = "Online"
-//                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(60.dp)
-                                    .fillMaxWidth()
-                            )
-                            CustomCircleIconButton(iconButtonClick = {
-                                gameSound.clickSound()
-                                commonViewModel.performHapticVibrate(requireView())
 //                                gameBundle.putSerializable(BundleKey.USER_ID,userId)
 //                                findNavController().navigate(
 //                                    resId = R.id.statsFragment,
 //                                    args = gameBundle,
 //                                    navOptions = NavOptions.navOptionStack
 //                                )
-                                scope.launch(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        requireActivity(),
-                                        "Nothing to display, come back later :P)",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }, buttonIcon = R.drawable.ic_stats)
-                            Spacer(
-                                modifier = Modifier
-                                    .height(10.dp)
-                                    .fillMaxWidth()
-                            )
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 80.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                CustomCircleIconButton(iconButtonClick = {
-                                    gameSound.clickSound()
-                                    commonViewModel.performHapticVibrate(requireView())
                                     scope.launch(Dispatchers.Main) {
-                                        async { viewModel.onEvent(HomePageUseCase.OnCopyUserIdEvent) }.await()
-                                        val message =
-                                            "${ShareInfo.SHARE_HEADER}\n${ShareInfo.SHARE_TITLE}\n${ShareInfo.SHARE_SUBTITLE}\n\nUserId : ✄-x${userId}x-✄"
-                                        val intent = Intent().apply {
-                                            action = Intent.ACTION_SEND
-                                            type = "text/plain"
-                                            putExtra(Intent.EXTRA_TEXT, message)
-                                        }
-                                        context.startActivity(Intent.createChooser(intent, "Share"))
+                                        Toast.makeText(
+                                            requireActivity(),
+                                            "Nothing to display, come back later :P)",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
-                                }, buttonIcon = R.drawable.ic_share)
-                                CustomCircleIconButton(iconButtonClick = {
-                                    gameSound.clickSound()
-                                    commonViewModel.performHapticVibrate(requireView())
-                                    findNavController().navigate(
-                                        resId = R.id.settingContainerFragment,
-                                        args = null,
-                                        navOptions = NavOptions.navOptionStack
-                                    )
-                                }, buttonIcon = R.drawable.ic_settings)
+                                }, buttonIcon = R.drawable.ic_stats)
+                                Spacer(
+                                    modifier = Modifier
+                                        .height(10.dp)
+                                        .fillMaxWidth()
+                                )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 80.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    CustomCircleIconButton(iconButtonClick = {
+                                        gameSound.clickSound()
+                                        commonViewModel.performHapticVibrate(requireView())
+                                        scope.launch(Dispatchers.Main) {
+                                            async { viewModel.onEvent(HomePageUseCase.OnCopyUserIdEvent) }.await()
+                                            val message =
+                                                "${ShareInfo.SHARE_HEADER}\n${ShareInfo.SHARE_TITLE}\n${ShareInfo.SHARE_SUBTITLE}\n\nUserId : ✄-x${userId}x-✄"
+                                            val intent = Intent().apply {
+                                                action = Intent.ACTION_SEND
+                                                type = "text/plain"
+                                                putExtra(Intent.EXTRA_TEXT, message)
+                                            }
+                                            context.startActivity(Intent.createChooser(intent, "Share"))
+                                        }
+                                    }, buttonIcon = R.drawable.ic_share)
+                                    CustomCircleIconButton(iconButtonClick = {
+                                        gameSound.clickSound()
+                                        commonViewModel.performHapticVibrate(requireView())
+                                        findNavController().navigate(
+                                            resId = R.id.settingContainerFragment,
+                                            args = null,
+                                            navOptions = NavOptions.navOptionStack
+                                        )
+                                    }, buttonIcon = R.drawable.ic_settings)
+                                }
+                                Spacer(
+                                    modifier = Modifier
+                                        .height(40.dp)
+                                        .fillMaxWidth()
+                                )
                             }
-                            Spacer(
-                                modifier = Modifier
-                                    .height(40.dp)
-                                    .fillMaxWidth()
-                            )
                         }
                     }
                 }
             }
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {

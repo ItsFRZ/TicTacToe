@@ -357,4 +357,8 @@ object IGameBrain : GameBrain {
     override fun setAITurn(value: Boolean) {
         this.isAITurn = value;
     }
+
+    override fun reset() {
+        this.isAITurn = false
+    }
 }

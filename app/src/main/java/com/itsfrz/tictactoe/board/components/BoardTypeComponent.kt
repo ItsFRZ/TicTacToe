@@ -57,7 +57,6 @@ fun BoardTypeComponent(
             Spacer(modifier = Modifier.fillMaxWidth().height(18.dp))
 
             if (isAIMode) {
-                // ✅ FIX 1: Direct reference instead of wrapper lambda
                 DifficultyCapsule(
                     selectedIndex = selectedIndex,
                     onDifficultyEvent = onDifficultyEvent
@@ -125,7 +124,6 @@ private fun DifficultyCapsule(
     selectedIndex: Int,
     onDifficultyEvent: (index: Int) -> Unit
 ) {
-    // ✅ FIX 2: Memoize lambdas to stabilize them
     val onClickEasy = remember { { onDifficultyEvent(1) } }
     val onClickMedium = remember { { onDifficultyEvent(2) } }
     val onClickHard = remember { { onDifficultyEvent(3) } }
@@ -141,20 +139,20 @@ private fun DifficultyCapsule(
         CapsuleShape(
             currentIndex = 1,
             selectedIndex = selectedIndex,
-            borderColor = ThemeGreen,
-            onClickEvent = onClickEasy  // ✅ Use memoized callback
+            borderColor = ThemePicker.themeButtonBackgroundColor.value,
+            onClickEvent = onClickEasy
         )
         CapsuleShape(
             currentIndex = 2,
             selectedIndex = selectedIndex,
-            borderColor = ThemePicker.themeButtonBackgroundColor.value,  // ✅ Direct reference
-            onClickEvent = onClickMedium  // ✅ Use memoized callback
+            borderColor = ThemePicker.themeButtonBackgroundColor.value,
+            onClickEvent = onClickMedium
         )
         CapsuleShape(
             currentIndex = 3,
             selectedIndex = selectedIndex,
-            borderColor = ThemePicker.themeButtonBackgroundColor.value,  // ✅ Direct reference
-            onClickEvent = onClickHard  // ✅ Use memoized callback
+            borderColor = ThemePicker.themeButtonBackgroundColor.value,
+            onClickEvent = onClickHard
         )
     }
 }

@@ -68,7 +68,8 @@ class SettingFragment : Fragment() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(ThemePicker.primaryColor.value),
+                        .background(ThemePicker.primaryColor.value)
+                    ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(

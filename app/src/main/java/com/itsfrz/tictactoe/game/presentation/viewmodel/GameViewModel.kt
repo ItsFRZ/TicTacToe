@@ -19,6 +19,7 @@ import com.itsfrz.tictactoe.minimax.IGameBrain
 import com.itsfrz.tictactoe.minimax.Move
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.time.delay
 
 class GameViewModel(
     private val cloudRepository: CloudRepository,
@@ -172,8 +173,15 @@ class GameViewModel(
         }
     }
 
+    private val _userMoveState : MutableState<Boolean> = mutableStateOf(false)
+    val userMoveState = _userMoveState
+
+
     fun onEvent(event : GameUsecase){
         when(event){
+            is GameUsecase.UserMove -> {
+                _userMoveState.value = event.state
+            }
             is GameUsecase.OnUserTick -> {
                 if (gameMode == GameMode.TWO_PLAYER){
                     if (_isUserTurnsComplete.value){
@@ -220,9 +228,9 @@ class GameViewModel(
             }
             is GameUsecase.OnAIMove -> {
                 if (gameMode == GameMode.AI && gameResult.value == GameResult.NONE){
-                    viewModelScope.launch {
-                        val aiValue = viewModelScope.async(Dispatchers.Default) {
-                            delay(if (boardType == BoardType.THREEX3) 50 else 0)
+                    viewModelScope.launch(Dispatchers.Main) {
+                        val aiValue = async(Dispatchers.Main.immediate) {
+                            delay(if (boardType == BoardType.THREEX3) 200 else 0)
                             aiMove()
                         }.await()
                         _playerTwoIndex.value.add(aiValue)
@@ -732,6 +740,7 @@ class GameViewModel(
         _playerThreeIndex.value = arrayListOf()
         _playerFourIndex.value = arrayListOf()
         _userTimer.value = 0F
+        _userMoveState.value = false
         job?.cancel()
         timeLimitStart()
         if (gameMode == GameMode.AI)
@@ -756,8 +765,12 @@ class GameViewModel(
                 _isUserTurnsComplete.value = false
                 _offlineUserTurn.value = true
             }
-            if (!_isUserTurnsComplete.value)
-                onEvent(GameUsecase.OnAIMove)
+            if (!_isUserTurnsComplete.value) {
+                viewModelScope.launch(Dispatchers.Main.immediate) {
+                    delay(200)
+                    onEvent(GameUsecase.OnAIMove)
+                }
+            }
         }
     }
 

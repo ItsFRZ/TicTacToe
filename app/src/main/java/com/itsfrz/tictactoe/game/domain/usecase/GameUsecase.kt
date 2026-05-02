@@ -5,6 +5,7 @@ import com.itsfrz.tictactoe.friend.usecase.FriendPageUseCase
 
 sealed class GameUsecase{
     data class OnUserTick(val index : Int) : GameUsecase()
+    data class UserMove(val state : Boolean) : GameUsecase()
     object OnGameRetry : GameUsecase()
     object OnAIMove : GameUsecase()
     object GameExitEvent : GameUsecase()

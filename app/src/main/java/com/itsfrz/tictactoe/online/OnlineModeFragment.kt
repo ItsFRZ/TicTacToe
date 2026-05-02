@@ -146,7 +146,8 @@ class OnlineModeFragment : Fragment() {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = ThemePicker.primaryColor.value),
+                            .background(color = ThemePicker.primaryColor.value)
+                        ,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Spacer(
@@ -173,7 +174,7 @@ class OnlineModeFragment : Fragment() {
                         )
                         Text(
                             style = headerSubTitle.copy(color = LightWhite),
-                            text = "Play with random person\n--- OR ---\nEnter your friend’s id to play.",
+                            text = "Play with anyone game mode\n--- OR ---\nChallenge your friend with invite id to play.",
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
                             lineHeight = 30.sp
@@ -183,39 +184,45 @@ class OnlineModeFragment : Fragment() {
                                 .height(78.dp)
                                 .fillMaxWidth()
                         )
-                        CustomOutlinedButton(
-                            enabled = true,
-                            buttonClick = {
-                                if (InternetHelper.isOnline(requireContext())) {
-                                    viewmodel.onEvent(OnlineModeUseCase.OnRandomPlayerSearch(true))
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        getString(R.string.internet_not_available),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            },
-                            buttonText = "Random"
-                        )
+                        Column(modifier = Modifier.fillMaxWidth().height(130.dp)) {
+                            CustomOutlinedButton(
+                                enabled = true,
+                                buttonClick = {
+                                    if (InternetHelper.isOnline(requireContext())) {
+                                        viewmodel.onEvent(OnlineModeUseCase.OnRandomPlayerSearch(true))
+                                    } else {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            getString(R.string.internet_not_available),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                },
+                                buttonText = "Play"
+                            )
+                        }
+
                         Spacer(
                             modifier = Modifier
-                                .height(20.dp)
+                                .height(24.dp)
                                 .fillMaxWidth()
                         )
-                        CustomOutlinedButton(
-                            enabled = true,
-                            buttonClick = {
-                                gameSound.clickSound()
-                                findNavController()
-                                    .navigate(
-                                        resId = R.id.friendFragment,
-                                        args = null,
-                                        navOptions = NavOptions.navOptionStack
-                                    )
-                            },
-                            buttonText = "Friend"
-                        )
+                        Column(modifier = Modifier.fillMaxWidth().height(130.dp)) {
+                            CustomOutlinedButton(
+                                enabled = true,
+                                buttonClick = {
+                                    gameSound.clickSound()
+                                    findNavController()
+                                        .navigate(
+                                            resId = R.id.friendFragment,
+                                            args = null,
+                                            navOptions = NavOptions.navOptionStack
+                                        )
+                                },
+                                buttonText = "Friend"
+                            )
+                        }
+
                     }
                     if (playerSearchState) {
                         Box(

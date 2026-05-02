@@ -37,6 +37,7 @@ import com.itsfrz.tictactoe.common.enums.PlayerCount
 import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
+import com.itsfrz.tictactoe.common.functionality.isScreenTV
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModel
 import com.itsfrz.tictactoe.online.viewmodel.BoardViewModelFactory
@@ -76,7 +77,9 @@ class SelectBoardFragment : Fragment() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = ThemePicker.primaryColor.value),
+//                        .background(color = ThemePicker.primaryColor.value)
+//                        .appBackground()
+                    ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(
@@ -214,11 +217,20 @@ class SelectBoardFragment : Fragment() {
                     ) {
                         viewmodel.onEvent(SelectBoardUseCase.OnBoardTypeChange(it))
                     }
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(15.dp)
-                    )
+
+                    if (isScreenTV(requireContext())){
+                        Spacer(
+                            modifier = Modifier
+                                .height(100.dp)
+                                .fillMaxWidth()
+                        )
+                    }else{
+                        Spacer(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .fillMaxWidth()
+                        )
+                    }
                     CustomButton(
                         isButtonEnabled = if (gameMode == GameMode.AI && boardType == BoardType.THREEX3) selectedIndex != -1 else true,
                         onButtonClick = {

@@ -1,5 +1,6 @@
 package com.itsfrz.tictactoe.common.components
 
+import android.content.Context
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.EaseInBounce
 import androidx.compose.animation.core.tween
@@ -25,6 +26,7 @@ import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.enums.GameResult
 import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
+import com.itsfrz.tictactoe.common.functionality.isScreenTV
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.ui.theme.*
 import kotlinx.coroutines.delay
@@ -37,6 +39,7 @@ object GameDialogue{
     }
     @Composable
     fun GameDrawLoseDialogue(
+        context: Context,
         gameResult : GameResult,
         commonViewModel: CommonViewModel,
         onCloseEvent : () -> Unit,
@@ -51,7 +54,7 @@ object GameDialogue{
         }
         Card(
             modifier = Modifier
-                .fillMaxWidth(7f)
+                .fillMaxWidth(.82f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(8.dp),
             elevation = 10.dp
@@ -59,7 +62,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(ThemeDialogBackground),
+                    .background(ThemeDialogBackground, shape = RoundedCornerShape(8.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -74,7 +77,7 @@ object GameDialogue{
                 ) {
                     IconButton(
                         modifier = Modifier
-                            .size(25.dp)
+                            .size(if (isScreenTV(context)) 45.dp else 25.dp)
                             .border(
                                 border = BorderStroke(width = 0.8.dp, color = ThemePicker.secondaryColor.value),
                                 shape = RoundedCornerShape(100)
@@ -109,9 +112,11 @@ object GameDialogue{
                     }
                     else ->{}
                 }
-                Spacer(modifier = Modifier
-                    .wrapContentWidth()
-                    .height(5.dp))
+                if (isScreenTV(context)){
+                    Spacer(modifier = Modifier.wrapContentWidth().height(30.dp))
+                }else{
+                    Spacer(modifier = Modifier.wrapContentWidth().height(5.dp))
+                }
                 CustomButton(
                     isButtonEnabled = true,
                     onButtonClick = {
@@ -130,6 +135,7 @@ object GameDialogue{
 
     @Composable
     fun GameWinDialogue(
+        context: Context,
         winnerUsername: String,
         dialogueButtonText : String,
         onCloseEvent : () -> Unit,
@@ -145,7 +151,7 @@ object GameDialogue{
         }
         Card(
             modifier = Modifier
-                .fillMaxWidth(7f)
+                .fillMaxWidth(.82f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(2.dp),
             elevation = 10.dp
@@ -153,7 +159,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(ThemeDialogBackground),
+                    .background(ThemeDialogBackground, shape = RoundedCornerShape(8.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -169,7 +175,7 @@ object GameDialogue{
                 ) {
                     IconButton(
                         modifier = Modifier
-                            .size(25.dp)
+                            .size(if (isScreenTV(context)) 45.dp else 25.dp)
                             .border(
                                 border = BorderStroke(width = 0.8.dp, color = ThemePicker.secondaryColor.value),
                                 shape = RoundedCornerShape(100)
@@ -200,9 +206,11 @@ object GameDialogue{
                     .wrapContentWidth()
                     .height(2.dp))
                 Text(text = winnerUsername, style = headerSubTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 14.sp))
-                Spacer(modifier = Modifier
-                    .wrapContentWidth()
-                    .height(5.dp))
+                if (isScreenTV(context)){
+                    Spacer(modifier = Modifier.wrapContentWidth().height(30.dp))
+                }else{
+                    Spacer(modifier = Modifier.wrapContentWidth().height(5.dp))
+                }
                 CustomButton(
                     isButtonEnabled = true,
                     onButtonClick = {
@@ -219,8 +227,8 @@ object GameDialogue{
         }
     }
 
-    private @Composable
-    fun AnimatedStarLayout(
+    @Composable
+    private fun AnimatedStarLayout(
         starLayoutBackground : Color,
         starInactiveColor : Color
     ) {
@@ -246,7 +254,7 @@ object GameDialogue{
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(starLayoutBackground),
+                .background(starLayoutBackground,  shape = RoundedCornerShape(8.dp)),
             horizontalArrangement = Arrangement.Center
         ) {
 
@@ -304,7 +312,7 @@ object GameDialogue{
         val view = LocalView.current
         Card(
             modifier = Modifier
-                .fillMaxWidth(7f)
+                .fillMaxWidth(.82f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(2.dp),
             elevation = 10.dp
@@ -312,7 +320,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(ThemeDialogBackground),
+                    .background(ThemeDialogBackground, shape = RoundedCornerShape(8.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -419,7 +427,7 @@ object GameDialogue{
         val view = LocalView.current
         Card(
             modifier = Modifier
-                .fillMaxWidth(.7f)
+                .fillMaxWidth(.82f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(8.dp),
             elevation = 10.dp,
@@ -428,7 +436,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .padding(horizontal = 15.dp, vertical = 22.dp)
-                    .background(ThemeDialogBackground),
+                    .background(ThemeDialogBackground, shape = RoundedCornerShape(8.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {

@@ -30,6 +30,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            throwable.printStackTrace()
+            Log.i(TAG, "onCreate: Classic Tic Tac Toe CRASH :: Crash happened on thread ${thread.name} ::  ${throwable.cause?.message}")
+
+        }
         setContentView(R.layout.activity_main)
         Log.i("VM_CHECK", "onCreate: MainActivity Created")
         val storeRepo: GameStoreRepository = IGameStoreRepository(GameDataStore.getDataStore(this))
