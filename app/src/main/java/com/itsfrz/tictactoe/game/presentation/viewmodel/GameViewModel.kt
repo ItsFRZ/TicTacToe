@@ -19,6 +19,7 @@ import com.itsfrz.tictactoe.minimax.IGameBrain
 import com.itsfrz.tictactoe.minimax.Move
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.time.delay
 
 class GameViewModel(
     private val cloudRepository: CloudRepository,
@@ -227,9 +228,9 @@ class GameViewModel(
             }
             is GameUsecase.OnAIMove -> {
                 if (gameMode == GameMode.AI && gameResult.value == GameResult.NONE){
-                    viewModelScope.launch {
-                        val aiValue = async(Dispatchers.IO) {
-                            delay(if (boardType == BoardType.THREEX3) 120 else 0)
+                    viewModelScope.launch(Dispatchers.Main) {
+                        val aiValue = async(Dispatchers.Main.immediate) {
+                            delay(if (boardType == BoardType.THREEX3) 200 else 0)
                             aiMove()
                         }.await()
                         _playerTwoIndex.value.add(aiValue)
@@ -764,8 +765,12 @@ class GameViewModel(
                 _isUserTurnsComplete.value = false
                 _offlineUserTurn.value = true
             }
-            if (!_isUserTurnsComplete.value)
-                onEvent(GameUsecase.OnAIMove)
+            if (!_isUserTurnsComplete.value) {
+                viewModelScope.launch(Dispatchers.Main.immediate) {
+                    delay(200)
+                    onEvent(GameUsecase.OnAIMove)
+                }
+            }
         }
     }
 

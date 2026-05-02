@@ -54,7 +54,7 @@ object GameDialogue{
         }
         Card(
             modifier = Modifier
-                .fillMaxWidth(.7f)
+                .fillMaxWidth(.82f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(8.dp),
             elevation = 10.dp
@@ -62,7 +62,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(ThemeDialogBackground),
+                    .background(ThemeDialogBackground, shape = RoundedCornerShape(8.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -151,7 +151,7 @@ object GameDialogue{
         }
         Card(
             modifier = Modifier
-                .fillMaxWidth(.7f)
+                .fillMaxWidth(.82f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(2.dp),
             elevation = 10.dp
@@ -159,7 +159,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(ThemeDialogBackground),
+                    .background(ThemeDialogBackground, shape = RoundedCornerShape(8.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -227,8 +227,8 @@ object GameDialogue{
         }
     }
 
-    private @Composable
-    fun AnimatedStarLayout(
+    @Composable
+    private fun AnimatedStarLayout(
         starLayoutBackground : Color,
         starInactiveColor : Color
     ) {
@@ -254,7 +254,7 @@ object GameDialogue{
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(starLayoutBackground),
+                .background(starLayoutBackground,  shape = RoundedCornerShape(8.dp)),
             horizontalArrangement = Arrangement.Center
         ) {
 
@@ -312,7 +312,7 @@ object GameDialogue{
         val view = LocalView.current
         Card(
             modifier = Modifier
-                .fillMaxWidth(.7f)
+                .fillMaxWidth(.82f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(2.dp),
             elevation = 10.dp
@@ -320,7 +320,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(ThemeDialogBackground),
+                    .background(ThemeDialogBackground, shape = RoundedCornerShape(8.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -427,7 +427,7 @@ object GameDialogue{
         val view = LocalView.current
         Card(
             modifier = Modifier
-                .fillMaxWidth(.7f)
+                .fillMaxWidth(.82f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(8.dp),
             elevation = 10.dp,
@@ -436,7 +436,7 @@ object GameDialogue{
             Column(
                 modifier = Modifier
                     .padding(horizontal = 15.dp, vertical = 22.dp)
-                    .background(ThemeDialogBackground),
+                    .background(ThemeDialogBackground, shape = RoundedCornerShape(8.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
