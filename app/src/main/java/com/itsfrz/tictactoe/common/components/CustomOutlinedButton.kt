@@ -119,37 +119,6 @@ fun CustomOutlinedButton(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.45f)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White.copy(
-                                alpha = if (pressed) 0.45f else highlightAlpha
-                            ),
-                            Color.White.copy(alpha = 0.25f),
-                            Color.Transparent
-                        )
-                    )
-                )
-        )
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .padding(6.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.12f),
-                            Color.Transparent
-                        ),
-                        radius = 300f
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                )
-        )
-        Box(
-            modifier = Modifier
                 .matchParentSize()
                 .background(
                     brush = Brush.verticalGradient(
@@ -158,24 +127,6 @@ fun CustomOutlinedButton(
                             Color.Black.copy(alpha = 0.16f)
                         )
                     )
-                )
-        )
-        Box(
-            modifier = Modifier
-                .size(16.dp)
-                .align(Alignment.TopEnd)
-                .offset(x = (-10).dp, y = 8.dp)
-                .graphicsLayer {
-                    alpha = if (pressed) 0.4f else 1f
-                }
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.85f),
-                            Color.Transparent
-                        )
-                    ),
-                    shape = CircleShape
                 )
         )
         Text(
