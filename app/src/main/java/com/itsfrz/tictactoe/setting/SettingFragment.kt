@@ -21,7 +21,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
-import com.itsfrz.tictactoe.common.background.appBackground
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.SettingType
 import com.itsfrz.tictactoe.common.functionality.GameSound

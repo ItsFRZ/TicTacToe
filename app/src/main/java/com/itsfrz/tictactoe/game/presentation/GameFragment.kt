@@ -28,14 +28,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
-import com.itsfrz.tictactoe.common.background.appBackground
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.BoardType
@@ -52,7 +53,9 @@ import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.game.presentation.components.GameBoard
 import com.itsfrz.tictactoe.game.presentation.components.GameDivider
+import com.itsfrz.tictactoe.game.presentation.components.PlayerCelebrationOverlay
 import com.itsfrz.tictactoe.game.presentation.components.ProgressTimer
+import com.itsfrz.tictactoe.game.presentation.components.rememberCelebrationState
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModel
 import com.itsfrz.tictactoe.game.presentation.viewmodel.GameViewModelFactory
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
@@ -199,236 +202,276 @@ class GameFragment : Fragment() {
                 val requestDialogState = viewModel.requestDialogState.value
                 val acceptDialogState = viewModel.acceptDialogState.value
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = ThemePicker.primaryColor.value)
-                    ,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(10.dp)
-                    )
 
-                    ProgressTimer(
-                        userTimeOutPulsatingWarning = userTimeOutPulsatingWarning,
-                        timeLimitAnimation = timeLimitAnimation,
-                        playerTurns = playerTurns,
-                        avatar = getCurrentAvatar(
-                            gameMode,
-                            currentUserId,
-                            friendUserId,
-                            playerTurns,
-                            multiplayerTurn
-                        ),
-                        currentUserId = currentUserId,
-                        gameMode = gameMode,
-                        userId = userId,
-                        playerTurn = multiplayerTurn,
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(20.dp)
-                    )
-                    GameDivider()
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
-                    )
-                    GameBoard(
-                        crossList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerTwoData else playerOneData,
-                        rightList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerOneData else playerTwoData,
-                        player3List = playerThreeData,
-                        player4List = playerFourData,
-                        userId = userId,
-                        currentUserId = currentUserId,
-                        gameMode = gameMode,
-                        gameCellList = calculateCellList(),
-                        columnCount = calculateBoardColumnCount(),
-                        boardHeight = calculateBoardHeight(),
-                        winnerIndexList = if (boardType == BoardType.THREEX3) winnerIndexList else GameWinner.winnerIndexList.value,
-                        isWinner = gameResult != GameResult.NONE && gameResult != GameResult.DRAW,
-                        isPlayerMoved = !playerTurns,
-                        onMove = { index ->
-                            Log.i("HIDDEN_BUG", "onCreateView: ${index}")
-                            gameSound.pieceClick1MovingSound()
-                            viewModel.onEvent(GameUsecase.OnUserTick(index))
-                        },
-                        onAIMove = {
-                            Log.i("AI_MOVE", "onCreateView: On AI Move")
-                            gameSound.pieceClick2MovingSound()
-                            viewModel.onEvent(GameUsecase.OnAIMove)
-                        },
-                        playerIcons = commonViewModel.getResourceIdList(),
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
-                    )
-                    GameDivider()
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(20.dp)
-                    )
-                }
-                if (gameResult != GameResult.NONE) {
-                    LaunchedEffect(Unit) {
-                        if (gameResult == GameResult.DRAW || gameResult == GameResult.WIN)
-                            delay(1000)
-                        else delay(2000)
-                        viewModel.onEvent(GameUsecase.OnDelayLaunch(true))
+                val celebration = rememberCelebrationState()
+
+                LaunchedEffect(playerTurns) {
+                    if (viewModel.userMoveState.value){
+                        celebration.triggerMove(if(!playerTurns) 1 else 2)
+                        delay(200)
+                        viewModel.onEvent(GameUsecase.UserMove(false))
                     }
+
+
+                    if (gameResult != GameResult.NONE && gameResult != GameResult.DRAW){
+                        celebration.triggerWin(if((gameResult != GameResult.NONE && gameResult != GameResult.DRAW) ) {if (playerTurns) 1 else 2} else 0, listOf(
+                            Offset(250F,500F),
+//                          Offset(300F,300F),
+//                          Offset(400F,400F),
+//                          Offset(500F,500F),
+                            ))
+                    }
+
+                    if (gameResult != GameResult.NONE && gameResult == GameResult.DRAW){
+                        celebration.triggerDraw()
+                    }
+
                 }
-                if (gameResult != GameResult.NONE && isDelayed) {
-                    Box(
+
+
+
+
+
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(color = ThemePicker.primaryColor.value)
-                            .padding(horizontal = 30.dp),
-                        contentAlignment = Alignment.Center
+                        ,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
+                        Spacer(
                             modifier = Modifier
-                                .fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            when (gameResult) {
-                                GameResult.WIN -> {
-                                    GameDialogue.GameWinDialogue(
-                                        winnerUsername = getWinnerName(playerTurns),
-                                        dialogueButtonText = "Play Again",
-                                        onCloseEvent = {
-                                            findNavController().popBackStack()
-                                            findNavController().navigateUp()
-                                            viewModel.onEvent(GameUsecase.GameExitEvent)
-                                        },
-                                        commonViewModel = commonViewModel
-                                    ) {
-                                        viewModel.onEvent(GameUsecase.OnGameRetry)
-                                        if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.FOUR_PLAYER || gameMode == GameMode.AI))
-                                            viewModel.onEvent(GameUsecase.OnClearGameBoard)
-                                    }
-                                }
+                                .fillMaxWidth()
+                                .height(10.dp)
+                        )
 
-                                GameResult.DRAW, GameResult.LOSE -> {
-                                    if (!acceptDialogState) {
-                                        GameDialogue.GameDrawLoseDialogue(
-                                            gameResult = gameResult,
-                                            commonViewModel = commonViewModel,
+                        ProgressTimer(
+                            userTimeOutPulsatingWarning = userTimeOutPulsatingWarning,
+                            timeLimitAnimation = timeLimitAnimation,
+                            playerTurns = playerTurns,
+                            avatar = getCurrentAvatar(
+                                gameMode,
+                                currentUserId,
+                                friendUserId,
+                                playerTurns,
+                                multiplayerTurn
+                            ),
+                            currentUserId = currentUserId,
+                            gameMode = gameMode,
+                            userId = userId,
+                            playerTurn = multiplayerTurn,
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(20.dp)
+                        )
+                        GameDivider()
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(40.dp)
+                        )
+                        GameBoard(
+                            crossList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerTwoData else playerOneData,
+                            rightList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerOneData else playerTwoData,
+                            player3List = playerThreeData,
+                            player4List = playerFourData,
+                            userId = userId,
+                            currentUserId = currentUserId,
+                            gameMode = gameMode,
+                            gameCellList = calculateCellList(),
+                            columnCount = calculateBoardColumnCount(),
+                            boardHeight = calculateBoardHeight(),
+                            winnerIndexList = if (boardType == BoardType.THREEX3) winnerIndexList else GameWinner.winnerIndexList.value,
+                            isWinner = gameResult != GameResult.NONE && gameResult != GameResult.DRAW,
+                            isPlayerMoved = !playerTurns,
+                            onMove = { index ->
+                                Log.i("HIDDEN_BUG", "onCreateView: ${index}")
+                                gameSound.pieceClick1MovingSound()
+                                viewModel.onEvent(GameUsecase.OnUserTick(index))
+                                viewModel.onEvent(GameUsecase.UserMove(true))
+
+                            },
+                            onAIMove = {
+                                Log.i("AI_MOVE", "onCreateView: On AI Move")
+                                gameSound.pieceClick2MovingSound()
+                                viewModel.onEvent(GameUsecase.OnAIMove)
+                            },
+                            playerIcons = commonViewModel.getResourceIdList(),
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(40.dp)
+                        )
+                        GameDivider()
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(20.dp)
+                        )
+                    }
+                    if (gameResult != GameResult.NONE) {
+                        LaunchedEffect(Unit) {
+                            if (gameResult == GameResult.DRAW || gameResult == GameResult.WIN)
+                                delay(1000)
+                            else delay(2000)
+                            viewModel.onEvent(GameUsecase.OnDelayLaunch(true))
+                        }
+                    }
+                    if (gameResult != GameResult.NONE && isDelayed) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(color = ThemePicker.primaryColor.value)
+                                .padding(horizontal = 30.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                when (gameResult) {
+                                    GameResult.WIN -> {
+                                        GameDialogue.GameWinDialogue(
+                                            winnerUsername = getWinnerName(playerTurns),
+                                            dialogueButtonText = "Play Again",
                                             onCloseEvent = {
                                                 findNavController().popBackStack()
                                                 findNavController().navigateUp()
                                                 viewModel.onEvent(GameUsecase.GameExitEvent)
-                                            }
+                                            },
+                                            commonViewModel = commonViewModel
                                         ) {
                                             viewModel.onEvent(GameUsecase.OnGameRetry)
-                                            if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.AI))
+                                            if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.FOUR_PLAYER || gameMode == GameMode.AI))
                                                 viewModel.onEvent(GameUsecase.OnClearGameBoard)
                                         }
                                     }
-                                }
 
-                                else -> {}
+                                    GameResult.DRAW, GameResult.LOSE -> {
+                                        if (!acceptDialogState) {
+                                            GameDialogue.GameDrawLoseDialogue(
+                                                gameResult = gameResult,
+                                                commonViewModel = commonViewModel,
+                                                onCloseEvent = {
+                                                    findNavController().popBackStack()
+                                                    findNavController().navigateUp()
+                                                    viewModel.onEvent(GameUsecase.GameExitEvent)
+                                                }
+                                            ) {
+                                                viewModel.onEvent(GameUsecase.OnGameRetry)
+                                                if ((gameMode == GameMode.TWO_PLAYER || gameMode == GameMode.AI))
+                                                    viewModel.onEvent(GameUsecase.OnClearGameBoard)
+                                            }
+                                        }
+                                    }
+
+                                    else -> {}
+                                }
                             }
                         }
                     }
-                }
-                if (onBackPress || !inGame) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = ThemePicker.primaryColor.value)
-                            .clickable { }
-                            .padding(horizontal = 30.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
+                    if (onBackPress || !inGame) {
+                        Box(
                             modifier = Modifier
-                                .fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                                .fillMaxSize()
+                                .background(color = ThemePicker.primaryColor.value)
+                                .clickable { }
+                                .padding(horizontal = 30.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            GameDialogue.GameDialog(
-                                onExitEvent = {
-                                    viewModel.onEvent(GameUsecase.GameExitEvent)
-                                    findNavController().popBackStack()
-                                    findNavController().navigateUp()
-                                    viewModel.onEvent(GameUsecase.OnBackPress(false))
-                                },
-                                onContinueEvent = {
-                                    viewModel.onEvent(GameUsecase.OnBackPress(false))
-                                },
-                                titleText = "Do you really want to exit ?",
-                                commonViewModel = commonViewModel
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                GameDialogue.GameDialog(
+                                    onExitEvent = {
+                                        viewModel.onEvent(GameUsecase.GameExitEvent)
+                                        findNavController().popBackStack()
+                                        findNavController().navigateUp()
+                                        viewModel.onEvent(GameUsecase.OnBackPress(false))
+                                    },
+                                    onContinueEvent = {
+                                        viewModel.onEvent(GameUsecase.OnBackPress(false))
+                                    },
+                                    titleText = "Do you really want to exit ?",
+                                    commonViewModel = commonViewModel
+                                )
+                            }
                         }
                     }
-                }
-                if (requestDialogState) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = ThemePicker.primaryColor.value)
-                            .clickable { }
-                            .padding(horizontal = 30.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
+                    if (requestDialogState) {
+                        Box(
                             modifier = Modifier
-                                .fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                                .fillMaxSize()
+                                .background(color = ThemePicker.primaryColor.value)
+                                .clickable { }
+                                .padding(horizontal = 30.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            GameDialogue.PlayRequestBox(
-                                commonViewModel = commonViewModel,
-                                onCloseClick = {
-                                    viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
-                                    viewModel.onEvent(GameUsecase.OnClearGameBoard)
-                                    findNavController().navigateUp()
-                                })
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                GameDialogue.PlayRequestBox(
+                                    commonViewModel = commonViewModel,
+                                    onCloseClick = {
+                                        viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
+                                        viewModel.onEvent(GameUsecase.OnClearGameBoard)
+                                        findNavController().navigateUp()
+                                    })
+                            }
                         }
                     }
-                }
-                if (acceptDialogState) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = ThemePicker.primaryColor.value)
-                            .clickable { }
-                            .padding(horizontal = 30.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
+                    if (acceptDialogState) {
+                        Box(
                             modifier = Modifier
-                                .fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                                .fillMaxSize()
+                                .background(color = ThemePicker.primaryColor.value)
+                                .clickable { }
+                                .padding(horizontal = 30.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            GameDialogue.GameDialog(
-                                onExitEvent = {
-                                    viewModel.onEvent(GameUsecase.OnAcceptPlayAgainRequest)
-                                },
-                                onContinueEvent = {
-                                    viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
-                                    findNavController().popBackStack()
-                                    findNavController().navigateUp()
-                                },
-                                headerText = "Play Request",
-                                titleText = "Do you want to play again ?",
-                                buttonText = "Yes",
-                                commonViewModel = commonViewModel
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                GameDialogue.GameDialog(
+                                    onExitEvent = {
+                                        viewModel.onEvent(GameUsecase.OnAcceptPlayAgainRequest)
+                                    },
+                                    onContinueEvent = {
+                                        viewModel.onEvent(GameUsecase.OnCancelPlayRequest)
+                                        findNavController().popBackStack()
+                                        findNavController().navigateUp()
+                                    },
+                                    headerText = "Play Request",
+                                    titleText = "Do you want to play again ?",
+                                    buttonText = "Yes",
+                                    commonViewModel = commonViewModel
+                                )
+                            }
                         }
                     }
+
+
+                    PlayerCelebrationOverlay(celebration, Modifier.matchParentSize())
+
                 }
+
             }
+
         }
     }
 

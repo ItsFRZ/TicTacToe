@@ -172,8 +172,15 @@ class GameViewModel(
         }
     }
 
+    private val _userMoveState : MutableState<Boolean> = mutableStateOf(false)
+    val userMoveState = _userMoveState
+
+
     fun onEvent(event : GameUsecase){
         when(event){
+            is GameUsecase.UserMove -> {
+                _userMoveState.value = event.state
+            }
             is GameUsecase.OnUserTick -> {
                 if (gameMode == GameMode.TWO_PLAYER){
                     if (_isUserTurnsComplete.value){

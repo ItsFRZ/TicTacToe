@@ -26,7 +26,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
-import com.itsfrz.tictactoe.common.background.appBackground
 import com.itsfrz.tictactoe.common.components.CustomButton
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.GameMode

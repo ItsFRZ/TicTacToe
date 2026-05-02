@@ -33,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
@@ -41,7 +40,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
-import com.itsfrz.tictactoe.common.background.parallax.TicTacToeParallaxContainer
 import com.itsfrz.tictactoe.common.background.refined.AnimatedGameBackground
 import com.itsfrz.tictactoe.common.components.CustomCircleIconButton
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
@@ -54,7 +52,6 @@ import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.InternetHelper
 import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.functionality.ShareInfo
-import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore

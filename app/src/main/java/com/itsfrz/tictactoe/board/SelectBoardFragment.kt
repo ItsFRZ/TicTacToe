@@ -29,7 +29,6 @@ import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.board.components.BoardTypeComponent
 import com.itsfrz.tictactoe.board.components.SelectedBoardIndicator
 import com.itsfrz.tictactoe.board.usecase.SelectBoardUseCase
-import com.itsfrz.tictactoe.common.background.appBackground
 import com.itsfrz.tictactoe.common.components.CustomButton
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.BoardType
