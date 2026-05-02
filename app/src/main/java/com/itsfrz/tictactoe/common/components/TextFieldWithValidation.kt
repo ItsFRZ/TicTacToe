@@ -100,12 +100,13 @@ fun TextFieldWithValidation(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(horizontal = 62.dp)
+                    .padding(horizontal = 62.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     style = errorMessage,
                     text = validationMessage,
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Center
                 )
             }
         }

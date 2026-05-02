@@ -47,6 +47,7 @@ import com.itsfrz.tictactoe.common.enums.PlayerTurn
 import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.GameWinner
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
+import com.itsfrz.tictactoe.common.functionality.isScreenTV
 import com.itsfrz.tictactoe.common.state.EssentialInfo
 import com.itsfrz.tictactoe.common.state.IEssentialInfo
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
@@ -264,11 +265,19 @@ class GameFragment : Fragment() {
                                 .height(20.dp)
                         )
                         GameDivider()
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(40.dp)
-                        )
+                        if (isScreenTV(requireContext())){
+                            Spacer(
+                                modifier = Modifier
+                                    .height(100.dp)
+                                    .fillMaxWidth()
+                            )
+                        }else{
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                            )
+                        }
                         GameBoard(
                             crossList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerTwoData else playerOneData,
                             rightList = if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM || gameMode == GameMode.AI || gameMode == GameMode.FOUR_PLAYER) playerOneData else playerTwoData,
@@ -279,7 +288,7 @@ class GameFragment : Fragment() {
                             gameMode = gameMode,
                             gameCellList = calculateCellList(),
                             columnCount = calculateBoardColumnCount(),
-                            boardHeight = calculateBoardHeight(),
+                            boardHeight = calculateBoardHeight(requireContext()),
                             winnerIndexList = if (boardType == BoardType.THREEX3) winnerIndexList else GameWinner.winnerIndexList.value,
                             isWinner = gameResult != GameResult.NONE && gameResult != GameResult.DRAW,
                             isPlayerMoved = !playerTurns,
@@ -297,11 +306,19 @@ class GameFragment : Fragment() {
                             },
                             playerIcons = commonViewModel.getResourceIdList(),
                         )
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(40.dp)
-                        )
+                        if (isScreenTV(requireContext())){
+                            Spacer(
+                                modifier = Modifier
+                                    .height(100.dp)
+                                    .fillMaxWidth()
+                            )
+                        }else{
+                            Spacer(
+                                modifier = Modifier
+                                    .height(40.dp)
+                                    .fillMaxWidth()
+                            )
+                        }
                         GameDivider()
                         Spacer(
                             modifier = Modifier
@@ -334,6 +351,7 @@ class GameFragment : Fragment() {
                                 when (gameResult) {
                                     GameResult.WIN -> {
                                         GameDialogue.GameWinDialogue(
+                                            context = requireContext(),
                                             winnerUsername = getWinnerName(playerTurns),
                                             dialogueButtonText = "Play Again",
                                             onCloseEvent = {
@@ -352,6 +370,7 @@ class GameFragment : Fragment() {
                                     GameResult.DRAW, GameResult.LOSE -> {
                                         if (!acceptDialogState) {
                                             GameDialogue.GameDrawLoseDialogue(
+                                                context = requireContext(),
                                                 gameResult = gameResult,
                                                 commonViewModel = commonViewModel,
                                                 onCloseEvent = {
@@ -532,11 +551,19 @@ class GameFragment : Fragment() {
         }
     }
 
-    private fun calculateBoardHeight(): Dp {
-        return when (boardType) {
-            BoardType.THREEX3 -> 100.dp
-            BoardType.FOURX4 -> 70.dp
-            BoardType.FIVEX5 -> 55.dp
+    private fun calculateBoardHeight(context: Context): Dp {
+        return if (isScreenTV(requireContext())){
+            when (boardType) {
+                BoardType.THREEX3 -> 180.dp
+                BoardType.FOURX4 -> 120.dp
+                BoardType.FIVEX5 -> 106.dp
+            }
+        }else{
+            when (boardType) {
+                BoardType.THREEX3 -> 100.dp
+                BoardType.FOURX4 -> 70.dp
+                BoardType.FIVEX5 -> 55.dp
+            }
         }
     }
 

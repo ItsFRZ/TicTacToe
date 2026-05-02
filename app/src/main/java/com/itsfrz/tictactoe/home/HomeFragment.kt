@@ -52,6 +52,7 @@ import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.InternetHelper
 import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.functionality.ShareInfo
+import com.itsfrz.tictactoe.common.functionality.isScreenTV
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
@@ -177,7 +178,11 @@ class HomeFragment : Fragment() {
                         ,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Spacer(modifier = Modifier.fillMaxHeight(0.02F).fillMaxWidth())
+                        if (isScreenTV(requireContext())){
+                            Spacer(modifier = Modifier.fillMaxHeight(0.2F).fillMaxWidth())
+                        }else{
+                            Spacer(modifier = Modifier.fillMaxHeight(0.04F).fillMaxWidth())
+                        }
                         TitleTextComponent()
                         Spacer(modifier = Modifier.fillMaxHeight(0.08F).fillMaxWidth())
                         LazyColumn(
@@ -245,19 +250,19 @@ class HomeFragment : Fragment() {
                                     },
                                     buttonText = "4 Player"
                                 )
-                                Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
-                                CustomOutlinedButton(
-                                    buttonClick = {
-                                        gameSound.clickSound()
-                                        commonViewModel.performHapticVibrate(requireView())
-                                        findNavController().navigate(
-                                            resId = R.id.onlineModeFragment,
-                                            args = null,
-                                            navOptions = NavOptions.navOptionStack
-                                        )
-                                    },
-                                    buttonText = "Online"
-                                )
+//                                Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
+//                                CustomOutlinedButton(
+//                                    buttonClick = {
+//                                        gameSound.clickSound()
+//                                        commonViewModel.performHapticVibrate(requireView())
+//                                        findNavController().navigate(
+//                                            resId = R.id.onlineModeFragment,
+//                                            args = null,
+//                                            navOptions = NavOptions.navOptionStack
+//                                        )
+//                                    },
+//                                    buttonText = "Online"
+//                                )
                                 Spacer(
                                     modifier = Modifier
                                         .height(60.dp)

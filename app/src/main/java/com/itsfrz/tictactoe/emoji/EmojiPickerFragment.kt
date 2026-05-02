@@ -33,6 +33,7 @@ import com.itsfrz.tictactoe.common.enums.PlayerCount
 import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
+import com.itsfrz.tictactoe.common.functionality.isScreenTV
 import com.itsfrz.tictactoe.common.usecase.CommonUseCase
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.emoji.components.EmojiDialogue
@@ -146,11 +147,22 @@ class EmojiPickerFragment : Fragment() {
                         },
                         selectedEmojiListCount = selectedEmojiList.size + 1
                     )
-                    Spacer(
-                        modifier = Modifier
-                            .height(20.dp)
-                            .fillMaxWidth()
-                    )
+
+                    if (isScreenTV(requireContext())){
+                        Spacer(
+                            modifier = Modifier
+                                .height(100.dp)
+                                .fillMaxWidth()
+                        )
+                    }else{
+                        Spacer(
+                            modifier = Modifier
+                                .height(20.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+
+
                     CustomButton(
                         onButtonClick = {
                             commonViewModel.performHapticVibrate(requireView())
