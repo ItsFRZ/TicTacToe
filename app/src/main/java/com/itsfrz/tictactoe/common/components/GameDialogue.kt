@@ -54,7 +54,7 @@ object GameDialogue{
         }
         Card(
             modifier = Modifier
-                .fillMaxWidth(7f)
+                .fillMaxWidth(.7f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(8.dp),
             elevation = 10.dp
@@ -151,7 +151,7 @@ object GameDialogue{
         }
         Card(
             modifier = Modifier
-                .fillMaxWidth(7f)
+                .fillMaxWidth(.7f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(2.dp),
             elevation = 10.dp
@@ -312,7 +312,7 @@ object GameDialogue{
         val view = LocalView.current
         Card(
             modifier = Modifier
-                .fillMaxWidth(7f)
+                .fillMaxWidth(.7f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(2.dp),
             elevation = 10.dp
