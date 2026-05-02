@@ -215,11 +215,7 @@ class GameFragment : Fragment() {
 
                     if (gameResult != GameResult.NONE && gameResult != GameResult.DRAW){
                         celebration.triggerWin(if((gameResult != GameResult.NONE && gameResult != GameResult.DRAW) ) {if (playerTurns) 1 else 2} else 0, listOf(
-                            Offset(250F,500F),
-//                          Offset(300F,300F),
-//                          Offset(400F,400F),
-//                          Offset(500F,500F),
-                            ))
+                            Offset(250F,500F)))
                     }
 
                     if (gameResult != GameResult.NONE && gameResult == GameResult.DRAW){

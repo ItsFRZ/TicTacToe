@@ -228,8 +228,8 @@ class GameViewModel(
             is GameUsecase.OnAIMove -> {
                 if (gameMode == GameMode.AI && gameResult.value == GameResult.NONE){
                     viewModelScope.launch {
-                        val aiValue = viewModelScope.async(Dispatchers.Default) {
-                            delay(if (boardType == BoardType.THREEX3) 50 else 0)
+                        val aiValue = async(Dispatchers.IO) {
+                            delay(if (boardType == BoardType.THREEX3) 120 else 0)
                             aiMove()
                         }.await()
                         _playerTwoIndex.value.add(aiValue)
@@ -739,6 +739,7 @@ class GameViewModel(
         _playerThreeIndex.value = arrayListOf()
         _playerFourIndex.value = arrayListOf()
         _userTimer.value = 0F
+        _userMoveState.value = false
         job?.cancel()
         timeLimitStart()
         if (gameMode == GameMode.AI)
