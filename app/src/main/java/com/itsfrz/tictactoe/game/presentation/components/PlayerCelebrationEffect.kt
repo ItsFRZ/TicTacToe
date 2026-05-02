@@ -315,40 +315,74 @@ fun rememberCelebrationState(): CelebrationState = remember { CelebrationState()
  */
 private enum class SoundShape { SQUARE, SINE, TRIANGLE }
 
+
 private object RetroSoundEngine {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     fun play(
-        freqsHz:      IntArray,
-        shape:        SoundShape,
-        noteDuration: Float = 0.09f,   // seconds per note
-        volume:       Float = 0.52f,
+        freqsHz: IntArray,
+        shape: SoundShape,
+        noteDuration: Float = 0.11f,   // slightly longer = less sharp
+        volume: Float = 0.28f,         // reduced default volume
     ) {
         scope.launch {
             val sampleRate = 44100
+
             freqsHz.forEach { freq ->
                 val sampleCount = (sampleRate * noteDuration).toInt()
                 val buf = ShortArray(sampleCount)
 
+                var prevSample = 0f
+
                 for (i in 0 until sampleCount) {
                     val t = i.toFloat() / sampleRate
-                    // Attack-Decay envelope (punchy retro feel)
-                    val attackTime = 0.006f
+                    val phase = (t * freq) % 1f
+
+                    // Softer ADSR-style envelope (less punchy)
+                    val attackTime = 0.01f
+                    val releaseStart = noteDuration * 0.65f
+
                     val env = when {
-                        t < attackTime -> t / attackTime
-                        else           -> exp(-((t - attackTime) * 20f))
+                        t < attackTime ->
+                            (t / attackTime).coerceIn(0f, 1f)
+
+                        t > releaseStart ->
+                            exp(-((t - releaseStart) * 8f)) // gentle fade out
+
+                        else -> 1f
                     }
-                    val wave: Float = when (shape) {
-                        SoundShape.SQUARE   ->
-                            if ((t * freq) % 1f < 0.5f) 1f else -1f
-                        SoundShape.SINE     ->
+
+                    // Soft waveform shaping (reduces harsh harmonics)
+                    val rawWave = when (shape) {
+                        SoundShape.SQUARE -> {
+                            val s = sin(2f * PI.toFloat() * freq * t)
+                            // soft square (sigmoid-ish shaping)
+                            tanh(s * 2.2f)
+                        }
+
+                        SoundShape.SINE -> {
                             sin(2f * PI.toFloat() * freq * t)
-                        SoundShape.TRIANGLE ->
-                            abs(((t * freq) % 1f) - 0.5f) * 4f - 1f
+                        }
+
+                        SoundShape.TRIANGLE -> {
+                            val tri = abs(phase - 0.5f) * 4f - 1f
+                            // soften edges
+                            sin(tri * (PI.toFloat() / 2f))
+                        }
                     }
-                    buf[i] = (wave * env * volume * Short.MAX_VALUE)
-                        .toLong()
-                        .coerceIn(Short.MIN_VALUE.toLong(), Short.MAX_VALUE.toLong())
+
+                    // gentle smoothing (simple low-pass feel)
+                    val smoothed = (rawWave * 0.6f) + (prevSample * 0.4f)
+                    prevSample = smoothed
+
+                    // final output with soft limiting
+                    val sample = smoothed * env * volume
+
+                    val softClipped = tanh(sample) // prevents ear-piercing peaks
+
+                    buf[i] = (softClipped * Short.MAX_VALUE)
+                        .toInt()
+                        .coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
                         .toShort()
                 }
 
@@ -373,7 +407,8 @@ private object RetroSoundEngine {
                 try {
                     track.write(buf, 0, buf.size)
                     track.play()
-                    delay((noteDuration * 1000f).toLong() + 12L)
+
+                    delay((noteDuration * 1000f).toLong())
                 } finally {
                     track.stop()
                     track.release()
