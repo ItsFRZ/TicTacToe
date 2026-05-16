@@ -227,24 +227,54 @@ class GameViewModel(
                 }
             }
             is GameUsecase.OnAIMove -> {
-                if (gameMode == GameMode.AI && gameResult.value == GameResult.NONE){
-                    viewModelScope.launch(Dispatchers.Main) {
-                        val aiValue = async(Dispatchers.Main.immediate) {
-                            val nextMove = aiMove()
-                            delay(if (boardType == BoardType.THREEX3) 200 else 0)
-                            nextMove
-                        }.await()
+                if (gameMode == GameMode.AI &&
+                    gameResult.value == GameResult.NONE
+                ) {
+
+                    viewModelScope.launch {
+
+                        // Human-like reaction timing
+                        val thinkingDelay = when (boardType) {
+                            BoardType.THREEX3 -> (250L..650L).random()
+                            BoardType.FOURX4 -> (450L..1200L).random()
+                            BoardType.FIVEX5 -> (700L..1800L).random()
+                        }
+
+                        // Optional: make first move faster
+                        val isEarlyGame =
+                            _playerOneIndex.value.size +
+                                    _playerTwoIndex.value.size < 3
+
+                        delay(
+                            if (isEarlyGame)
+                                thinkingDelay / 2
+                            else
+                                thinkingDelay
+                        )
+
+                        // AI computation OFF main thread
+                        val aiValue = withContext(Dispatchers.Default) {
+                            aiMove()
+                        }
+
+                        // Small execution delay
+                        // Feels like hand movement/tap
+                        delay((80L..180L).random())
+
+                        // Immutable update preferred
                         _playerTwoIndex.value.add(aiValue)
+
                         setGameMap(aiValue)
+
                         playGame()
                     }
                 }
             }
             is GameUsecase.OnGameRetry -> {
-                if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
-                    _requestDialogState.value = true
-                    playAgainRequest()
-                }
+//                if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
+//                    _requestDialogState.value = true
+//                    playAgainRequest()
+//                }
             }
             is GameUsecase.OnBackPress -> {
                 _onBackPress.value = event.backPressState
@@ -270,10 +300,10 @@ class GameViewModel(
                 _gameSessionId.value = event.sessionId
             }
             is GameUsecase.OnClearGameBoard -> {
-                if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM) {
-                    removeGameBoard()
-                    updatePlayGround()
-                }
+//                if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM) {
+//                    removeGameBoard()
+//                    updatePlayGround()
+//                }
                 resetGameBoard()
             }
             is GameUsecase.OnUpdateCurrentUserId -> {
@@ -767,9 +797,7 @@ class GameViewModel(
                 _offlineUserTurn.value = true
             }
             if (!_isUserTurnsComplete.value) {
-                viewModelScope.launch(Dispatchers.Default) {
-                    onEvent(GameUsecase.OnAIMove)
-                }
+                onEvent(GameUsecase.OnAIMove)
             }
         }
     }
