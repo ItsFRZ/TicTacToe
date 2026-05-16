@@ -48,4 +48,8 @@
         android:id="@+id/statsFragment"
         android:name="com.itsfrz.tictactoe.stats.StatsFragment"
         android:label="StatsFragment" />
+    <fragment
+        android:id="@+id/rewardFragment"
+        android:name="com.itsfrz.tictactoe.reward.RewardFragment"
+        android:label="RewardFragment" />
 </navigation>

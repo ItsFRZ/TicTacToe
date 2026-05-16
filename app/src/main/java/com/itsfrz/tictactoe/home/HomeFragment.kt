@@ -76,6 +76,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import com.itsfrz.tictactoe.reward.RewardFragment
 
 class HomeFragment : Fragment() {
 
@@ -236,8 +237,7 @@ class HomeFragment : Fragment() {
                                                             CustomCircleTextButton(iconButtonClick = {
                                                                 gameSound.clickSound()
                                                                 commonViewModel.performHapticVibrate(requireView())
-                                                                scope.launch(Dispatchers.Main) {
-                                                                }
+                                                                findNavController().navigate(R.id.rewardFragment)
                                                             }, text = "${item+1}")
 
                                                         }
@@ -254,8 +254,7 @@ class HomeFragment : Fragment() {
                                                             CustomCircleTextButton(iconButtonClick = {
                                                                 gameSound.clickSound()
                                                                 commonViewModel.performHapticVibrate(requireView())
-                                                                scope.launch(Dispatchers.Main) {
-                                                                }
+                                                                findNavController().navigate(R.id.rewardFragment)
                                                             }, text = "${item+1}")
 
                                                         }

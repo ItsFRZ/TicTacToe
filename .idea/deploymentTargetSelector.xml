@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-05-02T10:21:32.151804418Z">
+        <DropdownSelection timestamp="2026-05-16T12:43:46.952994492Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/faraz/.android/avd/TV_Home.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/faraz/.android/avd/Pixel_2.avd" />
             </handle>
           </Target>
         </DropdownSelection>
