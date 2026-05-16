@@ -74,8 +74,8 @@ private val MOUNTAIN_LAYERS = listOf(
 // ════════════════════════════════════════════════════════════════════════════
 
 private val EMOJI_POOL = listOf(
-    "🌟","✨","🎮","🎯","🎲","🏆","💫","🔥",
-    "🌈","🎪","⭐","🌙","💎","🎠","🎡","🍄","🦋","🪄","🎈","🌸"
+    "🌟","✨","💀","🎯","🎲","💫","🔥", "🌈","🎪","🔴","🌙","💎", "🎠","🎡","🍄",
+    "🦋","🎈","🌸", "👾","🪩","🧋","🧩", "🎨","🍄","🦄","🐳","🚀","📀","🫠","🕹️"
 )
 
 private class Particle(
@@ -202,9 +202,9 @@ fun AnimatedGameBackground(modifier: Modifier = Modifier) {
         drawStars      (t, w, h)
         drawMoonGlow   (    w, h)
         drawMountains  (t, w, h)
-        drawPixelWater (t, w, h)
+//        drawPixelWater (t, w, h)
         drawIntoCanvas { c -> paintEmojis(c.nativeCanvas, particles) }
-        drawScanlines  (w, h)
+//        drawScanlines  (w, h)
     }
 }
 

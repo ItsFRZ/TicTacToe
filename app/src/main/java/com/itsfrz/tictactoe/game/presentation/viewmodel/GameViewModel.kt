@@ -230,8 +230,9 @@ class GameViewModel(
                 if (gameMode == GameMode.AI && gameResult.value == GameResult.NONE){
                     viewModelScope.launch(Dispatchers.Main) {
                         val aiValue = async(Dispatchers.Main.immediate) {
+                            val nextMove = aiMove()
                             delay(if (boardType == BoardType.THREEX3) 200 else 0)
-                            aiMove()
+                            nextMove
                         }.await()
                         _playerTwoIndex.value.add(aiValue)
                         setGameMap(aiValue)
@@ -733,6 +734,7 @@ class GameViewModel(
     }
 
     private fun resetGameBoard(){
+        job?.cancel()
         setUpDynamicBoard()
         _gameResult.value = GameResult.NONE
         _playerOneIndex.value = arrayListOf()
@@ -741,8 +743,6 @@ class GameViewModel(
         _playerFourIndex.value = arrayListOf()
         _userTimer.value = 0F
         _userMoveState.value = false
-        job?.cancel()
-        timeLimitStart()
         if (gameMode == GameMode.AI)
             setAIRetryTurn()
         else if (gameMode == GameMode.FOUR_PLAYER)
@@ -754,6 +754,7 @@ class GameViewModel(
         _userWarning.value = false
         _onlineGameWinner.value = ""
         _gameBoardState.value = BoardState()
+        timeLimitStart()
     }
 
     private fun setAIRetryTurn() {
@@ -766,8 +767,7 @@ class GameViewModel(
                 _offlineUserTurn.value = true
             }
             if (!_isUserTurnsComplete.value) {
-                viewModelScope.launch(Dispatchers.Main.immediate) {
-                    delay(200)
+                viewModelScope.launch(Dispatchers.Default) {
                     onEvent(GameUsecase.OnAIMove)
                 }
             }

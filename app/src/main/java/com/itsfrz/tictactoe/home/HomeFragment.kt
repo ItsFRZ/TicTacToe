@@ -17,6 +17,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,12 +29,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -42,6 +49,7 @@ import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.background.refined.AnimatedGameBackground
 import com.itsfrz.tictactoe.common.components.CustomCircleIconButton
+import com.itsfrz.tictactoe.common.components.CustomCircleTextButton
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
 import com.itsfrz.tictactoe.common.components.GameDialogue
 import com.itsfrz.tictactoe.common.components.TitleTextComponent
@@ -168,9 +176,100 @@ class HomeFragment : Fragment() {
                         animation = tween(18000, easing = LinearEasing)
                     )
                 )
+                val listState = rememberLazyListState()
 
                 Box {
                     AnimatedGameBackground(modifier = Modifier.fillMaxSize())
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        Image(painter = painterResource(R.drawable.bg_wave), contentDescription = "Wave Background", contentScale = ContentScale.FillBounds)
+
+                        LazyRow(
+                            modifier = Modifier
+                                .height(136.dp)
+                                .fillMaxWidth(),
+                            state = listState,
+                            horizontalArrangement = Arrangement.spacedBy(20.dp),
+                            ) {
+                            items(100){ item ->
+                                val layoutInfo = listState.layoutInfo
+                                val visibleItem = layoutInfo.visibleItemsInfo
+                                    .firstOrNull { it.index == item }
+                                val screenCenter =
+                                    layoutInfo.viewportEndOffset / 2
+                                val itemCenter =
+                                    (visibleItem?.offset ?: 0) +
+                                            (visibleItem?.size ?: 0) / 2
+                                val distance =
+                                    (itemCenter - screenCenter).toFloat()
+                                val normalized =
+                                    (distance / screenCenter)
+                                        .coerceIn(-1f, 1f)
+                                val yOffset =
+                                    kotlin.math.abs(normalized) * 85f
+                                val scale =
+                                    1f - (kotlin.math.abs(normalized) * 0.25f)
+                                val alpha =
+                                    1f - (kotlin.math.abs(normalized) * 0.5f)
+                                Column(modifier = Modifier.fillMaxSize()
+                                    .graphicsLayer {
+                                    translationY = yOffset
+                                    scaleX = scale
+                                    scaleY = scale
+                                    this.alpha = alpha
+
+                                    rotationZ = normalized * 12f
+                                }) {
+                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+
+                                        Row(modifier = Modifier.fillMaxSize()) {
+                                            if (item%2==0){
+                                                Column(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+                                                    Row(modifier = Modifier.fillMaxHeight(0.5F)) {  }
+                                                    Row(modifier = Modifier.fillMaxHeight()) {
+                                                        Column(
+                                                            modifier = Modifier.size(36.dp),
+                                                        ) {
+
+                                                            CustomCircleTextButton(iconButtonClick = {
+                                                                gameSound.clickSound()
+                                                                commonViewModel.performHapticVibrate(requireView())
+                                                                scope.launch(Dispatchers.Main) {
+                                                                }
+                                                            }, text = "${item+1}")
+
+                                                        }
+                                                    }
+                                                }
+                                            }else{
+                                                Column(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+
+                                                    Row(modifier = Modifier.fillMaxHeight(0.5F)) {
+                                                        Column(
+                                                            modifier = Modifier.size(36.dp),
+                                                        ) {
+
+                                                            CustomCircleTextButton(iconButtonClick = {
+                                                                gameSound.clickSound()
+                                                                commonViewModel.performHapticVibrate(requireView())
+                                                                scope.launch(Dispatchers.Main) {
+                                                                }
+                                                            }, text = "${item+1}")
+
+                                                        }
+                                                    }
+
+                                                    Row(modifier = Modifier.fillMaxHeight()) {  }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
