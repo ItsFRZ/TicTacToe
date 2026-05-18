@@ -17,7 +17,10 @@ data class SettingDataStore(
     @SerialName("vibration")val vibration: Boolean = true,
     @SerialName("notification")val notification: Boolean = true,
     @SerialName("theme")val theme : GameTheme = GameTheme.THEME_BLUE,
-    @SerialName("language")val language : GameLanguage = GameLanguage.ENGLISH
+    @SerialName("language")val language : GameLanguage = GameLanguage.ENGLISH,
+    @SerialName("coinInfo") val coinInfo : Int = 500,
+    @SerialName("gameLevelInfo") val gameLevelInfo : Set<Int> = emptySet<Int>(),
+
 ){
     @Keep
     companion object{

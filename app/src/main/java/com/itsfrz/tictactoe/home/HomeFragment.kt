@@ -12,13 +12,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,30 +34,43 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.background.refined.AnimatedGameBackground
+import com.itsfrz.tictactoe.common.components.CrystalOrbButton
 import com.itsfrz.tictactoe.common.components.CustomCircleIconButton
-import com.itsfrz.tictactoe.common.components.CustomCircleTextButton
 import com.itsfrz.tictactoe.common.components.CustomOutlinedButton
 import com.itsfrz.tictactoe.common.components.GameDialogue
+import com.itsfrz.tictactoe.common.components.GameDialogue.GamePurchaseDialogue
+import com.itsfrz.tictactoe.common.components.SlotMachineIconStripComponent
 import com.itsfrz.tictactoe.common.components.TitleTextComponent
 import com.itsfrz.tictactoe.common.constants.BundleKey
+import com.itsfrz.tictactoe.common.enums.GameLevel
 import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.enums.PlayerCount
 import com.itsfrz.tictactoe.common.functionality.GameSound
@@ -61,6 +78,7 @@ import com.itsfrz.tictactoe.common.functionality.InternetHelper
 import com.itsfrz.tictactoe.common.functionality.NavOptions
 import com.itsfrz.tictactoe.common.functionality.ShareInfo
 import com.itsfrz.tictactoe.common.functionality.isScreenTV
+import com.itsfrz.tictactoe.common.usecase.CommonUseCase
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
@@ -72,11 +90,12 @@ import com.itsfrz.tictactoe.goonline.datastore.setting.SettingRepository
 import com.itsfrz.tictactoe.home.usecase.HomePageUseCase
 import com.itsfrz.tictactoe.home.viewmodel.HomePageViewModel
 import com.itsfrz.tictactoe.home.viewmodel.HomePageViewModelFactory
+import com.itsfrz.tictactoe.reward.audio.SlotSoundManager
+import com.itsfrz.tictactoe.reward.state.GameLevelMeta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import com.itsfrz.tictactoe.reward.RewardFragment
 
 class HomeFragment : Fragment() {
 
@@ -96,6 +115,9 @@ class HomeFragment : Fragment() {
     private lateinit var dataStoreRepository: GameStoreRepository
     private lateinit var settingRepository: SettingRepository
     private lateinit var commonViewModel: CommonViewModel
+    private lateinit var soundManager : SlotSoundManager
+    private var currentPurchaseLevel : Int = 0
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
@@ -125,6 +147,7 @@ class HomeFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             commonViewModel.loadUserPreference()
         }
+        soundManager = SlotSoundManager(requireContext())
     }
 
     private fun setUpOnlineConfig() {
@@ -159,6 +182,23 @@ class HomeFragment : Fragment() {
         GameDialogue.setDialogSound(gameSound)
     }
 
+    private fun onCrystalEvent(levelIndex : Int){
+        currentPurchaseLevel = levelIndex
+        commonViewModel.loadUserPreference()
+        if(commonViewModel.checkIsLevelUnlocked(levelIndex)){
+            val bundle = Bundle()
+            val url = GameLevelMeta.getLevel(currentPurchaseLevel+1)
+            bundle.putBoolean(BundleKey.SLOT_MACHINE,false)
+            bundle.putInt(BundleKey.GAME_LEVEL,currentPurchaseLevel + 1)
+            bundle.putString(BundleKey.REWARD_URL, url)
+            findNavController().navigate(resId = R.id.rewardFragment, navOptions = NavOptions.navOptionStack, args = bundle)
+            gameSound.clickSound()
+            commonViewModel.performHapticVibrate(requireView())
+        }else{
+            viewModel.onEvent(HomePageUseCase.OnPurchaseDialogEvent(true))
+        }
+    }
+
     @SuppressLint("ServiceCast")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -178,9 +218,11 @@ class HomeFragment : Fragment() {
                     )
                 )
                 val listState = rememberLazyListState()
+                val purchaseDialog = viewModel.purchaseDialog.value
 
                 Box {
                     AnimatedGameBackground(modifier = Modifier.fillMaxSize())
+
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.BottomCenter
@@ -192,7 +234,7 @@ class HomeFragment : Fragment() {
                                 .height(136.dp)
                                 .fillMaxWidth(),
                             state = listState,
-                            horizontalArrangement = Arrangement.spacedBy(20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(28.dp),
                             ) {
                             items(100){ item ->
                                 val layoutInfo = listState.layoutInfo
@@ -214,53 +256,32 @@ class HomeFragment : Fragment() {
                                     1f - (kotlin.math.abs(normalized) * 0.25f)
                                 val alpha =
                                     1f - (kotlin.math.abs(normalized) * 0.5f)
-                                Column(modifier = Modifier.fillMaxSize()
+                                Column(modifier = Modifier
+                                    .fillMaxSize()
                                     .graphicsLayer {
-                                    translationY = yOffset
-                                    scaleX = scale
-                                    scaleY = scale
-                                    this.alpha = alpha
+                                        translationY = yOffset
+                                        scaleX = scale
+                                        scaleY = scale
+                                        this.alpha = alpha
 
-                                    rotationZ = normalized * 12f
-                                }) {
+                                        rotationZ = normalized * 12f
+                                    }) {
                                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
                                         Row(modifier = Modifier.fillMaxSize()) {
-                                            if (item%2==0){
-                                                Column(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
-                                                    Row(modifier = Modifier.fillMaxHeight(0.5F)) {  }
-                                                    Row(modifier = Modifier.fillMaxHeight()) {
-                                                        Column(
-                                                            modifier = Modifier.size(36.dp),
-                                                        ) {
+                                            Column(modifier = Modifier
+                                                .fillMaxWidth()
+                                                .fillMaxHeight()) {
+                                                Row(modifier = Modifier.fillMaxHeight(0.5F)) {  }
+                                                Row(modifier = Modifier.fillMaxHeight()) {
+                                                    Column(
+                                                        modifier = Modifier.size(48.dp),
+                                                    ) {
+                                                        CrystalOrbButton(onClick = {
+                                                            onCrystalEvent(item)
+                                                        }, text = "${item+1}")
 
-                                                            CustomCircleTextButton(iconButtonClick = {
-                                                                gameSound.clickSound()
-                                                                commonViewModel.performHapticVibrate(requireView())
-                                                                findNavController().navigate(R.id.rewardFragment)
-                                                            }, text = "${item+1}")
-
-                                                        }
                                                     }
-                                                }
-                                            }else{
-                                                Column(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
-
-                                                    Row(modifier = Modifier.fillMaxHeight(0.5F)) {
-                                                        Column(
-                                                            modifier = Modifier.size(36.dp),
-                                                        ) {
-
-                                                            CustomCircleTextButton(iconButtonClick = {
-                                                                gameSound.clickSound()
-                                                                commonViewModel.performHapticVibrate(requireView())
-                                                                findNavController().navigate(R.id.rewardFragment)
-                                                            }, text = "${item+1}")
-
-                                                        }
-                                                    }
-
-                                                    Row(modifier = Modifier.fillMaxHeight()) {  }
                                                 }
                                             }
                                         }
@@ -276,6 +297,33 @@ class HomeFragment : Fragment() {
                         ,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            SlotMachineIconStripComponent {
+                                val bundle = Bundle()
+                                bundle.putBoolean(BundleKey.SLOT_MACHINE,true)
+                                bundle.putInt(BundleKey.GAME_LEVEL,0)
+                                bundle.putString(BundleKey.REWARD_URL,"")
+                                findNavController().navigate(resId = R.id.rewardFragment, navOptions = NavOptions.navOptionStack, args = bundle)
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                                    .wrapContentHeight(),
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = "${commonViewModel.goldTokens}", style = TextStyle(color = Color.White, textAlign = TextAlign.Start, fontSize = 18.sp))
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Image(modifier = Modifier.size(32.dp), painter = painterResource(R.drawable.ic_gold_coin), contentDescription = "Gold Tokens")
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
+                        }
                         if (isScreenTV(requireContext())){
                             Spacer(modifier = Modifier.fillMaxHeight(0.2F).fillMaxWidth())
                         }else{
@@ -283,6 +331,7 @@ class HomeFragment : Fragment() {
                         }
                         TitleTextComponent()
                         Spacer(modifier = Modifier.fillMaxHeight(0.08F).fillMaxWidth())
+                        Spacer(modifier = Modifier.fillMaxWidth().height(6.dp))
                         LazyColumn(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -304,7 +353,7 @@ class HomeFragment : Fragment() {
                                     },
                                     buttonText = "Computer"
                                 )
-                                Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
+                                Spacer(modifier = Modifier.height(18.dp).fillMaxWidth())
                                 CustomOutlinedButton(
                                     enabled = true,
                                     buttonClick = {
@@ -326,7 +375,7 @@ class HomeFragment : Fragment() {
                                     },
                                     buttonText = "2 Player"
                                 )
-                                Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
+                                Spacer(modifier = Modifier.height(18.dp).fillMaxWidth())
                                 CustomOutlinedButton(
                                     enabled = true,
                                     buttonClick = {
@@ -361,11 +410,7 @@ class HomeFragment : Fragment() {
 //                                    },
 //                                    buttonText = "Online"
 //                                )
-                                Spacer(
-                                    modifier = Modifier
-                                        .height(60.dp)
-                                        .fillMaxWidth()
-                                )
+                                Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
                                 CustomCircleIconButton(iconButtonClick = {
                                     gameSound.clickSound()
                                     commonViewModel.performHapticVibrate(requireView())
@@ -382,12 +427,8 @@ class HomeFragment : Fragment() {
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
-                                }, buttonIcon = R.drawable.ic_stats)
-                                Spacer(
-                                    modifier = Modifier
-                                        .height(10.dp)
-                                        .fillMaxWidth()
-                                )
+                                }, buttonIcon = R.drawable.ic_love)
+                                Spacer(modifier = Modifier.height(8.dp).fillMaxWidth())
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -419,13 +460,39 @@ class HomeFragment : Fragment() {
                                         )
                                     }, buttonIcon = R.drawable.ic_settings)
                                 }
-                                Spacer(
-                                    modifier = Modifier
-                                        .height(40.dp)
-                                        .fillMaxWidth()
-                                )
+                                Spacer(modifier = Modifier.height(28.dp).fillMaxWidth())
                             }
                         }
+                    }
+                    AnimatedVisibility(
+                        visible = purchaseDialog,
+                        enter = fadeIn() + expandIn(),
+                        exit = fadeOut()
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            GamePurchaseDialogue(
+                                context = requireContext(),
+                                levelId = currentPurchaseLevel + 1,
+                                commonViewModel = commonViewModel,
+                                onCloseEvent = {
+                                    viewModel.onEvent(HomePageUseCase.OnPurchaseDialogEvent(false))
+                                },
+                                onDialogueEvent = {
+                                    if (commonViewModel.goldTokens < (currentPurchaseLevel + 1) * 10000){
+                                        Toast.makeText(requireContext(), "Purchase Failed : Insufficient Balance", Toast.LENGTH_SHORT).show()
+                                    }else{
+                                        Log.i("PURCHASE_FLOW", "GamePurchaseDialogue: onDialogueEvent")
+                                        commonViewModel.onEvent(CommonUseCase.OnLevelPurchase(token = (currentPurchaseLevel + 1) * 10000, levelId = currentPurchaseLevel+1))
+                                        soundManager.cash()
+                                    }
+                                    viewModel.onEvent(HomePageUseCase.OnPurchaseDialogEvent(false))
+                                }
+                            )
+                        }
+
                     }
                 }
             }

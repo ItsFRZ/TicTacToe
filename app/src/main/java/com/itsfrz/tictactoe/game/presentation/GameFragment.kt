@@ -14,25 +14,37 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -50,6 +62,7 @@ import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.functionality.isScreenTV
 import com.itsfrz.tictactoe.common.state.EssentialInfo
 import com.itsfrz.tictactoe.common.state.IEssentialInfo
+import com.itsfrz.tictactoe.common.usecase.CommonUseCase
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.game.presentation.components.GameBoard
@@ -202,18 +215,13 @@ class GameFragment : Fragment() {
                 val inGame = viewModel.inGame.value
                 val requestDialogState = viewModel.requestDialogState.value
                 val acceptDialogState = viewModel.acceptDialogState.value
-
-
                 val celebration = rememberCelebrationState()
-
                 LaunchedEffect(playerTurns) {
                     if (viewModel.userMoveState.value){
                         celebration.triggerMove(if(!playerTurns) 1 else 2)
                         delay(200)
                         viewModel.onEvent(GameUsecase.UserMove(false))
                     }
-
-
                     if (gameResult != GameResult.NONE && gameResult != GameResult.DRAW){
                         celebration.triggerWin(if((gameResult != GameResult.NONE && gameResult != GameResult.DRAW) ) {if (playerTurns) 1 else 2} else 0, listOf(
                             Offset(250F,500F)))
@@ -222,13 +230,7 @@ class GameFragment : Fragment() {
                     if (gameResult != GameResult.NONE && gameResult == GameResult.DRAW){
                         celebration.triggerDraw()
                     }
-
                 }
-
-
-
-
-
                 Box(modifier = Modifier.fillMaxSize()) {
                     Column(
                         modifier = Modifier
@@ -237,12 +239,19 @@ class GameFragment : Fragment() {
                         ,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(10.dp)
-                        )
-
+                        if (gameMode == GameMode.AI){
+                            Row(
+                                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = "${commonViewModel.goldTokens}", style = TextStyle(color = Color.White, textAlign = TextAlign.Start, fontSize = 18.sp))
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Image(modifier = Modifier.size(32.dp), painter = painterResource(R.drawable.ic_gold_coin), contentDescription = "Gold Tokens")
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
+                        }
+                        Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
                         ProgressTimer(
                             userTimeOutPulsatingWarning = userTimeOutPulsatingWarning,
                             timeLimitAnimation = timeLimitAnimation,
@@ -358,6 +367,13 @@ class GameFragment : Fragment() {
                                                 findNavController().popBackStack()
                                                 findNavController().navigateUp()
                                                 viewModel.onEvent(GameUsecase.GameExitEvent)
+                                            },
+                                            onFinalEvent = {
+                                                if (gameMode == GameMode.AI && !playerTurns){
+                                                    commonViewModel.onEvent(CommonUseCase.OnCreditWinningToken)
+                                                }else{
+                                                    commonViewModel.onEvent(CommonUseCase.OnDebitLosingToken)
+                                                }
                                             },
                                             commonViewModel = commonViewModel
                                         ) {

@@ -25,6 +25,10 @@ class HomePageViewModel(
     private val _isUsernameExists : MutableState<Boolean> = mutableStateOf(false)
     val isUsernameExists : State<Boolean> = _isUsernameExists
 
+
+    private val _purchaseDialog : MutableState<Boolean> = mutableStateOf(false)
+    val purchaseDialog : State<Boolean> = _purchaseDialog
+
     private val _shareFriendDetails : MutableState<String> = mutableStateOf("")
     val shareFriendDetails : State<String> = _shareFriendDetails
 
@@ -45,6 +49,9 @@ class HomePageViewModel(
                      fetchUserId()
                 }
 
+            }
+            is HomePageUseCase.OnPurchaseDialogEvent -> {
+                _purchaseDialog.value = event.toggleState
             }
             else -> {}
         }

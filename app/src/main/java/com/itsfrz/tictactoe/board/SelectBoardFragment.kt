@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.*
@@ -17,10 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -82,6 +87,19 @@ class SelectBoardFragment : Fragment() {
                     ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    if (gameMode == GameMode.AI){
+                        Row(
+                            modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "${commonViewModel.goldTokens}", style = TextStyle(color = Color.White, textAlign = TextAlign.Start, fontSize = 18.sp))
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Image(modifier = Modifier.size(32.dp), painter = painterResource(R.drawable.ic_gold_coin), contentDescription = "Gold Tokens")
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    }
+
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth()

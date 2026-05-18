@@ -22,6 +22,7 @@ import com.itsfrz.tictactoe.goonline.datastore.setting.SettingDataStore
 import com.itsfrz.tictactoe.goonline.datastore.setting.SettingRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 
@@ -37,6 +38,9 @@ class CommonViewModel private constructor(): ViewModel() {
     public var music: Boolean = true
     public var sound: Boolean = true
     public var vibration: Boolean = true
+    public var goldTokens: Int = 500
+
+    public var gameLevelInfo: MutableSet<Int> = mutableSetOf()
     public var notification: Boolean = true
     public var theme: GameTheme = GameTheme.THEME_BLUE
     public var language: GameLanguage = GameLanguage.ENGLISH
@@ -129,9 +133,48 @@ class CommonViewModel private constructor(): ViewModel() {
             is CommonUseCase.ResetSelectEmojiData -> {
                 _selectedEmojiList.value = arrayListOf()
             }
+            is CommonUseCase.OnCreditWinningToken -> {
+                creditToken()
+            }
+            is CommonUseCase.OnDebitLosingToken -> {
+                debitToken()
+            }
+            is CommonUseCase.OnSlotMasterTokenUpdate -> {
+                onTokenUpdate(event.token)
+            }
+            is CommonUseCase.OnLevelPurchase -> {
+                Log.i("PURCHASE_FLOW", "onEvent:OnLevelPurchase ${event.token}")
+
+                onPurchase(event.token,event.levelId)
+            }
         }
-        Log.i(TAG, "onEvent: Selected Emoji List ${_selectedEmojiList.value.size}")
-        Log.i(TAG, "onEvent: Player Count ${_playerCount.value}")
+    }
+
+    private fun onPurchase(token: Int,levelId : Int): Unit {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.i("PURCHASE_FLOW", "onPurchase: is enough money ${settingRepository.getCoinInfo() >= token} current balance : ${settingRepository.getCoinInfo()} :: purchase rate : ${token}")
+            if (settingRepository.getCoinInfo() >= token){
+                settingRepository.onPurchase(token,levelId)
+            }
+        }
+    }
+
+    private fun debitToken() {
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.updateCoinInfo(typeDebit = true)
+        }
+    }
+
+    private fun creditToken(){
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.updateCoinInfo(typeDebit = false)
+        }
+    }
+
+    private fun onTokenUpdate(token : Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.updateCoinInfo(token)
+        }
     }
 
     private fun calculatePlayerCount(playerCount: PlayerCount): Int {
@@ -156,16 +199,27 @@ class CommonViewModel private constructor(): ViewModel() {
         }
     }
 
-    suspend fun loadUserPreference() : Unit{
+    fun checkIsLevelUnlocked(item : Int) : Boolean {
+        val level = item + 1
+        return gameLevelInfo.contains(level)
+    }
+
+    fun loadUserPreference() {
         viewModelScope.launch(Dispatchers.IO) {
-            settingRepository.getGameSetting()?.collectLatest {
-                music = it.music
-                sound = it.sound
-                vibration = it.vibration
-                notification = it.notification
-                gameSound.updateConditionAttributes(isMusicEnabled = it.music, isSoundEnabled = it.sound)
-                gameSound.startBackgroundMusic()
-            }
+            settingRepository.getGameSetting()
+                ?.collectLatest { setting ->
+                    music = setting.music
+                    sound = setting.sound
+                    goldTokens = setting.coinInfo
+                    vibration = setting.vibration
+                    notification = setting.notification
+                    gameLevelInfo = setting.gameLevelInfo.toMutableSet()
+                    gameSound.updateConditionAttributes(
+                        isMusicEnabled = setting.music,
+                        isSoundEnabled = setting.sound
+                    )
+                    gameSound.startBackgroundMusic()
+                }
         }
     }
 }

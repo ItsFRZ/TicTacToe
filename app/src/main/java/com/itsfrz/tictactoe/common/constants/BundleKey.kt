@@ -11,4 +11,10 @@ object BundleKey {
     const val SESSION_ID = "SESSION_ID"
     const val PLAYER_COUNT = "PLAYER_COUNT"
     const val SETTING_TYPE = "SETTING_TYPE"
+
+
+    // SERIAL CONSTANTS
+    val SLOT_MACHINE : String = "SLOT_MACHINE"
+    val GAME_LEVEL : String = "GAME_LEVEL"
+    val REWARD_URL : String = "REWARD_URL"
 }

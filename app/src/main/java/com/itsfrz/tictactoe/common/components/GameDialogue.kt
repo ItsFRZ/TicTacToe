@@ -5,6 +5,7 @@ import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.EaseInBounce
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -37,6 +38,94 @@ object GameDialogue{
     fun setDialogSound(gameSound: GameSound){
         this.gameSound = gameSound
     }
+
+    @Composable
+    fun GamePurchaseDialogue(
+        context: Context,
+        levelId : Int,
+        commonViewModel: CommonViewModel,
+        onCloseEvent : () -> Unit,
+        onDialogueEvent : () -> Unit,
+    ) {
+        val view = LocalView.current
+        LaunchedEffect(Unit){
+            gameSound.triggerPopSound()
+        }
+        LaunchedEffect(Unit){
+            delay(3000)
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(.82f)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(8.dp),
+            elevation = 10.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(ThemeDialogBackground, shape = RoundedCornerShape(8.dp)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(2.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 7.dp, end = 7.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        modifier = Modifier
+                            .size(if (isScreenTV(context)) 45.dp else 25.dp)
+                            .border(
+                                border = BorderStroke(width = 0.8.dp, color = ThemePicker.secondaryColor.value),
+                                shape = RoundedCornerShape(100)
+                            )
+                            .padding(8.dp),
+                        onClick = {
+                            gameSound.clickSound()
+                            commonViewModel.performHapticVibrate(view)
+                            onCloseEvent()
+                        }
+                    ){
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_cross),
+                            contentDescription = "Back Icon",
+                            tint = ThemePicker.secondaryColor.value
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+                Text(text = "Unlock Level ${levelId}", style = headerTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 20.sp))
+                Spacer(modifier = Modifier.wrapContentWidth().height(12.dp))
+                Image(modifier = Modifier.size(40.dp), painter = painterResource(R.drawable.ic_gold_coin), contentDescription = "Coins")
+                if (isScreenTV(context)){
+                    Spacer(modifier = Modifier.wrapContentWidth().height(30.dp))
+                }else{
+                    Spacer(modifier = Modifier.wrapContentWidth().height(5.dp))
+                }
+                CustomButton(
+                    isButtonEnabled = true,
+                    onButtonClick = {
+                        gameSound.clickSound()
+                        commonViewModel.performHapticVibrate(view)
+                        onDialogueEvent()
+                                    },
+                    buttonText = "Buy @ \n${levelId * 10000}"
+                )
+                Spacer(modifier = Modifier
+                    .wrapContentWidth()
+                    .height(5.dp))
+            }
+        }
+
+    }
+
     @Composable
     fun GameDrawLoseDialogue(
         context: Context,
@@ -139,6 +228,7 @@ object GameDialogue{
         winnerUsername: String,
         dialogueButtonText : String,
         onCloseEvent : () -> Unit,
+        onFinalEvent : () -> Unit,
         commonViewModel: CommonViewModel,
         onDialogueButtonClick : () -> Unit,
     ){
@@ -153,7 +243,7 @@ object GameDialogue{
             modifier = Modifier
                 .fillMaxWidth(.82f)
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(2.dp),
+            shape = RoundedCornerShape(8.dp),
             elevation = 10.dp
         ) {
             Column(
@@ -185,6 +275,7 @@ object GameDialogue{
                             gameSound.clickSound()
                             commonViewModel.performHapticVibrate(view)
                             onCloseEvent()
+                            onFinalEvent()
                         }
                     ){
                         Icon(
@@ -217,6 +308,7 @@ object GameDialogue{
                         gameSound.clickSound()
                         commonViewModel.performHapticVibrate(view)
                         onDialogueButtonClick()
+                        onFinalEvent()
                                     },
                     buttonText = dialogueButtonText
                 )
@@ -314,7 +406,7 @@ object GameDialogue{
             modifier = Modifier
                 .fillMaxWidth(.82f)
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(2.dp),
+            shape = RoundedCornerShape(8.dp),
             elevation = 10.dp
         ) {
             Column(
