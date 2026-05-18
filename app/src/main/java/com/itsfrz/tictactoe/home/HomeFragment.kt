@@ -483,11 +483,11 @@ class HomeFragment : Fragment() {
                                     viewModel.onEvent(HomePageUseCase.OnPurchaseDialogEvent(false))
                                 },
                                 onDialogueEvent = {
-                                    if (commonViewModel.goldTokens < (currentPurchaseLevel + 1) * 10000){
+                                    if (commonViewModel.goldTokens < (currentPurchaseLevel + 1) * 1000){
                                         Toast.makeText(requireContext(), "Purchase Failed : Insufficient Balance", Toast.LENGTH_SHORT).show()
                                     }else{
                                         Log.i("PURCHASE_FLOW", "GamePurchaseDialogue: onDialogueEvent")
-                                        commonViewModel.onEvent(CommonUseCase.OnLevelPurchase(token = (currentPurchaseLevel + 1) * 10000, levelId = currentPurchaseLevel+1))
+                                        commonViewModel.onEvent(CommonUseCase.OnLevelPurchase(token = (currentPurchaseLevel + 1) * 1000, levelId = currentPurchaseLevel+1))
                                         soundManager.cash()
                                     }
                                     viewModel.onEvent(HomePageUseCase.OnPurchaseDialogEvent(false))
