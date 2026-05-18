@@ -70,3 +70,11 @@ val SunGlowDeep     = Color(0xFFE89018)
 
 val StarlightWhite  = Color(0xFFFFFFFF)
 val MandalaWhite    = Color(0x12FFFFFF)
+
+
+// Support
+val OrangePrimary = Color(0xFFFF6A00)
+val OrangeSecondary = Color(0xFFFF9E57)
+val SurfaceDark = Color(0xFF111111)
+val SurfaceCard = Color(0xFF1A1A1A)
+val TextPrimary = Color.White

@@ -128,4 +128,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$expresso_core_version"
 
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.browser:browser:1.8.0")
+    implementation("com.airbnb.android:lottie-compose:6.3.0")
+
 }

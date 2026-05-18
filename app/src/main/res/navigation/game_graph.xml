@@ -52,4 +52,8 @@
         android:id="@+id/rewardFragment"
         android:name="com.itsfrz.tictactoe.reward.RewardFragment"
         android:label="RewardFragment" />
+    <fragment
+        android:id="@+id/supportFragment"
+        android:name="com.itsfrz.tictactoe.support.SupportFragment"
+        android:label="SupportFragment" />
 </navigation>

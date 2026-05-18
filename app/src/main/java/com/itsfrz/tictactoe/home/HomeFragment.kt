@@ -414,16 +414,18 @@ class HomeFragment : Fragment() {
                                 CustomCircleIconButton(iconButtonClick = {
                                     gameSound.clickSound()
                                     commonViewModel.performHapticVibrate(requireView())
-//                                gameBundle.putSerializable(BundleKey.USER_ID,userId)
-//                                findNavController().navigate(
-//                                    resId = R.id.statsFragment,
-//                                    args = gameBundle,
-//                                    navOptions = NavOptions.navOptionStack
-//                                )
                                     scope.launch(Dispatchers.Main) {
+                                        gameSound.clickSound()
+                                        commonViewModel.performHapticVibrate(requireView())
+                                        findNavController().navigate(
+                                            resId = R.id.supportFragment,
+                                            args = null,
+                                            navOptions = NavOptions.navOptionStack
+                                        )
+
                                         Toast.makeText(
                                             requireActivity(),
-                                            "Nothing to display, come back later :P)",
+                                            "Thank you for support :)",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
