@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -50,6 +51,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.components.GameDialogue
+import com.itsfrz.tictactoe.common.components.PixelBackground
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.BoardType
 import com.itsfrz.tictactoe.common.enums.GameLevel
@@ -113,10 +115,7 @@ class GameFragment : Fragment() {
         gameMode = requireArguments().getSerializable(BundleKey.GAME_MODE) as GameMode
         gameLevel = requireArguments().getSerializable(BundleKey.SELECTED_LEVEL) as GameLevel
         boardType = requireArguments().getSerializable(BundleKey.BOARD_TYPE) as BoardType
-        Log.i(
-            "GAME_MODE",
-            "onCreate: Game Mode ${gameMode}, Selected Level ${gameLevel}, Board Type ${boardType}"
-        )
+        Log.i("GAME_MODE", "onCreate: Game Mode ${gameMode}, Selected Level ${gameLevel}, Board Type ${boardType}")
         val essentialInfo: EssentialInfo = IEssentialInfo(gameMode, gameLevel, boardType)
         val viewModelFactory =
             GameViewModelFactory(cloudRepository, dataStoreRepository, essentialInfo)
@@ -231,11 +230,11 @@ class GameFragment : Fragment() {
                         celebration.triggerDraw()
                     }
                 }
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.fillMaxSize().background(color = ThemePicker.primaryColor.value)) {
+                    PixelBackground()
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = ThemePicker.primaryColor.value)
                         ,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {

@@ -9,13 +9,13 @@ import androidx.lifecycle.viewModelScope
 import com.itsfrz.tictactoe.common.enums.*
 import com.itsfrz.tictactoe.common.functionality.GameWinner
 import com.itsfrz.tictactoe.common.state.EssentialInfo
+import com.itsfrz.tictactoe.game.brain.IGameBrain
 import com.itsfrz.tictactoe.game.domain.usecase.GameUsecase
 import com.itsfrz.tictactoe.goonline.data.models.BoardState
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import com.itsfrz.tictactoe.minimax.GameBrain
-import com.itsfrz.tictactoe.minimax.IGameBrain
 import com.itsfrz.tictactoe.minimax.Move
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.firstOrNull
@@ -378,8 +378,8 @@ class GameViewModel(
         val difficultyLevel = getDiificultyLevel(gameLevel)
         val bestOptimalMove : Move = when(boardType){
             BoardType.THREEX3 -> minimax.getOptimalMove(gameMap,3,difficultyLevel)
-            BoardType.FOURX4 -> minimax.getOptimalMove(gameMap,4,difficultyLevel)
-            BoardType.FIVEX5 -> minimax.getOptimalMove(gameMap,5,difficultyLevel)
+            BoardType.FOURX4 -> minimax.getOptimalMove(gameMap,4,2)
+            BoardType.FIVEX5 -> minimax.getOptimalMove(gameMap,5,2)
         }
         Log.i("AI_MOVE", "aiMove: After Optimal Move ${getIndexFromMove(bestOptimalMove)}")
         return getIndexFromMove(bestOptimalMove)

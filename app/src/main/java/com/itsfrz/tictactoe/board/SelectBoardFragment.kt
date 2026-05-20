@@ -1,6 +1,8 @@
 package com.itsfrz.tictactoe.board
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,6 +68,7 @@ class SelectBoardFragment : Fragment() {
         gameSound = commonViewModel.gameSound
     }
 
+    @SuppressLint("UnusedBoxWithConstraintsScope")
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,14 +85,14 @@ class SelectBoardFragment : Fragment() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-//                        .background(color = ThemePicker.primaryColor.value)
-//                        .appBackground()
                     ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (gameMode == GameMode.AI){
                         Row(
-                            modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
                             horizontalArrangement = Arrangement.End,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -99,7 +102,6 @@ class SelectBoardFragment : Fragment() {
                             Spacer(modifier = Modifier.width(8.dp))
                         }
                     }
-
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -145,9 +147,10 @@ class SelectBoardFragment : Fragment() {
                                             gameSound.selectSound()
                                             viewmodel.onEvent(
                                                 SelectBoardUseCase.OnBoardInfoEvent(
-                                                    Pair(BoardType.THREEX3, capsuleIndex)
+                                                    Pair(BoardType.THREEX3, capsuleIndex-1)
                                                 )
                                             )
+                                            Log.i("GAME_MODE", "SelectBoardFragment: onCreate: Compose: Difficulty Mode ${capsuleIndex}")
                                         },
                                         isAIMode = gameMode == GameMode.AI,
                                         gameBoardContentText = "Good to start with!"
