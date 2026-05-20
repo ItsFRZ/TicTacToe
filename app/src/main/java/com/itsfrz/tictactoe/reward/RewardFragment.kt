@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.itsfrz.tictactoe.common.constants.BundleKey
+import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.reward.audio.SlotSoundManager
 import com.itsfrz.tictactoe.reward.components.Slot.SlotScreenRefined
@@ -36,7 +37,8 @@ class RewardFragment : Fragment() {
     private lateinit var viewmodel: SlotNewViewModel
     private lateinit var commonViewModel: CommonViewModel
     private lateinit var soundManager: SlotSoundManager
-
+    private var isPanoView : Boolean = false
+    private lateinit var gameSound: GameSound
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +50,9 @@ class RewardFragment : Fragment() {
         viewSlotMachine = requireArguments().getBoolean(BundleKey.SLOT_MACHINE,true)
         gameLevel = requireArguments().getInt(BundleKey.GAME_LEVEL,0)
         rewardUrl = requireArguments().getString(BundleKey.REWARD_URL,"")
+        isPanoView = !viewSlotMachine && gameLevel >= 1 && rewardUrl.isNotEmpty()
+        gameSound = commonViewModel.gameSound
+        gameSound.updateRoomLockAttributes(requireContext(),true,isPanoView)
         Log.i("REWARD_FLOW", "onCreate: Game Level : ${gameLevel} :: URL : ${rewardUrl} :: Slot Master ${viewSlotMachine}")
     }
 
@@ -60,7 +65,7 @@ class RewardFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val viewMode = remember { mutableStateOf(PanoMode.TOUCH) }
-                if (!viewSlotMachine && gameLevel >= 1 && rewardUrl.isNotEmpty()) {
+                if (isPanoView) {
                     PanoramaViewer(
                         imageUrl = rewardUrl,
                         modifier = Modifier.fillMaxSize(),
@@ -87,6 +92,7 @@ class RewardFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        soundManager.release()
     }
 
 }

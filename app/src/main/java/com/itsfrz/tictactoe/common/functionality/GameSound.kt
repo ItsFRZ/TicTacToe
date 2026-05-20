@@ -29,16 +29,22 @@ class GameSound(
         this.isMusicEnabled.value = isMusicEnabled
     }
 
-    fun updateRoomLockAttributes(context: Context,isLock : Boolean){
+    fun updateRoomLockAttributes(context: Context,isLock : Boolean,isPanoView : Boolean = false){
         try {
             this.isRoomLock.value = isLock
-            if (isLock){
-                stopBackgroundMusic()
-                this.player = MediaPlayer.create(context, R.raw.background_game_track)
-                resumeBackgroundMusic()
+            if (!isPanoView){
+                if (isLock){
+                    stopBackgroundMusic()
+                    this.player = MediaPlayer.create(context, R.raw.background_game_track)
+                    resumeBackgroundMusic()
+                }else{
+                    stopBackgroundMusic()
+                    this.player = MediaPlayer.create(context, R.raw.background_track)
+                    resumeBackgroundMusic()
+                }
             }else{
                 stopBackgroundMusic()
-                this.player = MediaPlayer.create(context, R.raw.background_track)
+                this.player = MediaPlayer.create(context, R.raw.pano_track)
                 resumeBackgroundMusic()
             }
         }catch (e : Exception){

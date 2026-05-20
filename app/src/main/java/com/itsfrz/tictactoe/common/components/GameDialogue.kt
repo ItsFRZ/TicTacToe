@@ -116,7 +116,7 @@ object GameDialogue{
                         commonViewModel.performHapticVibrate(view)
                         onDialogueEvent()
                                     },
-                    buttonText = "Buy @ \n${levelId * 10000}"
+                    buttonText = "Buy @ \n${levelId * 1000}"
                 )
                 Spacer(modifier = Modifier
                     .wrapContentWidth()

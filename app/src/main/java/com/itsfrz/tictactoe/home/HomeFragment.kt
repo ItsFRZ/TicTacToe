@@ -504,6 +504,7 @@ class HomeFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
+        gameSound.updateRoomLockAttributes(requireContext(),false,false)
         commonViewModel.updateOnlineStatus(isOnline = InternetHelper.isOnline(requireContext()))
     }
 
