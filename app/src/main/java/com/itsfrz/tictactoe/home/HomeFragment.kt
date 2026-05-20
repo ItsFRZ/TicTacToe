@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.itsfrz.tictactoe.R
@@ -141,10 +142,10 @@ class HomeFragment : Fragment() {
                 it
             )
         }
-        CoroutineScope(Dispatchers.Default).launch {
+        lifecycleScope.launch((Dispatchers.Default)) {
             commonViewModel.loadEmojiData(requireContext())
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             commonViewModel.loadUserPreference()
         }
         soundManager = SlotSoundManager(requireContext())
