@@ -32,7 +32,7 @@ data class SlotUiState(
     /** Trigger coin rain animation. */
     val showCoins:  Boolean          = false,
     /** Cost per spin. */
-    val betAmount:  Int              = 10,
+    val betAmount:  Int              = 50,
     /** Total spins played. */
     val totalSpins: Int              = 0,
 )

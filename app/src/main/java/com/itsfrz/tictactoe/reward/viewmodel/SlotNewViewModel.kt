@@ -101,7 +101,7 @@ class SlotNewViewModel : ViewModel() {
     }
 
     fun changeBet(amount: Int) {
-        _ui.update { it.copy(betAmount = amount.coerceIn(5, 100)) }
+        _ui.update { it.copy(betAmount = amount.coerceIn(5, 1000)) }
         cvm.onEvent(CommonUseCase.OnSlotMasterTokenUpdate(_ui.value.coins))
     }
 

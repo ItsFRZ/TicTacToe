@@ -716,8 +716,8 @@ fun SlotScreenRefined(
                             am.spin(state.lastWin,state.resultMsg)
                         }
                     },
-                    onBetUp   = { vm.changeBet(state.betAmount + 5) },
-                    onBetDown = { vm.changeBet(state.betAmount - 5) }
+                    onBetUp   = { vm.changeBet(state.betAmount + 50) },
+                    onBetDown = { vm.changeBet(state.betAmount - 50) }
                 )
             }
 
