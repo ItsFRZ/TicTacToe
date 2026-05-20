@@ -78,3 +78,8 @@ val OrangeSecondary = Color(0xFFFF9E57)
 val SurfaceDark = Color(0xFF111111)
 val SurfaceCard = Color(0xFF1A1A1A)
 val TextPrimary = Color.White
+
+// Slot Machine
+val Neon = Color(0xFF36FFB2)
+val ReelBlack = Color(0xFF0D0E12)
+val ReelDark  = Color(0xFF1A1C24)

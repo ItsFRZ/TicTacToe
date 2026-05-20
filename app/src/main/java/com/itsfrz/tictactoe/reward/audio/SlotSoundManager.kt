@@ -27,7 +27,7 @@ class SlotSoundManager(context: Context) {
 
     suspend fun spin(lastWin : Int,message : String) {
         pool.play(spin, 1f, 1f, 1, 0, 1f)
-        delay(5000)
+        delay(13000)
         if (message.isEmpty() && lastWin == 0){
             pool.play(win, 1f, 1f, 1, 0, 1f)
         }else if (lastWin == 0 && message.startsWith("Try again")){

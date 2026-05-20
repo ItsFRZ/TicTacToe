@@ -18,27 +18,36 @@ class SlotNewViewModel : ViewModel() {
     private val _ui = MutableStateFlow(SlotUiState())
     val uiState: StateFlow<SlotUiState> = _ui.asStateFlow()
 
-    private lateinit var cvm : CommonViewModel
+    private var cvm: CommonViewModel? = null
 
-    private val symbols = SlotNewSymbol.entries
-    // Weighted pool: rarer symbols appear less often
+    // ─────────────────────────────────────────
+    // Weighted pool — rarer = lower repeat count
+    // ─────────────────────────────────────────
     private val weightedPool: List<SlotNewSymbol> = buildList {
-        repeat(20) { add(SlotNewSymbol.CHERRY) }
-        repeat(16) { add(SlotNewSymbol.LEMON) }
+        repeat(22) { add(SlotNewSymbol.CHERRY) }
+        repeat(18) { add(SlotNewSymbol.LEMON) }
         repeat(14) { add(SlotNewSymbol.ORANGE) }
-        repeat(12) { add(SlotNewSymbol.GRAPE) }
-        repeat(8)  { add(SlotNewSymbol.BELL) }
-        repeat(5)  { add(SlotNewSymbol.BAR) }
+        repeat(10) { add(SlotNewSymbol.GRAPE) }
+        repeat(7)  { add(SlotNewSymbol.BELL) }
+        repeat(4)  { add(SlotNewSymbol.BAR) }
         repeat(1)  { add(SlotNewSymbol.DIAMOND) }
     }
 
-    fun updateCoinInfo(token : Int){
-        _ui.update {
-            it.copy(coins = token)
-        }
+    // ─────────────────────────────────────────
+    // Reel animation durations (ms) — must be
+    // LONGER than UI animation total per reel.
+    // UI does: stagger delay + phase1 + phase2
+    // + overshoot + spring ≈ 4200–5200ms max.
+    // We stop state AFTER that window.
+    // ─────────────────────────────────────────
+    private val reelStopDelays = listOf(4200L, 4500L, 5000L)
+
+    fun updateCoinInfo(token: Int) {
+        _ui.update { it.copy(coins = token) }
+        syncCoins()
     }
 
-    fun provideCVMInstance(commonViewModel: CommonViewModel){
+    fun provideCVMInstance(commonViewModel: CommonViewModel) {
         this.cvm = commonViewModel
     }
 
@@ -46,82 +55,108 @@ class SlotNewViewModel : ViewModel() {
         val state = _ui.value
         if (state.spinning.any { it } || state.coins < state.betAmount) return
 
+        // Determine result upfront — UI will animate to these
         val result = List(3) { weightedPool.random() }
 
         viewModelScope.launch {
-            // Deduct bet, start all reels spinning
+
+            // Deduct bet, mark all reels spinning, push target symbols immediately
+            // so the UI reel engine knows where to stop
             _ui.update {
                 it.copy(
-                    coins     = it.coins - it.betAmount,
-                    spinning  = List(3) { true },
-                    showCoins = false,
-                    lastWin   = 0,
-                    resultMsg = "",
+                    coins      = it.coins - it.betAmount,
+                    reels      = result,           // targets set NOW so animation aims correctly
+                    spinning   = List(3) { true },
+                    lastWin    = 0,
+                    resultMsg  = "Spinning...",
                     totalSpins = it.totalSpins + 1
                 )
             }
 
-            // Stop each reel with stagger — reel 0 stops first, then 1, then 2
-            val stopDelays = listOf(900L, 1500L, 2200L)
-            stopDelays.forEachIndexed { i, delayMs ->
+            // Stop each reel AFTER UI animation has fully settled
+            reelStopDelays.forEachIndexed { i, delayMs ->
                 delay(delayMs)
-                _ui.update { state ->
-                    val newReels    = state.reels.toMutableList().also { it[i] = result[i] }
-                    val newSpinning = state.spinning.toMutableList().also { it[i] = false }
-                    state.copy(reels = newReels, spinning = newSpinning)
+                _ui.update { s ->
+                    val newSpinning = s.spinning.toMutableList().also { it[i] = false }
+                    s.copy(spinning = newSpinning)
+                }
+
+                if (i >= 1){
+                    _ui.update{
+                        it.copy(resultMsg = "Pending ...")
+                    }
                 }
             }
 
-            // Evaluate win
-            delay(200)
-            val win     = evaluate(result, state.betAmount)
-            val bigWin  = win >= state.betAmount * 5
+
+            _ui.update{
+                it.copy(resultMsg = "Finalizing ...")
+            }
+            // Small buffer after last reel stops before showing result
+            delay(300L)
+
+            val win = evaluate(result, state.betAmount)
+            val isJackpot = win >= state.betAmount * 8
+            val isBigWin  = win >= state.betAmount * 3
+
             _ui.update {
                 it.copy(
                     coins     = it.coins + win,
                     lastWin   = win,
-                    showCoins = bigWin,
                     resultMsg = when {
-                        win == 0            -> "Try again!"
-                        win < state.betAmount * 3 -> "Nice! +$win 🪙"
-                        win < state.betAmount * 8 -> "Big Win! +$win 🪙"
-                        else                -> "JACKPOT! +$win 💎"
+                        win == 0   -> randomLoseMessage()
+                        isBigWin && !isJackpot -> "BIG WIN!  +$win 🪙"
+                        isJackpot  -> "💎 JACKPOT!  +$win 💎"
+                        else       -> "Nice!  +$win 🪙"
                     }
                 )
             }
 
-            // Hide coin rain after 3 s
-            if (bigWin) {
-                delay(3_000)
-                _ui.update { it.copy(showCoins = false) }
-            }
+            syncCoins()
 
-            cvm.onEvent(CommonUseCase.OnSlotMasterTokenUpdate(_ui.value.coins))
+            // Auto-clear coin rain after 3.5s
+            if (win >= 500) {
+                delay(3_500L)
+                _ui.update { it.copy(lastWin = 0) }
+            }
         }
     }
 
     fun changeBet(amount: Int) {
-        _ui.update { it.copy(betAmount = amount.coerceIn(5, 1000)) }
-        cvm.onEvent(CommonUseCase.OnSlotMasterTokenUpdate(_ui.value.coins))
+        _ui.update { it.copy(betAmount = amount.coerceIn(50, 1000)) }
+        // No coin sync here — bet change doesn't affect balance
     }
 
+    // ─────────────────────────────────────────
+    // Evaluate
+    // ─────────────────────────────────────────
     private fun evaluate(reels: List<SlotNewSymbol>, bet: Int): Int {
-        // All three match → full payout
-        if (reels[0] == reels[1] && reels[1] == reels[2])
-            return bet * reels[0].multiplier * 3
+        val (a, b, c) = reels
 
-        // Any two match → half payout
-        val pairs = listOf(
-            reels[0] == reels[1],
-            reels[1] == reels[2],
-            reels[0] == reels[2],
-        )
-        if (pairs.any { it }) {
-            val matched = if (reels[0] == reels[1]) reels[0]
-            else if (reels[1] == reels[2]) reels[1]
-            else reels[0]
-            return bet * matched.multiplier
+        // Three of a kind
+        if (a == b && b == c) return bet * a.multiplier * 3
+
+        // Two of a kind — find the matched symbol correctly
+        return when {
+            a == b -> bet * a.multiplier
+            b == c -> bet * b.multiplier
+            a == c -> bet * a.multiplier
+            else   -> 0
         }
-        return 0
     }
+
+    // ─────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────
+    private fun syncCoins() {
+        cvm?.onEvent(CommonUseCase.OnSlotMasterTokenUpdate(_ui.value.coins))
+    }
+
+    private fun randomLoseMessage(): String = listOf(
+        "So close... 🎰",
+        "Try again! 🍀",
+        "Almost! 🌀",
+        "Bad luck! 🎲",
+        "One more! ⚡"
+    ).random()
 }

@@ -20,9 +20,9 @@ import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.functionality.GameSound
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.reward.audio.SlotSoundManager
-import com.itsfrz.tictactoe.reward.components.Slot.SlotScreenRefined
 import com.itsfrz.tictactoe.reward.components.pano.PanoMode
 import com.itsfrz.tictactoe.reward.components.pano.PanoramaViewer
+import com.itsfrz.tictactoe.reward.components.slot.SlotScreenRefined
 import com.itsfrz.tictactoe.reward.viewmodel.SlotNewViewModel
 
 class RewardFragment : Fragment() {
