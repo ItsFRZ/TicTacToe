@@ -60,8 +60,8 @@ object IGameBrain : GameBrain {
     private val timeBudgetMs = mapOf(
         3 to 3_000L,
         4 to 5_000L,
-        5 to 8_000L,
-        6 to 12_000L,
+        5 to 12_000L,
+        6 to 15_000L,
         7 to 15_000L
     )
 
@@ -76,11 +76,11 @@ object IGameBrain : GameBrain {
 
     // Max search depth per difficulty & board size
     private val maxDepthTable = mapOf(
-        3 to mapOf(0 to 3, 1 to 5, 2 to 9),
-        4 to mapOf(0 to 3, 1 to 5, 2 to 8),
-        5 to mapOf(0 to 3, 1 to 5, 2 to 9),
-        6 to mapOf(0 to 3, 1 to 5, 2 to 8),
-        7 to mapOf(0 to 2, 1 to 4, 2 to 6)
+        3 to mapOf(0 to 3, 1 to 6, 2 to 9),
+        4 to mapOf(0 to 4, 1 to 6, 2 to 9),
+        5 to mapOf(0 to 5, 1 to 8, 2 to 12),
+        6 to mapOf(0 to 5, 1 to 8, 2 to 12),
+        7 to mapOf(0 to 3, 1 to 6, 2 to 9)
     )
 
     // Late Move Reduction parameters
@@ -384,32 +384,26 @@ object IGameBrain : GameBrain {
         masks: List<Long>,
         winLen: Int
     ): Move? {
-        // 1. AI win?
-        for (r in 0 until boardSize) {
-            for (c in 0 until boardSize) {
-                if (!board.isEmpty(r, c)) continue
-                if (checkWin(board.place(r, c, AI).ai, masks)) return Move(r, c)
-            }
+        // 1. AI wins immediately?
+        for (r in 0 until boardSize) for (c in 0 until boardSize) {
+            if (!board.isEmpty(r, c)) continue
+            if (checkWin(board.place(r, c, AI).ai, masks)) return Move(r, c)
         }
 
-        // 2. Block human win?
-        for (r in 0 until boardSize) {
-            for (c in 0 until boardSize) {
-                if (!board.isEmpty(r, c)) continue
-                if (checkWin(board.place(r, c, HUMAN).human, masks)) return Move(r, c)
-            }
+        // 2. Block human from winning immediately?
+        for (r in 0 until boardSize) for (c in 0 until boardSize) {
+            if (!board.isEmpty(r, c)) continue
+            if (checkWin(board.place(r, c, HUMAN).human, masks)) return Move(r, c)
         }
 
-        // 3. FORK PREVENTION (FIXED): Block HUMAN from creating forks
         if (boardSize >= 5) {
-            val forkBlock = preventHumanFork(board, boardSize, masks, winLen)
-            if (forkBlock != null) return forkBlock
-        }
-
-        // 4. FORK CREATION (Sage strategy): Create fork for AI
-        if (boardSize >= 5) {
+            // 3. Create a fork for AI (proactive — attack takes priority over defense)
             val forkCreate = createAIFork(board, boardSize, masks, winLen)
             if (forkCreate != null) return forkCreate
+
+            // 4. Block human from creating a fork
+            val forkBlock = preventHumanFork(board, boardSize, masks, winLen)
+            if (forkBlock != null) return forkBlock
         }
 
         return null
@@ -495,7 +489,7 @@ object IGameBrain : GameBrain {
         var bestMove: Move? = null
         var bestScore = -INF
 
-        val moves = generateMoves(board, boardSize, ply, true)
+        val moves = generateMoves(board, boardSize, ply, AI, true)
 
         for ((idx, move) in moves.withIndex()) {
             val (r, c) = move
@@ -582,7 +576,7 @@ object IGameBrain : GameBrain {
         val ttEntry = transpositionTable[ttKey]
 
         var alphaLocal = alpha
-        if (ttEntry != null && ttEntry.depth >= depth && ttEntry.ply == ply) {
+        if (ttEntry != null && ttEntry.depth >= depth) {
             when (ttEntry.flag.toInt()) {
                 0 -> return ttEntry.score
                 1 -> alphaLocal = max(alphaLocal, ttEntry.score)
@@ -600,7 +594,7 @@ object IGameBrain : GameBrain {
         }
 
         // Move generation with ordering
-        val moves = generateMoves(board, boardSize, ply, false)
+        val moves = generateMoves(board, boardSize, ply, player, false)
         var best = -INF
         val alphaOrig = alphaLocal
         var searched = 0
@@ -740,13 +734,14 @@ object IGameBrain : GameBrain {
         board: Bitboard,
         boardSize: Int,
         ply: Int,
+        player: Int,
         isRoot: Boolean = false
     ): List<Move> {
         val center = boardSize / 2.0
         val candidates = mutableListOf<Triple<Move, Int, Boolean>>()
 
-        // TT move for ordering
-        val ttKey = zobristHash xor (AI.toLong() shl 62)
+        // TT move for ordering — use correct player key
+        val ttKey = zobristHash xor (player.toLong() shl 62)
         val ttMove = transpositionTable[ttKey]?.bestMove
 
         // PROXIMITY RESTRICTION for large boards (FIXED)
@@ -779,9 +774,13 @@ object IGameBrain : GameBrain {
             // History
             score += historyTable[historyKey(r, c, boardSize)] ?: 0
 
-            // Threat detection
-            val threatBonus = threatScore(board, r, c, boardSize, AI)
-            if (threatBonus > 0) { score += threatBonus * 100; isThreat = true }
+            // Threat detection — score from current player's perspective
+            val threatBonus = threatScore(board, r, c, boardSize, player)
+            val oppThreatBonus = threatScore(board, r, c, boardSize, flipPlayer(player))
+            if (threatBonus > 0 || oppThreatBonus > 0) {
+                score += (threatBonus + oppThreatBonus) * 100
+                isThreat = true
+            }
 
             // SAGE STRATEGY: Center control (stronger weight)
             val dist = abs(r - center) + abs(c - center)
@@ -795,8 +794,8 @@ object IGameBrain : GameBrain {
 
             // Fork potential
             if (boardSize >= 5) {
-                val forkBonus = forkPotential(board, r, c, boardSize, AI)
-                score += forkBonus * 100
+                val forkBonus = forkPotential(board, r, c, boardSize, player)
+                score += forkBonus * 150
             }
 
             // Opening book preference: first move -> center
@@ -892,7 +891,7 @@ object IGameBrain : GameBrain {
         return score
     }
 
-    // Fork potential: count independent winning lines this move enables
+    // Fork potential: count independent directions where placing here creates a near-win line
     private fun forkPotential(
         board: Bitboard,
         row: Int, col: Int,
@@ -900,24 +899,50 @@ object IGameBrain : GameBrain {
         player: Int
     ): Int {
         if (boardSize < 5) return 0
-        val afterMove = board.place(row, col, player)
-        val bits = afterMove.playerBits(player)
         val wl = winLength[boardSize] ?: 4
+        val bits = board.playerBits(player)
+        val oppBits = board.playerBits(flipPlayer(player))
+        val n = boardSize
+        val directions = listOf(Pair(0, 1), Pair(1, 0), Pair(1, 1), Pair(1, -1))
         var forkLines = 0
-        val directions = listOf(Pair(0,1), Pair(1,0), Pair(1,1), Pair(1,-1))
 
         for ((dr, dc) in directions) {
-            var count = 0
-            var r = row; var c = col
-            // Count consecutive in this direction
-            while (r in 0 until boardSize && c in 0 until boardSize) {
-                if (bits and (1L shl (r * boardSize + c)) != 0L) count++
-                r += dr; c += dc
+            var count = 1  // count the cell being placed
+            var openEnds = 0
+
+            // Forward
+            var r = row + dr; var c = col + dc
+            var blocked = false
+            while (r in 0 until n && c in 0 until n) {
+                val bit = 1L shl (r * n + c)
+                when {
+                    bits and bit != 0L -> { count++; r += dr; c += dc }
+                    oppBits and bit != 0L -> { blocked = true; break }
+                    else -> { openEnds++; break }
+                }
             }
-            if (count >= wl - 1) forkLines++  // Near-winning line
+            if (!blocked && r !in 0 until n || c !in 0 until n) { /* wall — no open end */ }
+
+            // Backward
+            r = row - dr; c = col - dc; blocked = false
+            while (r in 0 until n && c in 0 until n) {
+                val bit = 1L shl (r * n + c)
+                when {
+                    bits and bit != 0L -> { count++; r -= dr; c -= dc }
+                    oppBits and bit != 0L -> { blocked = true; break }
+                    else -> { openEnds++; break }
+                }
+            }
+
+            // A near-win line: count >= wl-1 and at least one open end
+            if (count >= wl - 1 && openEnds >= 1) forkLines++
         }
 
-        return if (forkLines >= 2) 10 else if (forkLines == 1) 3 else 0
+        return when {
+            forkLines >= 2 -> 12  // True fork: two simultaneous near-win lines
+            forkLines == 1 -> 3
+            else -> 0
+        }
     }
 
     private fun isCaptureOrThreat(
@@ -967,15 +992,17 @@ object IGameBrain : GameBrain {
             if (oBits != 0L && pBits != 0L) continue  // Mixed = neutral
 
             if (pBits != 0L) {
-                val count = pBits.countOneBits().coerceAtMost(patternScore.size - 1)
+                val rawCount = pBits.countOneBits()
+                val count = rawCount.coerceAtMost(patternScore.size - 1)
                 val base = patternScore[count]
-                score += if (count == wl - 1) base * 2 else base  // Bonus for almost-win
+                score += if (rawCount >= wl - 1) base * 2 else base
             }
 
             if (oBits != 0L) {
-                val count = oBits.countOneBits().coerceAtMost(patternScore.size - 1)
+                val rawCount = oBits.countOneBits()
+                val count = rawCount.coerceAtMost(patternScore.size - 1)
                 val base = patternScore[count]
-                score -= if (count == wl - 1) base * 2 else base  // Penalize opponent threats
+                score -= if (rawCount >= wl - 1) base * 2 else base
             }
         }
 
@@ -992,10 +1019,28 @@ object IGameBrain : GameBrain {
             }
         }
 
-        // Mobility (larger boards)
+        // Mobility: both players share the same empty cells — no asymmetric term needed.
+        // Instead, reward having more near-neighbor open cells adjacent to own pieces (local mobility).
         if (boardSize >= 4) {
-            val mobility = board.emptyCells().size
-            score += if (player == AI) mobility * 2 else -mobility * 2
+            val n = boardSize
+            val playerBits = board.playerBits(player)
+            val oppBits = board.playerBits(opponent)
+            var localMobility = 0
+            for (r in 0 until n) for (c in 0 until n) {
+                if (!board.isEmpty(r, c)) continue
+                var adjPlayer = 0; var adjOpp = 0
+                for (dr in -1..1) for (dc in -1..1) {
+                    if (dr == 0 && dc == 0) continue
+                    val nr = r + dr; val nc = c + dc
+                    if (nr in 0 until n && nc in 0 until n) {
+                        val bit = 1L shl (nr * n + nc)
+                        if (playerBits and bit != 0L) adjPlayer++
+                        if (oppBits and bit != 0L) adjOpp++
+                    }
+                }
+                localMobility += adjPlayer - adjOpp
+            }
+            score += localMobility * 3
         }
 
         // Connected pieces bonus (encourages building lines)
@@ -1003,10 +1048,11 @@ object IGameBrain : GameBrain {
             score += connectedPiecesBonus(board, boardSize, player) * 5
         }
 
-        // Threat balance (dynamic)
+        // Threat balance (dynamic) — weighted heavier on large boards where threats dominate
+        val threatWeight = if (boardSize >= 5) 600 else 300
         val playerThreats = countActiveThreats(board, boardSize, player, wl)
         val oppThreats = countActiveThreats(board, boardSize, opponent, wl)
-        score += (playerThreats - oppThreats) * 300
+        score += (playerThreats - oppThreats) * threatWeight
 
         // Return score from CURRENT player's perspective (FIXED - no final sign flip)
         return score
@@ -1033,32 +1079,36 @@ object IGameBrain : GameBrain {
         return bonus
     }
 
-    // Count active threats: lines with (wl-1) player pieces and 1 empty, not blocked
+    // Count active threats: lines of exactly wl cells with (wl-1) player pieces + 1 empty, not blocked by opponent
     private fun countActiveThreats(board: Bitboard, boardSize: Int, player: Int, wl: Int): Int {
         var threats = 0
         val bits = board.playerBits(player)
         val oppBits = board.playerBits(flipPlayer(player))
-        val directions = listOf(Pair(0,1), Pair(1,0), Pair(1,1), Pair(1,-1))
+        val n = boardSize
+        // Only canonical directions to avoid double-counting: right, down, diag-↘, diag-↙
+        val directions = listOf(Pair(0, 1), Pair(1, 0), Pair(1, 1), Pair(1, -1))
 
-        for (r in 0 until boardSize) {
-            for (c in 0 until boardSize) {
-                if (!board.isEmpty(r, c)) continue
+        for (r in 0 until n) {
+            for (c in 0 until n) {
                 for ((dr, dc) in directions) {
-                    var count = 1  // Include this empty cell
-                    var valid = true
-                    for (sign in listOf(1, -1)) {
-                        var nr = r + sign * dr; var nc = c + sign * dc
-                        while (nr in 0 until boardSize && nc in 0 until boardSize) {
-                            val bit = 1L shl (nr * boardSize + nc)
-                            when {
-                                bits and bit != 0L -> { count++; nr += sign * dr; nc += sign * dc }
-                                oppBits and bit != 0L -> { valid = false; break }
-                                else -> break
-                            }
+                    // Check if a window of size `wl` starting at (r,c) is a threat
+                    val endR = r + dr * (wl - 1)
+                    val endC = c + dc * (wl - 1)
+                    if (endR !in 0 until n || endC !in 0 until n) continue
+
+                    var playerCount = 0
+                    var emptyCount = 0
+                    var blocked = false
+                    for (k in 0 until wl) {
+                        val nr = r + dr * k; val nc = c + dc * k
+                        val bit = 1L shl (nr * n + nc)
+                        when {
+                            bits and bit != 0L -> playerCount++
+                            oppBits and bit != 0L -> { blocked = true; break }
+                            else -> emptyCount++
                         }
-                        if (!valid) break
                     }
-                    if (valid && count == wl) threats++
+                    if (!blocked && playerCount == wl - 1 && emptyCount == 1) threats++
                 }
             }
         }
