@@ -147,10 +147,9 @@ class SelectBoardFragment : Fragment() {
                                             gameSound.selectSound()
                                             viewmodel.onEvent(
                                                 SelectBoardUseCase.OnBoardInfoEvent(
-                                                    Pair(BoardType.THREEX3, capsuleIndex-1)
+                                                    Pair(BoardType.THREEX3, capsuleIndex)
                                                 )
                                             )
-                                            Log.i("GAME_MODE", "SelectBoardFragment: onCreate: Compose: Difficulty Mode ${capsuleIndex}")
                                         },
                                         isAIMode = gameMode == GameMode.AI,
                                         gameBoardContentText = "Good to start with!"
