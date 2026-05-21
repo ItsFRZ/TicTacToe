@@ -301,14 +301,12 @@ class GameFragment : Fragment() {
                             isWinner = gameResult != GameResult.NONE && gameResult != GameResult.DRAW,
                             isPlayerMoved = !playerTurns,
                             onMove = { index ->
-                                Log.i("HIDDEN_BUG", "onCreateView: ${index}")
                                 gameSound.pieceClick1MovingSound()
                                 viewModel.onEvent(GameUsecase.OnUserTick(index))
                                 viewModel.onEvent(GameUsecase.UserMove(true))
 
                             },
                             onAIMove = {
-                                Log.i("AI_MOVE", "onCreateView: On AI Move")
                                 gameSound.pieceClick2MovingSound()
                                 viewModel.onEvent(GameUsecase.OnAIMove)
                             },
@@ -360,6 +358,7 @@ class GameFragment : Fragment() {
                                     GameResult.WIN -> {
                                         GameDialogue.GameWinDialogue(
                                             context = requireContext(),
+                                            isAIMode = gameMode == GameMode.AI,
                                             winnerUsername = getWinnerName(playerTurns),
                                             dialogueButtonText = "Play Again",
                                             onCloseEvent = {

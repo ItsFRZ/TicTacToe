@@ -225,6 +225,7 @@ object GameDialogue{
     @Composable
     fun GameWinDialogue(
         context: Context,
+        isAIMode : Boolean = false,
         winnerUsername: String,
         dialogueButtonText : String,
         onCloseEvent : () -> Unit,
@@ -296,7 +297,7 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(2.dp))
-                Text(text = winnerUsername, style = headerSubTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 14.sp))
+                Text(text = if(isAIMode) "You Are The Best!" else winnerUsername, style = headerSubTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 14.sp))
                 if (isScreenTV(context)){
                     Spacer(modifier = Modifier.wrapContentWidth().height(30.dp))
                 }else{
