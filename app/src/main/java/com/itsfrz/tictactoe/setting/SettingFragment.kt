@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -189,7 +190,47 @@ class SettingFragment : Fragment() {
                                     .fillMaxWidth()
                             )
                         }
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .height(18.dp)
+                                    .fillMaxWidth()
+                            )
+                            SettingSubHeader(subHeaderTitleText = "Support")
+                            Spacer(
+                                modifier = Modifier
+                                    .height(16.dp)
+                                    .fillMaxWidth()
+                            )
+                            SettingItem(
+                                icon = R.drawable.ic_love,
+                                title = "Donation",
+                                isToggled = false,
+                                toggleButtonEvent = {},
+                                isAdvance = true,
+                                buttonEvent = {
+                                    gameSound.clickSound()
+                                    commonViewModel.performHapticVibrate(requireView())
+                                    val bundle = bundleOf()
+                                    bundle.putBoolean(BundleKey.FULL_SUPPORT,true)
+                                    findNavController().navigate(
+                                        resId = R.id.supportFragment,
+                                        args = bundle,
+                                        navOptions = NavOptions.navOptionStack
+                                    )
 
+                                    Toast.makeText(
+                                        requireActivity(),
+                                        "Thankyou for generosity :)",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                })
+                            Spacer(
+                                modifier = Modifier
+                                    .height(16.dp)
+                                    .fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }

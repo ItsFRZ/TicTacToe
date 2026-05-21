@@ -74,4 +74,14 @@ class ISettingRepository(
             }
         }
     }
+
+    override suspend fun updateCash(amountUnit: Int) {
+        getGameSetting().firstOrNull()?.let { store ->
+            updateGameSetting(store.copy(cashAmount = amountUnit))
+        }
+    }
+
+    override suspend fun getCashInfo(): Int {
+        return dataStore.data.first().cashAmount
+    }
 }

@@ -20,6 +20,7 @@ data class SettingDataStore(
     @SerialName("language")val language : GameLanguage = GameLanguage.ENGLISH,
     @SerialName("coinInfo") val coinInfo : Int = 500,
     @SerialName("gameLevelInfo") val gameLevelInfo : Set<Int> = emptySet<Int>(),
+    @SerialName("cashAmount") val cashAmount : Int = 0,
 
 ){
     @Keep

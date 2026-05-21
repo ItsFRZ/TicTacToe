@@ -56,4 +56,8 @@
         android:id="@+id/supportFragment"
         android:name="com.itsfrz.tictactoe.support.SupportFragment"
         android:label="SupportFragment" />
+    <fragment
+        android:id="@+id/paymentWebViewFragment"
+        android:name="com.itsfrz.tictactoe.support.PaymentWebViewFragment"
+        android:label="PaymentWebViewFragment" />
 </navigation>

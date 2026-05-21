@@ -14,22 +14,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
+import com.itsfrz.tictactoe.ui.theme.NavyPrimary
+import com.itsfrz.tictactoe.ui.theme.NavySecondary
 import com.itsfrz.tictactoe.ui.theme.OrangePrimary
 import com.itsfrz.tictactoe.ui.theme.OrangeSecondary
+import com.itsfrz.tictactoe.ui.theme.ThemeBlue
 
 
 @Composable
-fun HeroSection() {
+fun HeroSection(purchase : Boolean) {
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(
                 Brush.verticalGradient(
-                    listOf(
-                        OrangePrimary,
-                        OrangeSecondary
-                    )
+                    if (purchase){
+                        listOf(
+                            NavyPrimary,
+                            NavySecondary
+                        )
+                    }else{
+                        listOf(
+                            OrangePrimary,
+                            OrangeSecondary
+                        )
+                    }
                 )
             )
             .padding(28.dp)
@@ -52,8 +63,7 @@ fun HeroSection() {
         Spacer(modifier = Modifier.height(18.dp))
 
         Text(
-            text =
-            "Support future builds, better multiplayer, accessibility, and indie innovation.",
+            text = if (purchase) "Coins will credited, immediately as transaction proceed to success. \n\n Wishing you best of luck from Orange Labs" else "Support future builds, better multiplayer, accessibility, and indie innovation.",
             color = Color.White
         )
     }

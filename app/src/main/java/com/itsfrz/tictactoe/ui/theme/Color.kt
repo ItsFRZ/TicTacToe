@@ -75,6 +75,10 @@ val MandalaWhite    = Color(0x12FFFFFF)
 // Support
 val OrangePrimary = Color(0xFFFF6A00)
 val OrangeSecondary = Color(0xFFFF9E57)
+
+val NavyPrimary = Color(0xFF202230)
+
+val NavySecondary = Color(0xFFC7BBBB)
 val SurfaceDark = Color(0xFF111111)
 val SurfaceCard = Color(0xFF1A1A1A)
 val TextPrimary = Color.White

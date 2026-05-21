@@ -418,19 +418,21 @@ class HomeFragment : Fragment() {
                                     scope.launch(Dispatchers.Main) {
                                         gameSound.clickSound()
                                         commonViewModel.performHapticVibrate(requireView())
+                                        val bundle = bundleOf()
+                                        bundle.putBoolean(BundleKey.FULL_SUPPORT,false)
                                         findNavController().navigate(
                                             resId = R.id.supportFragment,
-                                            args = null,
+                                            args = bundle,
                                             navOptions = NavOptions.navOptionStack
                                         )
 
                                         Toast.makeText(
                                             requireActivity(),
-                                            "Thank you for support :)",
+                                            "Happpy Purchase :)",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
-                                }, buttonIcon = R.drawable.ic_love)
+                                }, buttonIcon = R.drawable.ic_purchase)
                                 Spacer(modifier = Modifier.height(8.dp).fillMaxWidth())
                                 Row(
                                     modifier = Modifier

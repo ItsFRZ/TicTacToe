@@ -18,13 +18,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.support.data.SupportTier
+import com.itsfrz.tictactoe.ui.theme.NavyPrimary
 import com.itsfrz.tictactoe.ui.theme.OrangePrimary
 import com.itsfrz.tictactoe.ui.theme.SurfaceCard
 import com.itsfrz.tictactoe.ui.theme.TextPrimary
 
 @Composable
 fun SupportTierCard(
+    purchase : Boolean,
     tier: SupportTier,
     selected: Boolean,
     onClick: () -> Unit
@@ -37,18 +40,32 @@ fun SupportTierCard(
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor =
-            if (selected)
-                OrangePrimary.copy(alpha = 0.15f)
-            else
-                SurfaceCard
+                if (purchase){
+                    if (selected)
+                        NavyPrimary.copy(alpha = 0.15f)
+                    else
+                        SurfaceCard
+                }else {
+                    if (selected)
+                        OrangePrimary.copy(alpha = 0.15f)
+                    else
+                        SurfaceCard
+                }
+
         ),
         border = BorderStroke(
             width = 1.dp,
-            color =
-            if (selected)
-                OrangePrimary
-            else
-                Color.Transparent
+            color = if(purchase){
+                if (selected)
+                    NavyPrimary
+                else
+                    Color.Transparent
+            }else{
+                if (selected)
+                    OrangePrimary
+                else
+                    Color.Transparent
+            }
         ),
         shape = RoundedCornerShape(28.dp)
     ) {
@@ -83,7 +100,7 @@ fun SupportTierCard(
 
             Text(
                 text = "₹${tier.amount}",
-                color = OrangePrimary,
+                color = if(purchase) Color.White else OrangePrimary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 22.sp
             )

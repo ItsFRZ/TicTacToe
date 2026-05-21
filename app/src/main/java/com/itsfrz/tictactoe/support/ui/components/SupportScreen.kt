@@ -21,43 +21,63 @@ import com.itsfrz.tictactoe.support.manager.UpiLauncher
 import com.itsfrz.tictactoe.ui.theme.SurfaceDark
 
 @Composable
-fun SupportScreen() {
+fun SupportScreen(
+    purchase : Boolean,
+    onPayment : (activity : Activity, amount : Int) -> Unit
+) {
 
     val activity = LocalContext.current as Activity
 
     val tiers = remember {
-
-        listOf(
-            SupportTier(
-                "Coffee Drop",
-                49,
-                "☕",
-                "Support nightly builds"
-            ),
-            SupportTier(
-                "Pizza Patch",
-                149,
-                "🍕",
-                "Fuel new features"
-            ),
-            SupportTier(
-                "Legendary",
-                499,
-                "🏆",
-                "Become hall of fame"
+        if (purchase){
+            listOf(
+                SupportTier(
+                    "Best",
+                    49,
+                    "🪙",
+                    "${1*100000} gold coins"
+                ),
+                SupportTier(
+                    "Legend",
+                    149,
+                    "💰",
+                    "1 Bag of coins worth ${3*100000}"
+                ),
+                SupportTier(
+                    "Insane",
+                    499,
+                    "🌟",
+                    "10 Bag of coins worth ${10*100000}"
+                )
             )
-        )
+        }else{
+            listOf(
+                SupportTier(
+                    "Coffee Drop",
+                    49,
+                    "☕",
+                    "Support nightly builds"
+                ),
+                SupportTier(
+                    "Pizza Patch",
+                    149,
+                    "🍕",
+                    "Fuel new features"
+                ),
+                SupportTier(
+                    "Legendary",
+                    499,
+                    "🏆",
+                    "Become hall of fame"
+                )
+            )
+        }
+
+
     }
 
     var selectedAmount by remember {
         mutableIntStateOf(49)
-    }
-
-    val launcher = remember {
-        UpiLauncher(
-            upiId = "orangelabs@upi",
-            receiverName = "Orange Labs"
-        )
     }
 
     Scaffold(
@@ -71,18 +91,16 @@ fun SupportScreen() {
         ) {
 
             item {
-
-                HeroSection()
+                HeroSection(purchase)
             }
 
             item {
-
                 Spacer(modifier = Modifier.height(18.dp))
             }
 
             items(tiers) { tier ->
-
                 SupportTierCard(
+                    purchase = purchase,
                     tier = tier,
                     selected = tier.amount == selectedAmount,
                     onClick = {
@@ -96,13 +114,10 @@ fun SupportScreen() {
                 Spacer(modifier = Modifier.height(28.dp))
 
                 AnimatedSupportButton(
+                    purchase = purchase,
                     amount = selectedAmount
                 ) {
-
-                    launcher.launch(
-                        activity,
-                        selectedAmount
-                    )
+                    onPayment(activity,selectedAmount)
                 }
 
                 SecurityFooter()

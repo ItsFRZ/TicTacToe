@@ -2,7 +2,8 @@ package com.itsfrz.tictactoe.support.data
 
 enum class PaymentMethod {
     UPI,
-    STRIPE,
+    RAZORPAY,
     GITHUB,
-    KOFI
+    KOFI,
+    PAYPAL
 }

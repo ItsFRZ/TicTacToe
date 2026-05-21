@@ -11,4 +11,5 @@ sealed class CommonUseCase{
     object OnDebitLosingToken : CommonUseCase()
     data class OnSlotMasterTokenUpdate(val token : Int) : CommonUseCase()
     data class OnLevelPurchase(val token : Int,val levelId : Int) : CommonUseCase()
+    data class OnPurchaseTokenUpdate(val token : Int) : CommonUseCase()
 }

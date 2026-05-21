@@ -147,6 +147,9 @@ class CommonViewModel private constructor(): ViewModel() {
 
                 onPurchase(event.token,event.levelId)
             }
+            is CommonUseCase.OnPurchaseTokenUpdate -> {
+                onTokenUpdate(event.token)
+            }
         }
     }
 
@@ -221,5 +224,13 @@ class CommonViewModel private constructor(): ViewModel() {
                     gameSound.startBackgroundMusic()
                 }
         }
+    }
+
+    suspend fun updateCashInfo(cashAmount : Int) {
+        settingRepository.updateCash(cashAmount)
+    }
+
+    suspend fun getCashInfo() : Int {
+        return settingRepository.getCashInfo()
     }
 }

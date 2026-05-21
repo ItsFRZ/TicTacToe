@@ -16,10 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.itsfrz.tictactoe.common.functionality.ThemePicker
+import com.itsfrz.tictactoe.ui.theme.NavyPrimary
 import com.itsfrz.tictactoe.ui.theme.OrangePrimary
 
 @Composable
 fun AnimatedSupportButton(
+    purchase : Boolean,
     amount: Int,
     onClick: () -> Unit
 ) {
@@ -43,12 +46,12 @@ fun AnimatedSupportButton(
             .height(62.dp),
         shape = RoundedCornerShape(24.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = OrangePrimary
+            containerColor = if (purchase) NavyPrimary else OrangePrimary
         )
     ) {
 
         Text(
-            text = "Support ₹$amount",
+            text = "${if (purchase) "Buy" else "Support"} ₹$amount",
             fontSize = 18.sp
         )
     }

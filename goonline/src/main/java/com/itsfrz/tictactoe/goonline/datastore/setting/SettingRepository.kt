@@ -10,4 +10,6 @@ interface SettingRepository {
     suspend fun updateCoinInfo(typeDebit : Boolean) : Unit
     suspend fun updateCoinInfo(token : Int) : Unit
     suspend fun onPurchase(token : Int,levelId : Int) : Unit
+    suspend fun updateCash(amountUnit : Int) : Unit
+    suspend fun getCashInfo() : Int
 }

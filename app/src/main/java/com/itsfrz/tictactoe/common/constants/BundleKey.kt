@@ -17,4 +17,5 @@ object BundleKey {
     val SLOT_MACHINE : String = "SLOT_MACHINE"
     val GAME_LEVEL : String = "GAME_LEVEL"
     val REWARD_URL : String = "REWARD_URL"
+    val FULL_SUPPORT : String = "FULL_SUPPORT"
 }
