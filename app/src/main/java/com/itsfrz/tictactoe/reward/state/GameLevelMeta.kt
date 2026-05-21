@@ -17,6 +17,7 @@ object GameLevelMeta {
         "6f289973-8c26-4c99-ae85-1bc48d5b6efd",
         "281281e8-f760-4c57-acbb-906114eb4491",
         "9eedb89c-7994-46ff-bcc3-d2c5e2083f72",
+        "98440794-9d24-48ac-8718-84d9c5d4e8f7",
         "a4de5e0b-42a3-410b-bd04-1bd2696ddbb0",
         "31b37064-a86a-4a37-aa14-932d08699c0f",
         "9a79b112-91cd-48f7-8a02-73b32d117688",
