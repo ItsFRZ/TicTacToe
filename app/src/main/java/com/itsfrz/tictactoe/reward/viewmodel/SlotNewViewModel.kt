@@ -33,15 +33,6 @@ class SlotNewViewModel : ViewModel() {
         repeat(1)  { add(SlotNewSymbol.DIAMOND) }
     }
 
-    // ─────────────────────────────────────────
-    // Reel animation durations (ms) — must be
-    // LONGER than UI animation total per reel.
-    // UI does: stagger delay + phase1 + phase2
-    // + overshoot + spring ≈ 4200–5200ms max.
-    // We stop state AFTER that window.
-    // ─────────────────────────────────────────
-    private val reelStopDelays = listOf(4200L, 4500L, 5000L)
-
     fun updateCoinInfo(token: Int) {
         _ui.update { it.copy(coins = token) }
         syncCoins()
@@ -55,69 +46,64 @@ class SlotNewViewModel : ViewModel() {
         val state = _ui.value
         if (state.spinning.any { it } || state.coins < state.betAmount) return
 
-        // Determine result upfront — UI will animate to these
+        // Decide result upfront — UI animates to these symbols
         val result = List(3) { weightedPool.random() }
+        // Pre-compute win so onReelStopped can apply it the moment the last reel lands
+        val win       = evaluate(result, state.betAmount)
+        val isJackpot = win >= state.betAmount * 8
+        val isBigWin  = win >= state.betAmount * 3
+        val resultMsg = when {
+            win == 0               -> randomLoseMessage()
+            isBigWin && !isJackpot -> "BIG WIN!  +$win 🪙"
+            isJackpot              -> "💎 JACKPOT!  +$win 💎"
+            else                   -> "Nice!  +$win 🪙"
+        }
 
-        viewModelScope.launch {
+        _ui.update {
+            it.copy(
+                coins      = it.coins - it.betAmount,
+                reels      = result,
+                spinning   = List(3) { true },
+                lastWin    = 0,
+                resultMsg  = "Spinning...",
+                totalSpins = it.totalSpins + 1,
+                // Cache result so onReelStopped can apply it without recomputing
+                pendingWin       = win,
+                pendingResultMsg = resultMsg,
+            )
+        }
 
-            // Deduct bet, mark all reels spinning, push target symbols immediately
-            // so the UI reel engine knows where to stop
-            _ui.update {
-                it.copy(
-                    coins      = it.coins - it.betAmount,
-                    reels      = result,           // targets set NOW so animation aims correctly
-                    spinning   = List(3) { true },
-                    lastWin    = 0,
-                    resultMsg  = "Spinning...",
-                    totalSpins = it.totalSpins + 1
-                )
-            }
-
-            // Stop each reel AFTER UI animation has fully settled
-            reelStopDelays.forEachIndexed { i, delayMs ->
-                delay(delayMs)
-                _ui.update { s ->
-                    val newSpinning = s.spinning.toMutableList().also { it[i] = false }
-                    s.copy(spinning = newSpinning)
-                }
-
-                if (i >= 1){
-                    _ui.update{
-                        it.copy(resultMsg = "Pending ...")
-                    }
-                }
-            }
-
-
-            _ui.update{
-                it.copy(resultMsg = "Finalizing ...")
-            }
-            // Small buffer after last reel stops before showing result
-            delay(300L)
-
-            val win = evaluate(result, state.betAmount)
-            val isJackpot = win >= state.betAmount * 8
-            val isBigWin  = win >= state.betAmount * 3
-
-            _ui.update {
-                it.copy(
-                    coins     = it.coins + win,
-                    lastWin   = win,
-                    resultMsg = when {
-                        win == 0   -> randomLoseMessage()
-                        isBigWin && !isJackpot -> "BIG WIN!  +$win 🪙"
-                        isJackpot  -> "💎 JACKPOT!  +$win 💎"
-                        else       -> "Nice!  +$win 🪙"
-                    }
-                )
-            }
-
-            syncCoins()
-
-            // Auto-clear coin rain after 3.5s
-            if (win >= 500) {
-                delay(3_500L)
+        // If win is huge, schedule clearing coin rain after display
+        if (win >= 500) {
+            viewModelScope.launch {
+                // Wait for all reels + result display; coin rain lingers 3.5s after result
+                // We listen for spinning==false on all reels via state — but simpler:
+                // delay enough for max animation + result display time
+                delay(10_000L)
                 _ui.update { it.copy(lastWin = 0) }
+            }
+        }
+    }
+
+    /**
+     * Called by the UI (PremiumReel) the instant reel [index]'s animation completes.
+     * When the last reel (index 2) reports done, we apply the result immediately.
+     */
+    fun onReelStopped(index: Int) {
+        _ui.update { s ->
+            val newSpinning = s.spinning.toMutableList().also { it[index] = false }
+            val allStopped  = newSpinning.none { it }
+            if (allStopped) {
+                // All reels settled — show result right now
+                val w = s.pendingWin
+                s.copy(
+                    spinning   = newSpinning,
+                    coins      = s.coins + w,
+                    lastWin    = w,
+                    resultMsg  = s.pendingResultMsg,
+                ).also { syncCoins(it.coins) }
+            } else {
+                s.copy(spinning = newSpinning)
             }
         }
     }
@@ -148,8 +134,8 @@ class SlotNewViewModel : ViewModel() {
     // ─────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────
-    private fun syncCoins() {
-        cvm?.onEvent(CommonUseCase.OnSlotMasterTokenUpdate(_ui.value.coins))
+    private fun syncCoins(coins: Int = _ui.value.coins) {
+        cvm?.onEvent(CommonUseCase.OnSlotMasterTokenUpdate(coins))
     }
 
     private fun randomLoseMessage(): String = listOf(

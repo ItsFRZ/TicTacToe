@@ -78,6 +78,13 @@ fun SlotScreenRefined(
     val state by vm.uiState.collectAsState()
     val scope = rememberCoroutineScope()
 
+    // Trigger sound whenever a final result message arrives (not "Spinning...")
+//    LaunchedEffect(state.resultMsg) {
+//        if (state.resultMsg.isNotEmpty() && state.resultMsg != "Spinning...") {
+//            am.spin(state.lastWin, state.resultMsg)
+//        }
+//    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -104,12 +111,13 @@ fun SlotScreenRefined(
             TopBar(coins = state.coins, spins = state.totalSpins)
             Spacer(Modifier.height(24.dp))
             SlotMachineBody(
-                am       = am,
-                scope    = scope,
-                reels    = state.reels,
-                spinning = state.spinning,
+                am        = am,
+                vm        = vm,
+                scope     = scope,
+                reels     = state.reels,
+                spinning  = state.spinning,
                 resultMsg = state.resultMsg,
-                lastWin  = state.lastWin
+                lastWin   = state.lastWin
             )
             Spacer(Modifier.height(28.dp))
             SpinControls(
@@ -117,11 +125,9 @@ fun SlotScreenRefined(
                 canSpin   = state.coins >= state.betAmount,
                 betAmount = state.betAmount,
                 onSpin    = {
-                    scope.launch {
-                        vm.spin()
-                        am.spin(state.lastWin, state.resultMsg)
-                    }
-                },
+                    scope.launch { am.spin(state.lastWin, state.resultMsg) }
+                    vm.spin()
+                            },
                 onBetUp   = { vm.changeBet(state.betAmount + 50) },
                 onBetDown = { vm.changeBet(state.betAmount - 50) }
             )
@@ -173,6 +179,7 @@ private fun ScanlineOverlay() {
 @Composable
 private fun SlotMachineBody(
     am: SlotSoundManager,
+    vm: SlotNewViewModel,
     scope: CoroutineScope,
     reels: List<SlotNewSymbol>,
     spinning: List<Boolean>,
@@ -213,7 +220,7 @@ private fun SlotMachineBody(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                ReelViewport(reels = reels, spinning = spinning)
+                ReelViewport(reels = reels, spinning = spinning, vm = vm)
 
                 Spacer(Modifier.height(16.dp))
 
@@ -339,7 +346,8 @@ fun CoinRain(scope: CoroutineScope, am: SlotSoundManager) {
 @Composable
 private fun ReelViewport(
     reels: List<SlotNewSymbol>,
-    spinning: List<Boolean>
+    spinning: List<Boolean>,
+    vm: SlotNewViewModel
 ) {
     Box(
         modifier = Modifier
@@ -356,10 +364,11 @@ private fun ReelViewport(
         ) {
             reels.forEachIndexed { i, symbol ->
                 PremiumReel(
-                    target     = symbol,
-                    spinning   = spinning.getOrElse(i) { false },
-                    reelIndex  = i,
-                    modifier   = Modifier.weight(1f)
+                    target       = symbol,
+                    spinning     = spinning.getOrElse(i) { false },
+                    reelIndex    = i,
+                    onStopped    = { vm.onReelStopped(i) },
+                    modifier     = Modifier.weight(1f)
                 )
             }
         }
@@ -420,6 +429,7 @@ fun PremiumReel(
     target: SlotNewSymbol,
     spinning: Boolean,
     reelIndex: Int,
+    onStopped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val allSymbols = remember { SlotNewSymbol.entries.toList() }
@@ -490,17 +500,11 @@ fun PremiumReel(
         // HARD SNAP — guarantees pixel-perfect grid alignment
         offset.snapTo(finalOffset)
 
+        // Notify ViewModel the instant this reel is visually settled
+        onStopped()
+
         // NOW update displayed symbol — only after full stop
         displayedSymbol = target
-    }
-
-    // Derive which symbol index sits in the CENTER SLOT from offset
-    // This is used ONLY for visual rendering during spin
-    val centeredIndexDuringSpin by remember {
-        derivedStateOf {
-            val raw = (offset.value / cellPx).roundToInt()
-            raw.absoluteValue % symbolCount
-        }
     }
 
     Box(
@@ -515,12 +519,11 @@ fun PremiumReel(
             .border(1.dp, ReelBorder, RoundedCornerShape(16.dp))
     ) {
         ReelStrip(
-            allSymbols          = allSymbols,
-            offset              = offset.value,
-            cellPx              = cellPx,
-            spinning            = spinning,
-            centeredIndexDuringSpin = centeredIndexDuringSpin,
-            stoppedSymbol       = displayedSymbol
+            allSymbols    = allSymbols,
+            offset        = offset.value,
+            cellPx        = cellPx,
+            spinning      = spinning,
+            stoppedSymbol = displayedSymbol
         )
 
         // Center highlight window
@@ -562,7 +565,6 @@ private fun BoxScope.ReelStrip(
     offset: Float,
     cellPx: Float,
     spinning: Boolean,
-    centeredIndexDuringSpin: Int,
     stoppedSymbol: SlotNewSymbol
 ) {
     val symbolCount = allSymbols.size
@@ -584,21 +586,26 @@ private fun BoxScope.ReelStrip(
         }
     } else {
         // SPINNING: scroll-driven rendering with circular index
+        // offset increases → strip moves UP → symbols appear to scroll DOWN (like a real slot reel)
         val baseIndex = (offset / cellPx).toInt()
         val remainder = offset % cellPx
 
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
+                // Shift strip upward by the fractional part so it scrolls smoothly
                 .offset { IntOffset(x = 0, y = -remainder.roundToInt()) }
         ) {
+            // Render 5 cells: indices baseIndex-1 .. baseIndex+3 so the viewport
+            // (3 cells tall) is always covered during the sub-cell shift above.
+            // Center cell is at position i=1 (second row rendered).
             for (i in -1..3) {
-                val idx = (baseIndex + i).absoluteValue % symbolCount
+                // Positive modulo so index never goes negative
+                val idx = ((baseIndex + i) % symbolCount + symbolCount) % symbolCount
                 val isCenter = (i == 1)
-                val isCenterDerived = (idx == centeredIndexDuringSpin) && isCenter
                 SymbolCell(
                     symbol   = allSymbols[idx],
-                    isCenter = isCenterDerived,
+                    isCenter = isCenter,
                     spinning = true
                 )
             }

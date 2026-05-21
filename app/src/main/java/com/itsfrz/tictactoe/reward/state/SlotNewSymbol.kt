@@ -35,4 +35,8 @@ data class SlotUiState(
     val betAmount:  Int              = 50,
     /** Total spins played. */
     val totalSpins: Int              = 0,
+    /** Pre-computed win amount — applied the instant the last reel stops. */
+    val pendingWin: Int              = 0,
+    /** Pre-computed result message — applied the instant the last reel stops. */
+    val pendingResultMsg: String     = "",
 )
