@@ -4,6 +4,8 @@ import com.itsfrz.tictactoe.minimax.GameBrain
 import com.itsfrz.tictactoe.minimax.Move
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
+import kotlin.math.absoluteValue
+import kotlin.math.log
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
@@ -322,6 +324,9 @@ object IGameBrain : GameBrain {
         boardSize: Int,
         difficulty: Int
     ): Move {
+        if (boardSize == 3 && difficulty <= 1){
+            return getQuickMove(gameState)
+        }
         val wl      = winLength[boardSize] ?: 3
         val masks   = getWinMasks(boardSize, wl)
         val maxD    = maxDepthTable[boardSize]?.get(difficulty) ?: 4
@@ -372,6 +377,29 @@ object IGameBrain : GameBrain {
         }
 
         return bestMove
+    }
+
+    private fun getQuickMove(gameState: ArrayList<ArrayList<Int>>) : Move{
+        println("BOARD3 ::getQuickMove :: Game State ${gameState} ")
+        val moves =mutableListOf<Move>()
+        for (row in 0 until gameState.size){
+            for (col in 0 until gameState[row].size){
+                if (gameState[row][col] == 0){
+                    moves.add(Move(row,col))
+                }
+            }
+        }
+        return moves.random()
+    }
+
+    override fun getFirstMove(boardSize: Int): Move {
+        return when(boardSize) {
+            3 -> {Move(1,1)}
+            4 -> {Move(2,2)}
+            5 -> {Move(2,2)}
+            6 -> {Move(3,2)}
+            else -> {Move(2,3)}
+        }
     }
 
     // ─────────────────────────────────────────────────────────

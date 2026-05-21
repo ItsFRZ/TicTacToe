@@ -6,6 +6,7 @@ interface GameBrain {
     // Returns best optimal move for 3,4,5 matrix boards
     // For 3x3 matrix user can define difficulty
     public fun getOptimalMove(gameState : ArrayList<ArrayList<Int>>,boardSize : Int,difficulty : Int) : Move
+    public fun getFirstMove(boardSize : Int) : Move
     public fun setAITurn(value : Boolean) : Unit
     public fun reset() : Unit
 }
