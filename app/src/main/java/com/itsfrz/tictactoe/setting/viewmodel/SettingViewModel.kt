@@ -2,11 +2,13 @@ package com.itsfrz.tictactoe.setting.viewmodel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itsfrz.tictactoe.goonline.datastore.setting.SettingRepository
 import com.itsfrz.tictactoe.common.enums.SettingType
+import com.itsfrz.tictactoe.common.functionality.LocaleManager
 import com.itsfrz.tictactoe.goonline.common.GameTheme
 import com.itsfrz.tictactoe.setting.usecase.SettingUseCase
 import kotlinx.coroutines.Dispatchers
@@ -15,11 +17,30 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 
-class SettingViewModel(
+class SettingViewModel : ViewModel() {
 
-) : ViewModel() {
-
-
+    val supportedLanguages =  listOf(
+        "English" to "en",
+        "German" to "de",
+        "Russian" to "ru",
+        "French" to "fr",
+        "Spanish" to "es",
+        "Portuguese (Brazil)" to "pt-BR",
+        "Italian" to "it",
+        "Turkish" to "tr",
+        "Polish" to "pl",
+        "Dutch" to "nl",
+        "Chinese (Simplified)" to "zh-CN",
+        "Japanese" to "ja",
+        "Korean" to "ko",
+        "Ukrainian" to "uk",
+        "Czech" to "cs",
+        "Romanian" to "ro",
+        "Hungarian" to "hu",
+        "Indonesian" to "id",
+        "Arabic" to "ar",
+        "Hindi" to "hi"
+    )
     companion object{
         private var instance : SettingViewModel? = null
         private lateinit var settingRepository: SettingRepository
@@ -52,14 +73,19 @@ class SettingViewModel(
     private val _gameNotification : MutableState<Boolean> = mutableStateOf(false)
     val gameNotification: State<Boolean> = _gameNotification
 
-    private val _systemLanguageIndex : MutableState<Int> = mutableStateOf(0)
-    val systemLanguageIndex: State<Int> = _systemLanguageIndex
+    private val _systemLanguageIndex : MutableState<Int> = mutableIntStateOf(0)
 
-    private val _backgroundColorIndex : MutableState<Int> = mutableStateOf(0)
+    private val _backgroundColorIndex : MutableState<Int> = mutableIntStateOf(0)
     val backgroundColorIndex: State<Int> = _backgroundColorIndex
 
     private val _settingType : MutableState<SettingType> = mutableStateOf(SettingType.COLOR)
     val settingType: State<SettingType> = _settingType
+
+    private val _languageExpanded : MutableState<Boolean> = mutableStateOf(false)
+    val languageExpanded : State<Boolean> = _languageExpanded
+
+    private val _selectedLanguage : MutableState<Pair<String,String>> = mutableStateOf(supportedLanguages.first())
+    val selectedLanguage : State<Pair<String,String>> = _selectedLanguage
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -69,6 +95,7 @@ class SettingViewModel(
                 _systemVibration.value = it.vibration
                 _gameNotification.value = it.notification
                 _backgroundColorIndex.value = getGameThemeFromEnum(it.theme)
+                _selectedLanguage.value = it.language ?:  ("English" to "en")
             }
         }
     }
@@ -101,8 +128,26 @@ class SettingViewModel(
             is SettingUseCase.OnUpdateSettingType -> {
                 _settingType.value = event.settingType
             }
+            is SettingUseCase.OnLangToggle -> {
+                _languageExpanded.value = event.state
+            }
+            is SettingUseCase.OnLanguageChange -> {
+                _selectedLanguage.value = event.lang
+                updateLangLocale()
+            }
         }
     }
+
+    private fun updateLangLocale() {
+        LocaleManager.updateLocale( _selectedLanguage.value.second)
+        viewModelScope.launch(Dispatchers.IO) {
+            val settingData = settingRepository.getGameSetting()?.firstOrNull()
+            settingData?.let {
+                settingRepository.updateGameSetting(settingData.copy(language = _selectedLanguage.value))
+            }
+        }
+    }
+
 
     fun updateSettings(settingType : SettingType, assignValue : Any){
         viewModelScope.launch(Dispatchers.IO) {
@@ -146,7 +191,6 @@ class SettingViewModel(
             GameTheme.DARK_RED -> 1
             GameTheme.POPPY_ORANGE -> 2
             GameTheme.DRACULA_GREEN -> 3
-            else -> 0
         }
     }
 

@@ -99,7 +99,7 @@ fun SupportTierCard(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "₹${tier.amount}",
+                text = "$${tier.amount}",
                 color = if(purchase) Color.White else OrangePrimary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 22.sp

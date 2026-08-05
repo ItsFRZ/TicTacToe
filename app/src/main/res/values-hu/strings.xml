@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Amőba</string>
+    <string name="share">Megosztás</string>
+    <string name="internet_not_available">Az internet nem érhető el :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">Regisztrálnod kell</string>
+    <string name="username">Felhasználónév</string>
+    <string name="play_online">az online játékhoz</string>
+    <string name="choose_language">Válaszd ki a kívánt nyelvet</string>
+    <string name="no_tracking">Nincs követés</string>
+    <string name="no_ads">Nincsenek hirdetések</string>
+    <string name="privacy_first">Adatvédelem az első helyen</string>
+    <string name="offline_support">Offline támogatás</string>
+    <string name="no_permission">Nincsenek engedélyek</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">Válaszd ki</string>
+    <string name="play_mode">Játékmód</string>
+    <string name="computer">Számítógép</string>
+    <string name="two_player">2 játékos</string>
+    <string name="four_player">4 játékos</string>
+    <string name="online_player">Online</string>
+    <string name="happy_purchase">Sikeres vásárlás :)</string>
+    <string name="no_balance">Vásárlás sikertelen: nincs elegendő egyenleg</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">Válassz</string>
+    <string name="emoji_text">emojit</string>
+    <string name="go_text">MEHET</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">Kezdő</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Kezdésnek kiváló!</string>
+
+    <string name="board_seasoned">Tapasztalt</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">A magas IQ-jú játékosok ezt a táblát választják!</string>
+
+    <string name="board_pro">Profi</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">A szint zseniális óvatosságot igényel a tábla kiválasztásához!</string>
+
+    <!-- Game board -->
+    <string name="your_text">Tiéd</string>
+    <string name="opponent_text">Ellenfél</string>
+    <string name="ai_text">MI</string>
+    <string name="player_one">Játékos 1</string>
+    <string name="player_two">Játékos 2</string>
+    <string name="player_three">Játékos 3</string>
+    <string name="player_four">Játékos 4</string>
+    <string name="play_again">Játssz újra</string>
+    <string name="draw_text">DÖNTETLEN</string>
+    <string name="lose_text">Vesztettél!</string>
+    <string name="next_time_text">Legközelebb több szerencsét!</string>
+    <string name="retry_text">Próbáld újra</string>
+    <string name="winner_text">NYERTES</string>
+    <string name="best_text">Te vagy a legjobb!</string>
+    <string name="exit_text">KILÉPÉS</string>
+    <string name="exit_confirm_text">Biztosan ki szeretnél lépni?</string>
+    <string name="agree_text">Egyetértek</string>
+    <string name="wait_load_text">Kérlek, várd meg az ellenfeled</string>
+    <string name="connect_text">a csatlakozáshoz ...</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">◈  NYERŐGÉP MESTER  ◈</string>
+    <string name="balance_text">EGYENLEG</string>
+    <string name="spins_text">PÖRGETÉSEK</string>
+    <string name="spinning_text">▶▶ PÖRÖG</string>
+    <string name="spin_text">▶  PÖRGETÉS</string>
+    <string name="match_text">PÁROSÍTS 3-AT</string>
+    <string name="paytable_text">NYEREMÉNYTÁBLA</string>
+
+    <!-- support page -->
+    <string name="sbest_text">Legjobb</string>
+    <string name="legend_text">Legenda</string>
+    <string name="insane_text">Őrült</string>
+    <string name="gold_coins_text">aranyérmék</string>
+    <string name="bag_coin_text">1 zacskó érme értéke</string>
+    <string name="many_bag_coin_text">10 zacskó érme értéke</string>
+    <string name="coffee_drop_text">Kávécsepp</string>
+    <string name="support_text">Támogasd a nightly buildeket</string>
+    <string name="pizza_text">Pizza Patch</string>
+    <string name="fuel_text">Támogasd az új funkciókat</string>
+    <string name="legendary_text">Legendás</string>
+    <string name="fame_text">Kerülj be a Hall of Fame-be</string>
+    <string name="security_text">A fizetések biztonságosan, megbízható alkalmazásokon és böngészős fizetésen keresztül zajlanak.</string>
+    <string name="no_details_text">Nem tárolunk banki adatokat.</string>
+
+    <!-- setting page -->
+    <string name="setting_text">Beállítások</string>
+    <string name="game_text">Játék</string>
+    <string name="music_text">Zene</string>
+    <string name="sound_text">Hang</string>
+    <string name="vibration_text">Rezgés</string>
+    <string name="notification_text">Értesítés</string>
+    <string name="display_text">Kijelző</string>
+    <string name="color_text">Szín</string>
+    <string name="setting_support_text">Támogatás</string>
+    <string name="donation_text">Adomány</string>
+    <string name="thank_text">Köszönjük</string>
+
+    <!-- setting container page -->
+    <string name="select_background_text">Válassz háttérszínt</string>
+    <string name="select_language_text">Válassz nyelvet</string>
+    <string name="theme_blue_text">Kék téma</string>
+    <string name="theme_red_text">Sötétvörös</string>
+    <string name="theme_orange_text">Máknarancs</string>
+    <string name="theme_green_text">Drakula-zöld</string>
+
+</resources>

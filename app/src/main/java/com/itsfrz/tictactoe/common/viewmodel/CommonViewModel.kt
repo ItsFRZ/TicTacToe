@@ -9,7 +9,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.itsfrz.tictactoe.common.enums.GameLanguage
 import com.itsfrz.tictactoe.common.enums.GameTheme
 import com.itsfrz.tictactoe.common.enums.PlayerCount
 import com.itsfrz.tictactoe.common.functionality.GameSound
@@ -18,11 +17,9 @@ import com.itsfrz.tictactoe.common.usecase.CommonUseCase
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameDataStore
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
-import com.itsfrz.tictactoe.goonline.datastore.setting.SettingDataStore
 import com.itsfrz.tictactoe.goonline.datastore.setting.SettingRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 
@@ -43,7 +40,6 @@ class CommonViewModel private constructor(): ViewModel() {
     public var gameLevelInfo: MutableSet<Int> = mutableSetOf()
     public var notification: Boolean = true
     public var theme: GameTheme = GameTheme.THEME_BLUE
-    public var language: GameLanguage = GameLanguage.ENGLISH
 
 
     private var _emojiDataList : ArrayList<EmojiState> = arrayListOf()

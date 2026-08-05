@@ -15,7 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.support.data.SupportTier
 import com.itsfrz.tictactoe.support.manager.UpiLauncher
 import com.itsfrz.tictactoe.ui.theme.SurfaceDark
@@ -27,48 +29,62 @@ fun SupportScreen(
 ) {
 
     val activity = LocalContext.current as Activity
+    val best = stringResource(R.string.sbest_text)
+    val legend = stringResource(R.string.legend_text)
+    val insane = stringResource(R.string.insane_text)
+    val goldCoin =  stringResource(R.string.gold_coins_text)
+    val bagCoin =  stringResource(R.string.bag_coin_text)
+    val manyBagCoin =  stringResource(R.string.many_bag_coin_text)
+
+
+    val coffeeDrop = stringResource(R.string.coffee_drop_text)
+    val support = stringResource(R.string.support_text)
+    val pizza = stringResource(R.string.pizza_text)
+    val fuel = stringResource(R.string.fuel_text)
+    val legendary = stringResource(R.string.legendary_text)
+    val fame = stringResource(R.string.fame_text)
 
     val tiers = remember {
         if (purchase){
             listOf(
                 SupportTier(
-                    "Best",
-                    49,
+                    best,
+                    11,
                     "🪙",
-                    "${1*100000} gold coins"
+                    "${1*100000} "+goldCoin
                 ),
                 SupportTier(
-                    "Legend",
-                    149,
+                    legend,
+                    25,
                     "💰",
-                    "1 Bag of coins worth ${3*100000}"
+                    bagCoin+" ${3*100000}"
                 ),
                 SupportTier(
-                    "Insane",
-                    499,
+                    insane,
+                    49,
                     "🌟",
-                    "10 Bag of coins worth ${10*100000}"
+                    manyBagCoin+" ${10*100000}"
                 )
             )
         }else{
             listOf(
                 SupportTier(
-                    "Coffee Drop",
-                    49,
+                    coffeeDrop,
+                    100,
                     "☕",
-                    "Support nightly builds"
+                    support
                 ),
                 SupportTier(
-                    "Pizza Patch",
-                    149,
+                    pizza,
+                    200,
                     "🍕",
-                    "Fuel new features"
+                    fuel
                 ),
                 SupportTier(
-                    "Legendary",
-                    499,
+                    legendary,
+                    500,
                     "🏆",
-                    "Become hall of fame"
+                    fame
                 )
             )
         }
@@ -77,7 +93,7 @@ fun SupportScreen(
     }
 
     var selectedAmount by remember {
-        mutableIntStateOf(49)
+        mutableIntStateOf(11)
     }
 
     Scaffold(

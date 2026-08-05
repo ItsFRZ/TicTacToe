@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -220,6 +221,8 @@ class HomeFragment : Fragment() {
                 )
                 val listState = rememberLazyListState()
                 val purchaseDialog = viewModel.purchaseDialog.value
+                val purchase = stringResource(R.string.happy_purchase)
+                val no_balance = stringResource(R.string.no_balance)
 
                 Box {
                     AnimatedGameBackground(modifier = Modifier.fillMaxSize())
@@ -268,7 +271,6 @@ class HomeFragment : Fragment() {
                                         rotationZ = normalized * 12f
                                     }) {
                                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-
                                         Row(modifier = Modifier.fillMaxSize()) {
                                             Column(modifier = Modifier
                                                 .fillMaxWidth()
@@ -281,7 +283,6 @@ class HomeFragment : Fragment() {
                                                         CrystalOrbButton(onClick = {
                                                             onCrystalEvent(item)
                                                         }, text = "${item+1}")
-
                                                     }
                                                 }
                                             }
@@ -352,7 +353,7 @@ class HomeFragment : Fragment() {
                                             navOptions = NavOptions.navOptionStack
                                         )
                                     },
-                                    buttonText = "Computer"
+                                    buttonText = stringResource(R.string.computer)
                                 )
                                 Spacer(modifier = Modifier.height(18.dp).fillMaxWidth())
                                 CustomOutlinedButton(
@@ -374,7 +375,7 @@ class HomeFragment : Fragment() {
                                             navOptions = NavOptions.navOptionStack
                                         )
                                     },
-                                    buttonText = "2 Player"
+                                    buttonText = stringResource(R.string.two_player)
                                 )
                                 Spacer(modifier = Modifier.height(18.dp).fillMaxWidth())
                                 CustomOutlinedButton(
@@ -396,7 +397,7 @@ class HomeFragment : Fragment() {
                                             navOptions = NavOptions.navOptionStack
                                         )
                                     },
-                                    buttonText = "4 Player"
+                                    buttonText = stringResource(R.string.four_player)
                                 )
 //                                Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
 //                                CustomOutlinedButton(
@@ -409,7 +410,7 @@ class HomeFragment : Fragment() {
 //                                            navOptions = NavOptions.navOptionStack
 //                                        )
 //                                    },
-//                                    buttonText = "Online"
+//                                    buttonText = stringResource(R.string.online_player)
 //                                )
                                 Spacer(modifier = Modifier.height(24.dp).fillMaxWidth())
                                 CustomCircleIconButton(iconButtonClick = {
@@ -425,10 +426,9 @@ class HomeFragment : Fragment() {
                                             args = bundle,
                                             navOptions = NavOptions.navOptionStack
                                         )
-
                                         Toast.makeText(
                                             requireActivity(),
-                                            "Happpy Purchase :)",
+                                            purchase,
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
@@ -487,7 +487,7 @@ class HomeFragment : Fragment() {
                                 },
                                 onDialogueEvent = {
                                     if (commonViewModel.goldTokens < (currentPurchaseLevel + 1) * 1000){
-                                        Toast.makeText(requireContext(), "Purchase Failed : Insufficient Balance", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(requireContext(), no_balance, Toast.LENGTH_SHORT).show()
                                     }else{
                                         Log.i("PURCHASE_FLOW", "GamePurchaseDialogue: onDialogueEvent")
                                         commonViewModel.onEvent(CommonUseCase.OnLevelPurchase(token = (currentPurchaseLevel + 1) * 1000, levelId = currentPurchaseLevel+1))

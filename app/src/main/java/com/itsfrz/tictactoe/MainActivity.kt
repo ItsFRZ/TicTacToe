@@ -1,9 +1,16 @@
 package com.itsfrz.tictactoe
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.navigation.fragment.NavHostFragment
+import com.itsfrz.tictactoe.common.functionality.LocaleManager
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.goonline.common.GameTheme
@@ -12,10 +19,12 @@ import com.itsfrz.tictactoe.goonline.datastore.gamestore.GameStoreRepository
 import com.itsfrz.tictactoe.goonline.datastore.gamestore.IGameStoreRepository
 import com.itsfrz.tictactoe.goonline.datastore.setting.ISettingRepository
 import com.itsfrz.tictactoe.goonline.datastore.setting.SettingDataStore
+import com.itsfrz.tictactoe.goonline.datastore.setting.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -27,21 +36,38 @@ class MainActivity : AppCompatActivity() {
     private var job: Job? = null
     private var commonViewModel: CommonViewModel? = null
 
-
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            throwable.printStackTrace()
-            Log.i(TAG, "onCreate: Classic Tic Tac Toe CRASH :: Crash happened on thread ${thread.name} ::  ${throwable.cause?.message}")
-
-        }
-        setContentView(R.layout.activity_main)
-        Log.i("VM_CHECK", "onCreate: MainActivity Created")
-        val storeRepo: GameStoreRepository = IGameStoreRepository(GameDataStore.getDataStore(this))
         val settingRepository = ISettingRepository(SettingDataStore.getDataStore(this))
         runBlocking {
+            val language = runBlocking {
+                settingRepository.getGameSetting()
+                    .first()
+                    .language
+                    ?.second ?: "en"
+            }
+            LocaleManager.updateLocale( language)
             setupTheme(settingRepository)
         }
+        Log.d("LANG", "Locales = ${AppCompatDelegate.getApplicationLocales().toLanguageTags()}")
+        Log.d("LANG", "Config = ${resources.configuration.locales[0]}")
+        Log.d("LANG", getString(R.string.register_title))
+        Log.d("LANG", resources.getResourceEntryName(R.string.register_title))
+        Log.d("LANG", resources.getResourcePackageName(R.string.register_title))
+
+        super.onCreate(savedInstanceState)
+
+
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            throwable.printStackTrace()
+            Log.i(TAG, "onCreate: Clgassic Tic Tac Toe CRASH :: Crash happened on thread ${thread.name} ::  ${throwable.cause?.message}")
+        }
+        val storeRepo = IGameStoreRepository(
+            GameDataStore.getDataStore(this)
+        )
+        setContentView(R.layout.activity_main)
+        Log.i("VM_CHECK", "onCreate: MainActivity Created")
+
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment

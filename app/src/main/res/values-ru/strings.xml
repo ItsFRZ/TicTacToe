@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Крестики-нолики</string>
+    <string name="share">Поделиться</string>
+    <string name="internet_not_available">Интернет недоступен :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">Вы должны зарегистрироваться</string>
+    <string name="username">Имя пользователя</string>
+    <string name="play_online">чтобы играть онлайн</string>
+    <string name="choose_language">Выберите предпочитаемый язык</string>
+    <string name="no_tracking">Без отслеживания</string>
+    <string name="no_ads">Без рекламы</string>
+    <string name="privacy_first">Конфиденциальность прежде всего</string>
+    <string name="offline_support">Офлайн-поддержка</string>
+    <string name="no_permission">Без разрешений</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">Выберите</string>
+    <string name="play_mode">Режим игры</string>
+    <string name="computer">Компьютер</string>
+    <string name="two_player">2 игрока</string>
+    <string name="four_player">4 игрока</string>
+    <string name="online_player">Онлайн</string>
+    <string name="happy_purchase">Удачной покупки :)</string>
+    <string name="no_balance">Покупка не удалась: недостаточно средств</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">Выберите</string>
+    <string name="emoji_text">эмодзи</string>
+    <string name="go_text">ВПЕРЁД</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">Новичок</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Отлично для начала!</string>
+
+    <string name="board_seasoned">Опытный</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">Игроки с высоким IQ выбирают это поле!</string>
+
+    <string name="board_pro">Про</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">Этот уровень требует гениальной осторожности при выборе этого поля!</string>
+
+    <!-- Game board -->
+    <string name="your_text">Вы</string>
+    <string name="opponent_text">Противник</string>
+    <string name="ai_text">ИИ</string>
+    <string name="player_one">Игрок 1</string>
+    <string name="player_two">Игрок 2</string>
+    <string name="player_three">Игрок 3</string>
+    <string name="player_four">Игрок 4</string>
+    <string name="play_again">Играть снова</string>
+    <string name="draw_text">НИЧЬЯ</string>
+    <string name="lose_text">Вы проиграли!</string>
+    <string name="next_time_text">Повезёт в следующий раз!</string>
+    <string name="retry_text">Повторить</string>
+    <string name="winner_text">ПОБЕДИТЕЛЬ</string>
+    <string name="best_text">Вы лучше всех!</string>
+    <string name="exit_text">ВЫХОД</string>
+    <string name="exit_confirm_text">Вы действительно хотите выйти?</string>
+    <string name="agree_text">Согласиться</string>
+    <string name="wait_load_text">Пожалуйста, подождите противника</string>
+    <string name="connect_text">для подключения ...</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">◈  МАСТЕР СЛОТОВ  ◈</string>
+    <string name="balance_text">БАЛАНС</string>
+    <string name="spins_text">СПИНЫ</string>
+    <string name="spinning_text">▶▶ ВРАЩЕНИЕ</string>
+    <string name="spin_text">▶  КРУТИТЬ</string>
+    <string name="match_text">СОБЕРИ 3</string>
+    <string name="paytable_text">ТАБЛИЦА ВЫПЛАТ</string>
+
+    <!-- support page -->
+    <string name="sbest_text">Лучший</string>
+    <string name="legend_text">Легенда</string>
+    <string name="insane_text">Безумный</string>
+    <string name="gold_coins_text">золотые монеты</string>
+    <string name="bag_coin_text">1 мешок монет на сумму</string>
+    <string name="many_bag_coin_text">10 мешков монет на сумму</string>
+    <string name="coffee_drop_text">Кофейная капля</string>
+    <string name="support_text">Поддержите ночные сборки</string>
+    <string name="pizza_text">Пицца-патч</string>
+    <string name="fuel_text">Финансируйте новые функции</string>
+    <string name="legendary_text">Легендарный</string>
+    <string name="fame_text">Попадите в Зал славы</string>
+    <string name="security_text">Платежи безопасно обрабатываются через доверенные приложения и браузерное оформление заказа.</string>
+    <string name="no_details_text">Банковские данные не хранятся.</string>
+
+    <!-- setting page -->
+    <string name="setting_text">Настройки</string>
+    <string name="game_text">Игра</string>
+    <string name="music_text">Музыка</string>
+    <string name="sound_text">Звук</string>
+    <string name="vibration_text">Вибрация</string>
+    <string name="notification_text">Уведомления</string>
+    <string name="display_text">Экран</string>
+    <string name="color_text">Цвет</string>
+    <string name="setting_support_text">Поддержка</string>
+    <string name="donation_text">Пожертвование</string>
+    <string name="thank_text">Спасибо</string>
+
+    <!-- setting container page -->
+    <string name="select_background_text">Выберите цвет фона</string>
+    <string name="select_language_text">Выберите язык</string>
+    <string name="theme_blue_text">Синяя тема</string>
+    <string name="theme_red_text">Тёмно-красный</string>
+    <string name="theme_orange_text">Маковый оранжевый</string>
+    <string name="theme_green_text">Зелёный Дракула</string>
+
+</resources>

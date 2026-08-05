@@ -51,7 +51,7 @@ fun AnimatedSupportButton(
     ) {
 
         Text(
-            text = "${if (purchase) "Buy" else "Support"} ₹$amount",
+            text = "${if (purchase) "Buy" else "Support"} $$amount",
             fontSize = 18.sp
         )
     }

@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -135,8 +136,8 @@ class SelectBoardFragment : Fragment() {
                                             .fillParentMaxWidth(.88F)
                                             .clip(RoundedCornerShape(10.dp))
                                             .height(320.dp),
-                                        boardLevelText = "Rookie",
-                                        boardSizeText = "3x3",
+                                        boardLevelText = stringResource(R.string.board_rookie),
+                                        boardSizeText = stringResource(R.string.board_size_three),
                                         boardTypeVisual = R.drawable.ic_board_size_3,
                                         selectedIndex = isIndexSelected(
                                             selectedIndex,
@@ -152,7 +153,7 @@ class SelectBoardFragment : Fragment() {
                                             )
                                         },
                                         isAIMode = gameMode == GameMode.AI,
-                                        gameBoardContentText = "Good to start with!"
+                                        gameBoardContentText = stringResource(R.string.start_ai)
                                     )
                                     Spacer(
                                         modifier = Modifier
@@ -168,8 +169,8 @@ class SelectBoardFragment : Fragment() {
                                         .fillParentMaxWidth(.88F)
                                         .clip(RoundedCornerShape(10.dp))
                                         .height(320.dp),
-                                    boardLevelText = "Seasoned",
-                                    boardSizeText = "4x4",
+                                    boardLevelText = stringResource(R.string.board_rookie),
+                                    boardSizeText = stringResource(R.string.board_size_four),
                                     boardTypeVisual = R.drawable.ic_board_size_4,
                                     selectedIndex = isIndexSelected(
                                         selectedIndex,
@@ -187,7 +188,7 @@ class SelectBoardFragment : Fragment() {
                                         )
                                     },
                                     isAIMode = false,
-                                    gameBoardContentText = "Players with high IQ chooses this board!"
+                                    gameBoardContentText = stringResource(R.string.player_iq_text)
                                 )
                                 Spacer(
                                     modifier = Modifier
@@ -202,8 +203,8 @@ class SelectBoardFragment : Fragment() {
                                         .fillParentMaxWidth(.88F)
                                         .clip(RoundedCornerShape(10.dp))
                                         .height(320.dp),
-                                    boardLevelText = "Pro",
-                                    boardSizeText = "5x5",
+                                    boardLevelText = stringResource(R.string.board_pro),
+                                    boardSizeText = stringResource(R.string.board_size_five),
                                     boardTypeVisual = R.drawable.ic_board_size_5,
                                     selectedIndex = isIndexSelected(
                                         selectedIndex,
@@ -221,7 +222,7 @@ class SelectBoardFragment : Fragment() {
                                         )
                                     },
                                     isAIMode = false,
-                                    gameBoardContentText = "Hokage like minded people chooses this board!"
+                                    gameBoardContentText = stringResource(R.string.player_challenge_text)
                                 )
                                 Spacer(
                                     modifier = Modifier

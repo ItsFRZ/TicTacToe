@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Morpion</string>
+    <string name="share">Partager</string>
+    <string name="internet_not_available">Internet n\'est pas disponible :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">Vous devez vous inscrire</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="play_online">pour jouer en ligne</string>
+    <string name="choose_language">Choisissez votre langue préférée</string>
+    <string name="no_tracking">Aucun suivi</string>
+    <string name="no_ads">Aucune publicité</string>
+    <string name="privacy_first">Confidentialité d\'abord</string>
+    <string name="offline_support">Prise en charge hors ligne</string>
+    <string name="no_permission">Aucune autorisation</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">Choisissez votre</string>
+    <string name="play_mode">Mode de jeu</string>
+    <string name="computer">Ordinateur</string>
+    <string name="two_player">2 joueurs</string>
+    <string name="four_player">4 joueurs</string>
+    <string name="online_player">En ligne</string>
+    <string name="happy_purchase">Achat réussi :)</string>
+    <string name="no_balance">Échec de l\'achat : solde insuffisant</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">Choisissez</string>
+    <string name="emoji_text">un emoji</string>
+    <string name="go_text">GO</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">Débutant</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Idéal pour débuter !</string>
+
+    <string name="board_seasoned">Confirmé</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">Les joueurs avec un QI élevé choisissent cette grille !</string>
+
+    <string name="board_pro">Pro</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">Ce niveau nécessite une prudence de génie pour choisir cette grille !</string>
+
+    <!-- Game board -->
+    <string name="your_text">Vous</string>
+    <string name="opponent_text">Adversaire</string>
+    <string name="ai_text">IA</string>
+    <string name="player_one">Joueur 1</string>
+    <string name="player_two">Joueur 2</string>
+    <string name="player_three">Joueur 3</string>
+    <string name="player_four">Joueur 4</string>
+    <string name="play_again">Rejouer</string>
+    <string name="draw_text">ÉGALITÉ</string>
+    <string name="lose_text">Vous avez perdu !</string>
+    <string name="next_time_text">Plus de chance la prochaine fois !</string>
+    <string name="retry_text">Réessayer</string>
+    <string name="winner_text">GAGNANT</string>
+    <string name="best_text">Vous êtes le meilleur !</string>
+    <string name="exit_text">QUITTER</string>
+    <string name="exit_confirm_text">Voulez-vous vraiment quitter ?</string>
+    <string name="agree_text">Accepter</string>
+    <string name="wait_load_text">Veuillez attendre votre adversaire</string>
+    <string name="connect_text">pour vous connecter ...</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">◈  MAÎTRE DES SLOTS  ◈</string>
+    <string name="balance_text">SOLDE</string>
+    <string name="spins_text">TOURS</string>
+    <string name="spinning_text">▶▶ TOURNE</string>
+    <string name="spin_text">▶  TOURNER</string>
+    <string name="match_text">ALIGNEZ 3</string>
+    <string name="paytable_text">TABLEAU DES GAINS</string>
+
+    <!-- support page -->
+    <string name="sbest_text">Meilleur</string>
+    <string name="legend_text">Légende</string>
+    <string name="insane_text">Insensé</string>
+    <string name="gold_coins_text">pièces d\'or</string>
+    <string name="bag_coin_text">1 sac de pièces d\'une valeur de</string>
+    <string name="many_bag_coin_text">10 sacs de pièces d\'une valeur de</string>
+    <string name="coffee_drop_text">Goutte de café</string>
+    <string name="support_text">Soutenez les versions nightly</string>
+    <string name="pizza_text">Pizza Patch</string>
+    <string name="fuel_text">Alimentez les nouvelles fonctionnalités</string>
+    <string name="legendary_text">Légendaire</string>
+    <string name="fame_text">Entrez dans le Hall of Fame</string>
+    <string name="security_text">Les paiements sont effectués en toute sécurité via des applications fiables et le paiement par navigateur.</string>
+    <string name="no_details_text">Aucune donnée bancaire enregistrée.</string>
+
+    <!-- setting page -->
+    <string name="setting_text">Paramètres</string>
+    <string name="game_text">Jeu</string>
+    <string name="music_text">Musique</string>
+    <string name="sound_text">Son</string>
+    <string name="vibration_text">Vibration</string>
+    <string name="notification_text">Notifications</string>
+    <string name="display_text">Affichage</string>
+    <string name="color_text">Couleur</string>
+    <string name="setting_support_text">Assistance</string>
+    <string name="donation_text">Don</string>
+    <string name="thank_text">Merci</string>
+
+    <!-- setting container page -->
+    <string name="select_background_text">Sélectionnez la couleur d\'arrière-plan</string>
+    <string name="select_language_text">Sélectionnez la langue</string>
+    <string name="theme_blue_text">Thème bleu</string>
+    <string name="theme_red_text">Rouge foncé</string>
+    <string name="theme_orange_text">Orange coquelicot</string>
+    <string name="theme_green_text">Vert Dracula</string>
+
+</resources>

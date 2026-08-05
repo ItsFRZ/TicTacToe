@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -188,13 +189,13 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
-                Text(text = if (gameResult == GameResult.DRAW) "DRAW" else "You Lose!", style = headerTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 20.sp))
+                Text(text = if (gameResult == GameResult.DRAW) stringResource(R.string.draw_text) else stringResource(R.string.lose_text), style = headerTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 20.sp))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
                 when(gameResult){
                     GameResult.DRAW -> {
-                        Text(text = "Better Luck Next Time!", style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Italic, color = ThemePicker.secondaryColor.value))
+                        Text(text = stringResource(R.string.next_time_text), style = headerSubTitle.copy(fontSize = 17.sp, fontStyle = FontStyle.Italic, color = ThemePicker.secondaryColor.value))
                     }
                     GameResult.LOSE -> {
                         Icon(modifier = Modifier.size(50.dp), painter = painterResource(id = R.drawable.ic_game_retry), contentDescription = "Game Retry", tint = ThemePicker.secondaryColor.value)
@@ -212,7 +213,7 @@ object GameDialogue{
                         gameSound.clickSound()
                         commonViewModel.performHapticVibrate(view)
                         onDialogueButtonClick() },
-                    buttonText = if (gameResult == GameResult.DRAW) "Play Again" else "Retry"
+                    buttonText = if (gameResult == GameResult.DRAW) stringResource(R.string.play_again) else stringResource(R.string.retry_text)
                 )
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
@@ -289,7 +290,7 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(5.dp))
-                Text(text = "WINNER", style = headerTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 20.sp))
+                Text(text = stringResource(R.string.winner_text), style = headerTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 20.sp))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
@@ -297,7 +298,7 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(2.dp))
-                Text(text = if(isAIMode) "You Are The Best!" else winnerUsername, style = headerSubTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 14.sp))
+                Text(text = if(isAIMode) stringResource(R.string.best_text) else winnerUsername, style = headerSubTitle.copy(color = ThemePicker.secondaryColor.value, fontSize = 14.sp))
                 if (isScreenTV(context)){
                     Spacer(modifier = Modifier.wrapContentWidth().height(30.dp))
                 }else{
@@ -394,9 +395,9 @@ object GameDialogue{
     fun GameDialog(
         onExitEvent : () -> Unit,
         onContinueEvent : () -> Unit,
-        headerText : String = "EXIT",
-        titleText : String = "Do you really want to exit ?",
-        buttonText : String = "Agree",
+        headerText : String = stringResource(R.string.exit_text),
+        titleText : String = stringResource(R.string.exit_confirm_text),
+        buttonText : String =  stringResource(R.string.agree_text),
         commonViewModel: CommonViewModel
     ) {
         LaunchedEffect(Unit){
@@ -574,7 +575,7 @@ object GameDialogue{
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(12.dp))
-                Text(text = "Please wait for your opponent\nto connect ...", style = headerSubTitle.copy(fontSize = 12.sp, fontStyle = FontStyle.Italic, color = ThemePicker.secondaryColor.value, fontWeight = FontWeight.Light))
+                Text(text =  stringResource(R.string.wait_load_text)+"\n"+stringResource(R.string.connect_text), style = headerSubTitle.copy(fontSize = 12.sp, fontStyle = FontStyle.Italic, color = ThemePicker.secondaryColor.value, fontWeight = FontWeight.Light))
                 Spacer(modifier = Modifier
                     .wrapContentWidth()
                     .height(10.dp))

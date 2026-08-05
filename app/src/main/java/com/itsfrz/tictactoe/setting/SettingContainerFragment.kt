@@ -16,9 +16,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.constants.BundleKey
 import com.itsfrz.tictactoe.common.enums.SettingType
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
@@ -69,7 +71,7 @@ class SettingContainerFragment : Fragment() {
                             .height(18.dp)
                             .fillMaxWidth()
                     )
-                    SettingHeader(headerTitleText = if (settingTypeLayout == SettingType.COLOR) "Select Background Color" else "Select Language") {
+                    SettingHeader(headerTitleText = if (settingTypeLayout == SettingType.COLOR) stringResource(R.string.select_background_text) else  stringResource(R.string.select_language_text)) {
                         findNavController().navigateUp()
                     }
                     Spacer(
@@ -86,7 +88,7 @@ class SettingContainerFragment : Fragment() {
                                 SettingColorPickerComponent(
                                     primaryColor = PrimaryMain,
                                     secondaryColor = ThemeBlue,
-                                    themeTitle = "Theme Blue",
+                                    themeTitle = stringResource(R.string.theme_blue_text),
                                     isSelected = themeIndex == 0
                                 ) {
                                     commonViewModel.performHapticVibrate(requireView())
@@ -98,7 +100,7 @@ class SettingContainerFragment : Fragment() {
                                 SettingColorPickerComponent(
                                     primaryColor = DarkRedPrimary,
                                     secondaryColor = DarkRedSecondary,
-                                    themeTitle = "Dark Red",
+                                    themeTitle = stringResource(R.string.theme_red_text),
                                     isSelected = themeIndex == 1
                                 ) {
                                     commonViewModel.performHapticVibrate(requireView())
@@ -110,7 +112,7 @@ class SettingContainerFragment : Fragment() {
                                 SettingColorPickerComponent(
                                     primaryColor = PoppyOrangePrimary,
                                     secondaryColor = PoppyOrangeSecondary,
-                                    themeTitle = "Poppy Orange",
+                                    themeTitle = stringResource(R.string.theme_orange_text),
                                     isSelected = themeIndex == 2
                                 ) {
                                     commonViewModel.performHapticVibrate(requireView())
@@ -122,7 +124,7 @@ class SettingContainerFragment : Fragment() {
                                 SettingColorPickerComponent(
                                     primaryColor = DraculaGreenPrimary,
                                     secondaryColor = DraculaGreenSecondary,
-                                    themeTitle = "Dracula Green",
+                                    themeTitle =  stringResource(R.string.theme_green_text),
                                     isSelected = themeIndex == 3
                                 ) {
                                     commonViewModel.performHapticVibrate(requireView())

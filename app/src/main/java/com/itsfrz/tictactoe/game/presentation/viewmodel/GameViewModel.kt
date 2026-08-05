@@ -292,10 +292,13 @@ class GameViewModel(
     // ─── Play Again ─────────────────────────────────────────────────────────────
 
     private suspend fun gameDelay(){
+        if (boardType != BoardType.THREEX3){
+            return
+        }
         if (boardType == BoardType.THREEX3){
             when(gameLevel){
-                GameLevel.EASY -> { delay((200..350).random().toLong()) }
-                GameLevel.MEDIUM -> {delay((120..200).random().toLong())}
+                GameLevel.EASY -> { delay((180..150).random().toLong()) }
+                GameLevel.MEDIUM -> {delay((100..130).random().toLong())}
                 GameLevel.HARD -> {}
                 GameLevel.NONE -> {}
             }
@@ -673,7 +676,6 @@ class GameViewModel(
         val minimax: GameBrain = IGameBrain
         minimax.setAITurn(true)
         val difficulty = getDifficultyLevel(gameLevel)
-        Log.i("BOARD3", "aiMove: Difficulty :: ${difficulty}")
         val bestMove: Move = when (boardType) {
             BoardType.THREEX3 -> minimax.getOptimalMove(gameMap, 3, difficulty)
             BoardType.FOURX4  -> minimax.getOptimalMove(gameMap, 4, 2)

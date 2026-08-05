@@ -11,5 +11,5 @@ data class UserProfile(
     @SerialName("online") val online : Boolean = false,
     @SerialName("email")val email : String = "",
     @SerialName("location")val location : String = "",
-    @SerialName("setting")val setting: Setting? = null
+    @SerialName("setting")val setting: Setting? = null,
 )

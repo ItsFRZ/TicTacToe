@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">틱택토</string>
+    <string name="share">공유</string>
+    <string name="internet_not_available">인터넷을 사용할 수 없습니다 :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">가입이 필요합니다</string>
+    <string name="username">사용자 이름</string>
+    <string name="play_online">" 온라인으로 플레이하려면"</string>
+    <string name="choose_language">원하는 언어를 선택하세요</string>
+    <string name="no_tracking">추적 없음</string>
+    <string name="no_ads">광고 없음</string>
+    <string name="privacy_first">개인정보 우선</string>
+    <string name="offline_support">오프라인 지원</string>
+    <string name="no_permission">권한 없음</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">선택하세요</string>
+    <string name="play_mode">플레이 모드</string>
+    <string name="computer">컴퓨터</string>
+    <string name="two_player">2인 플레이</string>
+    <string name="four_player">4인 플레이</string>
+    <string name="online_player">온라인</string>
+    <string name="happy_purchase">즐거운 구매 :)</string>
+    <string name="no_balance">구매 실패: 잔액 부족</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">선택</string>
+    <string name="emoji_text">" 이모지"</string>
+    <string name="go_text">시작</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">초보</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">시작하기 좋습니다!</string>
+
+    <string name="board_seasoned">숙련자</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">IQ가 높은 플레이어는 이 보드를 선택합니다!</string>
+
+    <string name="board_pro">프로</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">이 보드를 선택하려면 천재적인 주의가 필요합니다!</string>
+
+    <!-- Game board -->
+    <string name="your_text">나</string>
+    <string name="opponent_text">상대</string>
+    <string name="ai_text">AI</string>
+    <string name="player_one">플레이어 1</string>
+    <string name="player_two">플레이어 2</string>
+    <string name="player_three">플레이어 3</string>
+    <string name="player_four">플레이어 4</string>
+    <string name="play_again">다시 하기</string>
+    <string name="draw_text">무승부</string>
+    <string name="lose_text">패배했습니다!</string>
+    <string name="next_time_text">다음에는 더 좋은 결과가 있기를!</string>
+    <string name="retry_text">재시도</string>
+    <string name="winner_text">승자</string>
+    <string name="best_text">당신이 최고입니다!</string>
+    <string name="exit_text">종료</string>
+    <string name="exit_confirm_text">정말 종료하시겠습니까?</string>
+    <string name="agree_text">동의</string>
+    <string name="wait_load_text">상대방 연결을</string>
+    <string name="connect_text">" 기다려 주세요 ..."</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">"◈  슬롯 마스터  ◈"</string>
+    <string name="balance_text">잔액</string>
+    <string name="spins_text">스핀</string>
+    <string name="spinning_text">▶▶ 스핀 중</string>
+    <string name="spin_text">"▶  스핀"</string>
+    <string name="match_text">3 매치</string>
+    <string name="paytable_text">페이테이블</string>
+
+    <!-- Support page -->
+    <string name="sbest_text">최고</string>
+    <string name="legend_text">전설</string>
+    <string name="insane_text">인세인</string>
+    <string name="gold_coins_text">금화</string>
+    <string name="bag_coin_text">1 코인 자루 가치</string>
+    <string name="many_bag_coin_text">10 코인 자루 가치</string>
+    <string name="coffee_drop_text">커피 드롭</string>
+    <string name="support_text">나이틀리 빌드 지원</string>
+    <string name="pizza_text">피자 패치</string>
+    <string name="fuel_text">새 기능에 힘을</string>
+    <string name="legendary_text">전설적인</string>
+    <string name="fame_text">명예의 전당에 입성</string>
+    <string name="security_text">결제는 신뢰할 수 있는 앱과 브라우저 결제를 통해 안전하게 처리됩니다.</string>
+    <string name="no_details_text">은행 정보는 저장되지 않습니다.</string>
+
+    <!-- Settings page -->
+    <string name="setting_text">설정</string>
+    <string name="game_text">게임</string>
+    <string name="music_text">음악</string>
+    <string name="sound_text">소리</string>
+    <string name="vibration_text">진동</string>
+    <string name="notification_text">알림</string>
+    <string name="display_text">디스플레이</string>
+    <string name="color_text">색상</string>
+    <string name="setting_support_text">지원</string>
+    <string name="donation_text">기부</string>
+    <string name="thank_text">감사합니다</string>
+
+    <!-- Settings container page -->
+    <string name="select_background_text">배경색 선택</string>
+    <string name="select_language_text">언어 선택</string>
+    <string name="theme_blue_text">블루 테마</string>
+    <string name="theme_red_text">다크 레드</string>
+    <string name="theme_orange_text">포피 오렌지</string>
+    <string name="theme_green_text">드라큘라 그린</string>
+
+</resources>

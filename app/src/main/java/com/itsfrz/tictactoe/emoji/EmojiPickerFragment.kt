@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -134,9 +135,9 @@ class EmojiPickerFragment : Fragment() {
                     )
                     Text(
                         text = buildAnnotatedString {
-                            append("Choose")
+                            append(stringResource(R.string.choose_text))
                             withStyle(style = SpanStyle(color = ThemePicker.secondaryColor.value)) {
-                                append(" Emoji")
+                                append(stringResource(R.string.emoji_text))
                             }
                         },
                         style = headerTitle.copy(

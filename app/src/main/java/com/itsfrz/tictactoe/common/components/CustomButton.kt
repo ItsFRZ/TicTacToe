@@ -13,8 +13,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.functionality.ThemePicker
 import com.itsfrz.tictactoe.ui.theme.*
 
@@ -23,7 +25,7 @@ fun CustomButton(
     modifier: Modifier = Modifier,
     onButtonClick : () -> Unit,
     isButtonEnabled : Boolean = true,
-    buttonText : String = "GO",
+    buttonText : String = stringResource(R.string.go_text),
     buttonColors : ButtonColors = ButtonDefaults.buttonColors(
         backgroundColor = ThemePicker.themeButtonBackgroundColor.value,
         disabledBackgroundColor = ThemePicker.themeButtonBackgroundDisabled.value

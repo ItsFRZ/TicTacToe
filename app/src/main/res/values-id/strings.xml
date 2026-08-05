@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TicTacToe</string>
+    <string name="share">Bagikan</string>
+    <string name="internet_not_available">Internet tidak tersedia :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">Kamu harus mendaftar</string>
+    <string name="username">Nama pengguna</string>
+    <string name="play_online">" untuk bermain online"</string>
+    <string name="choose_language">Pilih bahasa pilihanmu</string>
+    <string name="no_tracking">Tanpa Pelacakan</string>
+    <string name="no_ads">Tanpa Iklan</string>
+    <string name="privacy_first">Privasi Utama</string>
+    <string name="offline_support">Dukungan Offline</string>
+    <string name="no_permission">Tanpa Izin</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">Pilih</string>
+    <string name="play_mode">Mode Permainan</string>
+    <string name="computer">Komputer</string>
+    <string name="two_player">2 Pemain</string>
+    <string name="four_player">4 Pemain</string>
+    <string name="online_player">Online</string>
+    <string name="happy_purchase">Pembelian Menyenangkan :)</string>
+    <string name="no_balance">Pembelian Gagal: Saldo Tidak Cukup</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">Pilih</string>
+    <string name="emoji_text">" Emoji"</string>
+    <string name="go_text">MULAI</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">Pemula</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Cocok untuk memulai!</string>
+
+    <string name="board_seasoned">Berpengalaman</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">Pemain dengan IQ tinggi memilih papan ini!</string>
+
+    <string name="board_pro">Pro</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">Level ini membutuhkan kehati-hatian jenius untuk memilih papan ini!</string>
+
+    <!-- Game board -->
+    <string name="your_text">Kamu</string>
+    <string name="opponent_text">Lawan</string>
+    <string name="ai_text">AI</string>
+    <string name="player_one">Pemain 1</string>
+    <string name="player_two">Pemain 2</string>
+    <string name="player_three">Pemain 3</string>
+    <string name="player_four">Pemain 4</string>
+    <string name="play_again">Main Lagi</string>
+    <string name="draw_text">SERI</string>
+    <string name="lose_text">Kamu Kalah!</string>
+    <string name="next_time_text">Semoga Beruntung Lain Kali!</string>
+    <string name="retry_text">Coba Lagi</string>
+    <string name="winner_text">PEMENANG</string>
+    <string name="best_text">Kamu Yang Terbaik!</string>
+    <string name="exit_text">KELUAR</string>
+    <string name="exit_confirm_text">Apakah kamu benar-benar ingin keluar?</string>
+    <string name="agree_text">Setuju</string>
+    <string name="wait_load_text">Harap tunggu lawanmu</string>
+    <string name="connect_text">" untuk terhubung ..."</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">"◈  MASTER SLOT  ◈"</string>
+    <string name="balance_text">SALDO</string>
+    <string name="spins_text">PUTARAN</string>
+    <string name="spinning_text">▶▶ BERPUTAR</string>
+    <string name="spin_text">"▶  PUTAR"</string>
+    <string name="match_text">COCOKKAN 3</string>
+    <string name="paytable_text">TABEL PEMBAYARAN</string>
+
+    <!-- Support page -->
+    <string name="sbest_text">Terbaik</string>
+    <string name="legend_text">Legenda</string>
+    <string name="insane_text">Gila</string>
+    <string name="gold_coins_text">koin emas</string>
+    <string name="bag_coin_text">1 kantong koin senilai</string>
+    <string name="many_bag_coin_text">10 kantong koin senilai</string>
+    <string name="coffee_drop_text">Drop Kopi</string>
+    <string name="support_text">Dukung versi nightly</string>
+    <string name="pizza_text">Patch Pizza</string>
+    <string name="fuel_text">Danai fitur baru</string>
+    <string name="legendary_text">Legendaris</string>
+    <string name="fame_text">Masuk ke Hall of Fame</string>
+    <string name="security_text">Pembayaran diproses dengan aman melalui aplikasi tepercaya dan checkout di browser.</string>
+    <string name="no_details_text">Tidak ada detail perbankan yang disimpan.</string>
+
+    <!-- Settings page -->
+    <string name="setting_text">Pengaturan</string>
+    <string name="game_text">Game</string>
+    <string name="music_text">Musik</string>
+    <string name="sound_text">Suara</string>
+    <string name="vibration_text">Getaran</string>
+    <string name="notification_text">Notifikasi</string>
+    <string name="display_text">Tampilan</string>
+    <string name="color_text">Warna</string>
+    <string name="setting_support_text">Dukungan</string>
+    <string name="donation_text">Donasi</string>
+    <string name="thank_text">Terima Kasih</string>
+
+    <!-- Settings container page -->
+    <string name="select_background_text">Pilih Warna Latar Belakang</string>
+    <string name="select_language_text">Pilih Bahasa</string>
+    <string name="theme_blue_text">Tema Biru</string>
+    <string name="theme_red_text">Merah Gelap</string>
+    <string name="theme_orange_text">Oranye Poppy</string>
+    <string name="theme_green_text">Hijau Dracula</string>
+
+</resources>

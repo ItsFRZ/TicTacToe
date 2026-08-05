@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">टिक टैक टो</string>
+    <string name="share">साझा करें</string>
+    <string name="internet_not_available">इंटरनेट उपलब्ध नहीं है :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">आपको पंजीकरण करना होगा</string>
+    <string name="username">उपयोगकर्ता नाम</string>
+    <string name="play_online">" ऑनलाइन खेलने के लिए"</string>
+    <string name="choose_language">अपनी पसंदीदा भाषा चुनें</string>
+    <string name="no_tracking">कोई ट्रैकिंग नहीं</string>
+    <string name="no_ads">कोई विज्ञापन नहीं</string>
+    <string name="privacy_first">गोपनीयता सर्वप्रथम</string>
+    <string name="offline_support">ऑफ़लाइन समर्थन</string>
+    <string name="no_permission">कोई अनुमतियाँ नहीं</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">अपना चुनें</string>
+    <string name="play_mode">खेल मोड</string>
+    <string name="computer">कंप्यूटर</string>
+    <string name="two_player">2 खिलाड़ी</string>
+    <string name="four_player">4 खिलाड़ी</string>
+    <string name="online_player">ऑनलाइन</string>
+    <string name="happy_purchase">खरीदारी मुबारक :)</string>
+    <string name="no_balance">खरीदारी विफल: अपर्याप्त बैलेंस</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">चुनें</string>
+    <string name="emoji_text">" इमोजी"</string>
+    <string name="go_text">चलो</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">शुरुआती</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">शुरुआत के लिए बढ़िया!</string>
+
+    <string name="board_seasoned">अनुभवी</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">उच्च IQ वाले खिलाड़ी इस बोर्ड को चुनते हैं!</string>
+
+    <string name="board_pro">प्रो</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">इस बोर्ड को चुनने के लिए जीनियस जैसी सावधानी आवश्यक है!</string>
+
+    <!-- Game board -->
+    <string name="your_text">आप</string>
+    <string name="opponent_text">प्रतिद्वंद्वी</string>
+    <string name="ai_text">AI</string>
+    <string name="player_one">खिलाड़ी 1</string>
+    <string name="player_two">खिलाड़ी 2</string>
+    <string name="player_three">खिलाड़ी 3</string>
+    <string name="player_four">खिलाड़ी 4</string>
+    <string name="play_again">फिर से खेलें</string>
+    <string name="draw_text">बराबरी</string>
+    <string name="lose_text">आप हार गए!</string>
+    <string name="next_time_text">अगली बार बेहतर किस्मत!</string>
+    <string name="retry_text">पुनः प्रयास करें</string>
+    <string name="winner_text">विजेता</string>
+    <string name="best_text">आप सबसे बढ़िया हैं!</string>
+    <string name="exit_text">बाहर निकलें</string>
+    <string name="exit_confirm_text">क्या आप वाकई बाहर निकलना चाहते हैं?</string>
+    <string name="agree_text">सहमत</string>
+    <string name="wait_load_text">कृपया अपने प्रतिद्वंद्वी की प्रतीक्षा करें</string>
+    <string name="connect_text">" कनेक्ट होने के लिए ..."</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">"◈  स्लॉट मास्टर  ◈"</string>
+    <string name="balance_text">बैलेंस</string>
+    <string name="spins_text">स्पिन</string>
+    <string name="spinning_text">▶▶ घूम रहा है</string>
+    <string name="spin_text">"▶  स्पिन करें"</string>
+    <string name="match_text">3 मिलाएँ</string>
+    <string name="paytable_text">भुगतान तालिका</string>
+
+    <!-- Support page -->
+    <string name="sbest_text">सर्वश्रेष्ठ</string>
+    <string name="legend_text">किंवदंती</string>
+    <string name="insane_text">पागल</string>
+    <string name="gold_coins_text">सोने के सिक्के</string>
+    <string name="bag_coin_text">सिक्कों के 1 बैग की कीमत</string>
+    <string name="many_bag_coin_text">सिक्कों के 10 बैगों की कीमत</string>
+    <string name="coffee_drop_text">कॉफ़ी ड्रॉप</string>
+    <string name="support_text">नाइटली बिल्ड्स का समर्थन करें</string>
+    <string name="pizza_text">पिज़्ज़ा पैच</string>
+    <string name="fuel_text">नए फ़ीचर्स को बढ़ावा दें</string>
+    <string name="legendary_text">लेजेंडरी</string>
+    <string name="fame_text">हॉल ऑफ फेम में शामिल हों</string>
+    <string name="security_text">भुगतान विश्वसनीय ऐप्स और ब्राउज़र चेकआउट के माध्यम से सुरक्षित रूप से संभाले जाते हैं।</string>
+    <string name="no_details_text">कोई बैंकिंग विवरण संग्रहीत नहीं किया जाता।</string>
+
+    <!-- Settings page -->
+    <string name="setting_text">सेटिंग्स</string>
+    <string name="game_text">गेम</string>
+    <string name="music_text">संगीत</string>
+    <string name="sound_text">ध्वनि</string>
+    <string name="vibration_text">वाइब्रेशन</string>
+    <string name="notification_text">सूचना</string>
+    <string name="display_text">डिस्प्ले</string>
+    <string name="color_text">रंग</string>
+    <string name="setting_support_text">सहायता</string>
+    <string name="donation_text">दान</string>
+    <string name="thank_text">धन्यवाद</string>
+
+    <!-- Settings container page -->
+    <string name="select_background_text">पृष्ठभूमि रंग चुनें</string>
+    <string name="select_language_text">भाषा चुनें</string>
+    <string name="theme_blue_text">नीली थीम</string>
+    <string name="theme_red_text">गहरा लाल</string>
+    <string name="theme_orange_text">पोपी नारंगी</string>
+    <string name="theme_green_text">ड्रैकुला हरा</string>
+
+</resources>

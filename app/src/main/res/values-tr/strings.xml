@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XOX</string>
+    <string name="share">Paylaş</string>
+    <string name="internet_not_available">İnternet kullanılamıyor :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">Kayıt olmalısın</string>
+    <string name="username">Kullanıcı adı</string>
+    <string name="play_online">" çevrimiçi oynamak için"</string>
+    <string name="choose_language">Tercih ettiğin dili seç</string>
+    <string name="no_tracking">Takip Yok</string>
+    <string name="no_ads">Reklam Yok</string>
+    <string name="privacy_first">Önce Gizlilik</string>
+    <string name="offline_support">Çevrimdışı Destek</string>
+    <string name="no_permission">İzin Yok</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">Seç</string>
+    <string name="play_mode">Oyun Modu</string>
+    <string name="computer">Bilgisayar</string>
+    <string name="two_player">2 Oyuncu</string>
+    <string name="four_player">4 Oyuncu</string>
+    <string name="online_player">Çevrimiçi</string>
+    <string name="happy_purchase">Mutlu satın alma :)</string>
+    <string name="no_balance">Satın Alma Başarısız: Yetersiz Bakiye</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">Seç</string>
+    <string name="emoji_text">" Emoji"</string>
+    <string name="go_text">BAŞLAT</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">Acemi</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Başlamak için ideal!</string>
+
+    <string name="board_seasoned">Deneyimli</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">Yüksek IQ sahibi oyuncular bu tahtayı seçer!</string>
+
+    <string name="board_pro">Pro</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">Bu tahtayı seçmek için dahi düzeyinde dikkat gerekir!</string>
+
+    <!-- Game board -->
+    <string name="your_text">Sen</string>
+    <string name="opponent_text">Rakip</string>
+    <string name="ai_text">YZ</string>
+    <string name="player_one">Oyuncu 1</string>
+    <string name="player_two">Oyuncu 2</string>
+    <string name="player_three">Oyuncu 3</string>
+    <string name="player_four">Oyuncu 4</string>
+    <string name="play_again">Tekrar Oyna</string>
+    <string name="draw_text">BERABERE</string>
+    <string name="lose_text">Kaybettin!</string>
+    <string name="next_time_text">Bir dahaki sefere bol şans!</string>
+    <string name="retry_text">Tekrar Dene</string>
+    <string name="winner_text">KAZANAN</string>
+    <string name="best_text">En iyi sensin!</string>
+    <string name="exit_text">ÇIKIŞ</string>
+    <string name="exit_confirm_text">Gerçekten çıkmak istiyor musun?</string>
+    <string name="agree_text">Kabul Et</string>
+    <string name="wait_load_text">Lütfen rakibinin bağlanmasını bekle</string>
+    <string name="connect_text">" ..."</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">"◈  SLOT USTASI  ◈"</string>
+    <string name="balance_text">BAKİYE</string>
+    <string name="spins_text">ÇEVİRMELER</string>
+    <string name="spinning_text">▶▶ ÇEVRİLİYOR</string>
+    <string name="spin_text">"▶  ÇEVİR"</string>
+    <string name="match_text">ÜÇLÜ EŞLE</string>
+    <string name="paytable_text">ÖDEME TABLOSU</string>
+
+    <!-- Support page -->
+    <string name="sbest_text">En İyi</string>
+    <string name="legend_text">Efsane</string>
+    <string name="insane_text">Çılgın</string>
+    <string name="gold_coins_text">altın paralar</string>
+    <string name="bag_coin_text">1 kese altın değerinde</string>
+    <string name="many_bag_coin_text">10 kese altın değerinde</string>
+    <string name="coffee_drop_text">Kahve Damlası</string>
+    <string name="support_text">Gecelik derlemeleri destekle</string>
+    <string name="pizza_text">Pizza Yaması</string>
+    <string name="fuel_text">Yeni özelliklere yakıt ol</string>
+    <string name="legendary_text">Efsanevi</string>
+    <string name="fame_text">Onur Listesine gir</string>
+    <string name="security_text">Ödemeler, güvenilir uygulamalar ve tarayıcı ödemesi aracılığıyla güvenli şekilde işlenir.</string>
+    <string name="no_details_text">Bankacılık bilgileri saklanmaz.</string>
+
+    <!-- Settings page -->
+    <string name="setting_text">Ayarlar</string>
+    <string name="game_text">Oyun</string>
+    <string name="music_text">Müzik</string>
+    <string name="sound_text">Ses</string>
+    <string name="vibration_text">Titreşim</string>
+    <string name="notification_text">Bildirim</string>
+    <string name="display_text">Görünüm</string>
+    <string name="color_text">Renk</string>
+    <string name="setting_support_text">Destek</string>
+    <string name="donation_text">Bağış</string>
+    <string name="thank_text">Teşekkürler</string>
+
+    <!-- Settings container page -->
+    <string name="select_background_text">Arka Plan Rengini Seç</string>
+    <string name="select_language_text">Dil Seç</string>
+    <string name="theme_blue_text">Mavi Tema</string>
+    <string name="theme_red_text">Koyu Kırmızı</string>
+    <string name="theme_orange_text">Gelincik Turuncusu</string>
+    <string name="theme_green_text">Drakula Yeşili</string>
+
+</resources>

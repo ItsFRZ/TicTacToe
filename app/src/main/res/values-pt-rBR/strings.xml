@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jogo da Velha</string>
+    <string name="share">Compartilhar</string>
+    <string name="internet_not_available">Sem conexão com a internet :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">Você precisa se registrar</string>
+    <string name="username">Nome de usuário</string>
+    <string name="play_online">para jogar online</string>
+    <string name="choose_language">Escolha seu idioma preferido</string>
+    <string name="no_tracking">Sem rastreamento</string>
+    <string name="no_ads">Sem anúncios</string>
+    <string name="privacy_first">Privacidade em primeiro lugar</string>
+    <string name="offline_support">Suporte offline</string>
+    <string name="no_permission">Sem permissões</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">Escolha seu</string>
+    <string name="play_mode">Modo de jogo</string>
+    <string name="computer">Computador</string>
+    <string name="two_player">2 jogadores</string>
+    <string name="four_player">4 jogadores</string>
+    <string name="online_player">Online</string>
+    <string name="happy_purchase">Boa compra :)</string>
+    <string name="no_balance">Falha na compra: saldo insuficiente</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">Escolha</string>
+    <string name="emoji_text">um emoji</string>
+    <string name="go_text">GO</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">Novato</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Ótimo para começar!</string>
+
+    <string name="board_seasoned">Experiente</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">Jogadores com QI alto escolhem este tabuleiro!</string>
+
+    <string name="board_pro">Pro</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">Este nível exige cautela genial ao escolher este tabuleiro!</string>
+
+    <!-- Game board -->
+    <string name="your_text">Você</string>
+    <string name="opponent_text">Oponente</string>
+    <string name="ai_text">IA</string>
+    <string name="player_one">Jogador 1</string>
+    <string name="player_two">Jogador 2</string>
+    <string name="player_three">Jogador 3</string>
+    <string name="player_four">Jogador 4</string>
+    <string name="play_again">Jogar novamente</string>
+    <string name="draw_text">EMPATE</string>
+    <string name="lose_text">Você perdeu!</string>
+    <string name="next_time_text">Mais sorte na próxima vez!</string>
+    <string name="retry_text">Tentar novamente</string>
+    <string name="winner_text">VENCEDOR</string>
+    <string name="best_text">Você é o melhor!</string>
+    <string name="exit_text">SAIR</string>
+    <string name="exit_confirm_text">Você realmente quer sair?</string>
+    <string name="agree_text">Concordo</string>
+    <string name="wait_load_text">Por favor, aguarde seu oponente</string>
+    <string name="connect_text">para se conectar ...</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">◈  MESTRE DOS SLOTS  ◈</string>
+    <string name="balance_text">SALDO</string>
+    <string name="spins_text">GIROS</string>
+    <string name="spinning_text">▶▶ GIRANDO</string>
+    <string name="spin_text">▶  GIRAR</string>
+    <string name="match_text">COMBINE 3</string>
+    <string name="paytable_text">TABELA DE PAGAMENTOS</string>
+
+    <!-- support page -->
+    <string name="sbest_text">Melhor</string>
+    <string name="legend_text">Lenda</string>
+    <string name="insane_text">Insano</string>
+    <string name="gold_coins_text">moedas de ouro</string>
+    <string name="bag_coin_text">1 saco de moedas no valor de</string>
+    <string name="many_bag_coin_text">10 sacos de moedas no valor de</string>
+    <string name="coffee_drop_text">Gota de café</string>
+    <string name="support_text">Apoie as builds noturnas</string>
+    <string name="pizza_text">Pizza Patch</string>
+    <string name="fuel_text">Impulsione novos recursos</string>
+    <string name="legendary_text">Lendário</string>
+    <string name="fame_text">Entre para o Hall da Fama</string>
+    <string name="security_text">Pagamentos processados com segurança por aplicativos confiáveis e checkout no navegador.</string>
+    <string name="no_details_text">Nenhum dado bancário armazenado.</string>
+
+    <!-- setting page -->
+    <string name="setting_text">Configurações</string>
+    <string name="game_text">Jogo</string>
+    <string name="music_text">Música</string>
+    <string name="sound_text">Som</string>
+    <string name="vibration_text">Vibração</string>
+    <string name="notification_text">Notificações</string>
+    <string name="display_text">Tela</string>
+    <string name="color_text">Cor</string>
+    <string name="setting_support_text">Suporte</string>
+    <string name="donation_text">Doação</string>
+    <string name="thank_text">Obrigado</string>
+
+    <!-- setting container page -->
+    <string name="select_background_text">Selecione a cor de fundo</string>
+    <string name="select_language_text">Selecione o idioma</string>
+    <string name="theme_blue_text">Tema azul</string>
+    <string name="theme_red_text">Vermelho escuro</string>
+    <string name="theme_orange_text">Laranja papoula</string>
+    <string name="theme_green_text">Verde Drácula</string>
+
+</resources>

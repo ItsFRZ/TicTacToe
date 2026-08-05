@@ -9,18 +9,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.constants.BundleKey
-import com.itsfrz.tictactoe.common.enums.GameMode
 import com.itsfrz.tictactoe.common.usecase.CommonUseCase
 import com.itsfrz.tictactoe.common.viewmodel.CommonViewModel
 import com.itsfrz.tictactoe.support.ui.components.SupportScreen
@@ -33,12 +26,6 @@ class SupportFragment : Fragment() {
     var isSupport : Boolean = false
     private lateinit var viewModel: SupportViewModel
     private lateinit var commonViewModel: CommonViewModel
-
-    val launcher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            handlePaymentResult(result)
-        }
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -58,9 +45,7 @@ class SupportFragment : Fragment() {
         ) { _, bundle ->
             when(bundle.getString("status")) {
                 "success" -> {
-                    Log.d("PAYMENT", "Payment Success")
                     val url = bundle.getString("url")
-                    Log.d("PAYMENT", "Success URL = $url")
                     sendAcknowledgement("webview_success")
                 }
 
@@ -89,11 +74,7 @@ class SupportFragment : Fragment() {
                     lifecycleScope.launch {
                         commonViewModel.updateCashInfo(amount)
                     }
-                    if (isUpiAvailable()){
-                        viewModel.onPayment(activity = activity, launcher = launcher)
-                    }else {
-                        openPaymentWebView("https://www.paypal.com/paypalme/orangelabs")
-                    }
+                    openPaymentPage("https://rzp.io/rzp/sCJBATL")
                 }
             }
         }
@@ -116,58 +97,9 @@ class SupportFragment : Fragment() {
         }
     }
 
-    private fun handlePaymentResult(
-        result: ActivityResult
-    ) {
-        if (result.resultCode != Activity.RESULT_OK) {
-            Log.d("UPI", "Cancelled")
-            return
-        }
-        val response = result.data?.dataString
-        Log.d("UPI", "Response = $response")
-        val status = extractStatus(response)
-        when(status?.lowercase()) {
-            "success" -> {
-                Log.d("UPI", "Payment Success")
-                val txnId = extractValue(response, "txnId")
-                sendAcknowledgement(txnId)
-            }
-            "failure" -> {
-                Log.d("UPI", "Payment Failed")
-            }
-            else -> {
-                Log.d("UPI", "Payment Cancelled")
-            }
-        }
-    }
-
-    private fun extractStatus(
-        response: String?
-    ): String? {
-        return extractValue(response, "Status")
-    }
-
-    private fun extractValue(
-        response: String?,
-        key: String
-    ): String? {
-        response ?: return null
-        response.split("&").forEach { param ->
-            val parts = param.split("=")
-            if (
-                parts.size >= 2 &&
-                parts[0].equals(key, true)
-            ) {
-                return parts[1]
-            }
-        }
-        return null
-    }
-
     private fun sendAcknowledgement(
         txnId: String?
     ) {
-        Log.d("UPI", "Acknowledgement received for txnId=$txnId")
         txnId?.let {
             if (txnId.isNotBlank()){
                 lifecycleScope.launch {
@@ -186,28 +118,11 @@ class SupportFragment : Fragment() {
         }
     }
 
-    private fun openPaymentWebView(
-        url: String
-    ) {
-        findNavController().navigate(
-            R.id.paymentWebViewFragment,
-            bundleOf(
-                "url" to url
-            )
-        )
-    }
-
-    private fun isUpiAvailable(): Boolean {
-
-        val uri = Uri.parse("upi://pay")
-
+    private fun openPaymentPage(url: String) {
         val intent = Intent(
             Intent.ACTION_VIEW,
-            uri
+            Uri.parse(url)
         )
-
-        return intent.resolveActivity(
-            requireActivity().packageManager
-        ) != null
+        startActivity(intent)
     }
 }

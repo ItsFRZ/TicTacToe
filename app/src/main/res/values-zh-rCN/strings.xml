@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">井字棋</string>
+    <string name="share">分享</string>
+    <string name="internet_not_available">网络连接不可用 :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">您需要注册</string>
+    <string name="username">用户名</string>
+    <string name="play_online">" 才能在线游戏"</string>
+    <string name="choose_language">请选择您的首选语言</string>
+    <string name="no_tracking">无跟踪</string>
+    <string name="no_ads">无广告</string>
+    <string name="privacy_first">隐私优先</string>
+    <string name="offline_support">离线支持</string>
+    <string name="no_permission">无需权限</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">选择您的</string>
+    <string name="play_mode">游戏模式</string>
+    <string name="computer">电脑</string>
+    <string name="two_player">2名玩家</string>
+    <string name="four_player">4名玩家</string>
+    <string name="online_player">在线</string>
+    <string name="happy_purchase">购买愉快 :)</string>
+    <string name="no_balance">购买失败：余额不足</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">选择</string>
+    <string name="emoji_text">" 表情符号"</string>
+    <string name="go_text">开始</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">新手</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">适合入门！</string>
+
+    <string name="board_seasoned">老手</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">高智商玩家会选择这个棋盘！</string>
+
+    <string name="board_pro">专业</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">选择此棋盘需要天才般的谨慎！</string>
+
+    <!-- Game board -->
+    <string name="your_text">您</string>
+    <string name="opponent_text">对手</string>
+    <string name="ai_text">AI</string>
+    <string name="player_one">玩家1</string>
+    <string name="player_two">玩家2</string>
+    <string name="player_three">玩家3</string>
+    <string name="player_four">玩家4</string>
+    <string name="play_again">再玩一次</string>
+    <string name="draw_text">平局</string>
+    <string name="lose_text">您输了！</string>
+    <string name="next_time_text">下次好运！</string>
+    <string name="retry_text">重试</string>
+    <string name="winner_text">获胜者</string>
+    <string name="best_text">您是最棒的！</string>
+    <string name="exit_text">退出</string>
+    <string name="exit_confirm_text">确定要退出吗？</string>
+    <string name="agree_text">同意</string>
+    <string name="wait_load_text">请等待您的对手</string>
+    <string name="connect_text">" 连接 ..."</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">"◈  老虎机大师  ◈"</string>
+    <string name="balance_text">余额</string>
+    <string name="spins_text">旋转次数</string>
+    <string name="spinning_text">▶▶ 旋转中</string>
+    <string name="spin_text">"▶  旋转"</string>
+    <string name="match_text">三连</string>
+    <string name="paytable_text">赔付表</string>
+
+    <!-- Support page -->
+    <string name="sbest_text">最佳</string>
+    <string name="legend_text">传说</string>
+    <string name="insane_text">疯狂</string>
+    <string name="gold_coins_text">金币</string>
+    <string name="bag_coin_text">1袋金币价值</string>
+    <string name="many_bag_coin_text">10袋金币价值</string>
+    <string name="coffee_drop_text">咖啡空投</string>
+    <string name="support_text">支持夜间构建</string>
+    <string name="pizza_text">披萨补丁</string>
+    <string name="fuel_text">为新功能加油</string>
+    <string name="legendary_text">传奇</string>
+    <string name="fame_text">进入名人堂</string>
+    <string name="security_text">支付通过受信任的应用和浏览器结算安全处理。</string>
+    <string name="no_details_text">不会存储银行信息。</string>
+
+    <!-- Settings page -->
+    <string name="setting_text">设置</string>
+    <string name="game_text">游戏</string>
+    <string name="music_text">音乐</string>
+    <string name="sound_text">声音</string>
+    <string name="vibration_text">振动</string>
+    <string name="notification_text">通知</string>
+    <string name="display_text">显示</string>
+    <string name="color_text">颜色</string>
+    <string name="setting_support_text">支持</string>
+    <string name="donation_text">捐赠</string>
+    <string name="thank_text">谢谢</string>
+
+    <!-- Settings container page -->
+    <string name="select_background_text">选择背景颜色</string>
+    <string name="select_language_text">选择语言</string>
+    <string name="theme_blue_text">蓝色主题</string>
+    <string name="theme_red_text">深红</string>
+    <string name="theme_orange_text">罂粟橙</string>
+    <string name="theme_green_text">德古拉绿</string>
+
+</resources>

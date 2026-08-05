@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.itsfrz.tictactoe.R
 
 @Composable
 fun SecurityFooter() {
@@ -24,8 +26,7 @@ fun SecurityFooter() {
     ) {
 
         Text(
-            text =
-            "Payments handled securely via trusted apps and browser checkout.",
+            text = stringResource(R.string.security_text),
             color = Color.Gray,
             textAlign = TextAlign.Center
         )
@@ -33,8 +34,7 @@ fun SecurityFooter() {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text =
-            "No banking details stored.",
+            text = stringResource(R.string.no_details_text),
             color = Color.Gray
         )
     }

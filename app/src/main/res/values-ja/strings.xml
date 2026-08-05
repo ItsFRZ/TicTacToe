@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">マルバツゲーム</string>
+    <string name="share">共有</string>
+    <string name="internet_not_available">インターネットに接続できません :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">登録が必要です</string>
+    <string name="username">ユーザー名</string>
+    <string name="play_online">オンラインでプレイするには</string>
+    <string name="choose_language">お好みの言語を選択してください</string>
+    <string name="no_tracking">追跡なし</string>
+    <string name="no_ads">広告なし</string>
+    <string name="privacy_first">プライバシー優先</string>
+    <string name="offline_support">オフライン対応</string>
+    <string name="no_permission">権限不要</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">選択</string>
+    <string name="play_mode">プレイモード</string>
+    <string name="computer">コンピューター</string>
+    <string name="two_player">2人プレイ</string>
+    <string name="four_player">4人プレイ</string>
+    <string name="online_player">オンライン</string>
+    <string name="happy_purchase">ご購入ありがとうございます :)</string>
+    <string name="no_balance">購入に失敗しました：残高不足</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">選択</string>
+    <string name="emoji_text">絵文字</string>
+    <string name="go_text">GO</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">初心者</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">始めるのに最適！</string>
+
+    <string name="board_seasoned">中級者</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">IQの高いプレイヤーが選ぶボード！</string>
+
+    <string name="board_pro">プロ</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">このボードを選ぶには天才的な慎重さが必要です！</string>
+
+    <!-- Game board -->
+    <string name="your_text">あなた</string>
+    <string name="opponent_text">対戦相手</string>
+    <string name="ai_text">AI</string>
+    <string name="player_one">プレイヤー1</string>
+    <string name="player_two">プレイヤー2</string>
+    <string name="player_three">プレイヤー3</string>
+    <string name="player_four">プレイヤー4</string>
+    <string name="play_again">もう一度プレイ</string>
+    <string name="draw_text">引き分け</string>
+    <string name="lose_text">あなたの負け！</string>
+    <string name="next_time_text">次こそ勝利！</string>
+    <string name="retry_text">リトライ</string>
+    <string name="winner_text">勝者</string>
+    <string name="best_text">あなたが最高！</string>
+    <string name="exit_text">終了</string>
+    <string name="exit_confirm_text">本当に終了しますか？</string>
+    <string name="agree_text">同意する</string>
+    <string name="wait_load_text">対戦相手を待っています</string>
+    <string name="connect_text">接続中...</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">◈  スロットマスター  ◈</string>
+    <string name="balance_text">残高</string>
+    <string name="spins_text">スピン</string>
+    <string name="spinning_text">▶▶ スピン中</string>
+    <string name="spin_text">▶ スピン</string>
+    <string name="match_text">マッチ3</string>
+    <string name="paytable_text">配当表</string>
+
+    <!-- support page -->
+    <string name="sbest_text">ベスト</string>
+    <string name="legend_text">レジェンド</string>
+    <string name="insane_text">クレイジー</string>
+    <string name="gold_coins_text">ゴールドコイン</string>
+    <string name="bag_coin_text">コイン1袋の価値</string>
+    <string name="many_bag_coin_text">コイン10袋の価値</string>
+    <string name="coffee_drop_text">コーヒードロップ</string>
+    <string name="support_text">ナイトリービルドをサポート</string>
+    <string name="pizza_text">ピザパッチ</string>
+    <string name="fuel_text">新機能の開発を支援</string>
+    <string name="legendary_text">レジェンダリー</string>
+    <string name="fame_text">殿堂入り</string>
+    <string name="security_text">お支払いは信頼できるアプリとブラウザ決済を通じて安全に処理されます。</string>
+    <string name="no_details_text">銀行情報は保存されません。</string>
+
+    <!-- setting page -->
+    <string name="setting_text">設定</string>
+    <string name="game_text">ゲーム</string>
+    <string name="music_text">音楽</string>
+    <string name="sound_text">サウンド</string>
+    <string name="vibration_text">振動</string>
+    <string name="notification_text">通知</string>
+    <string name="display_text">表示</string>
+    <string name="color_text">カラー</string>
+    <string name="setting_support_text">サポート</string>
+    <string name="donation_text">寄付</string>
+    <string name="thank_text">ありがとうございます</string>
+
+    <!-- setting container page -->
+    <string name="select_background_text">背景色を選択</string>
+    <string name="select_language_text">言語を選択</string>
+    <string name="theme_blue_text">テーマブルー</string>
+    <string name="theme_red_text">ダークレッド</string>
+    <string name="theme_orange_text">ポピーオレンジ</string>
+    <string name="theme_green_text">ドラキュラグリーン</string>
+
+</resources>

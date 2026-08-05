@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">تيك تاك تو</string>
+    <string name="share">مشاركة</string>
+    <string name="internet_not_available">الإنترنت غير متاح :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">يجب عليك التسجيل</string>
+    <string name="username">اسم المستخدم</string>
+    <string name="play_online">" للعب عبر الإنترنت"</string>
+    <string name="choose_language">اختر لغتك المفضلة</string>
+    <string name="no_tracking">بدون تتبع</string>
+    <string name="no_ads">بدون إعلانات</string>
+    <string name="privacy_first">الخصوصية أولًا</string>
+    <string name="offline_support">دعم عدم الاتصال</string>
+    <string name="no_permission">بدون أذونات</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">اختر</string>
+    <string name="play_mode">وضع اللعب</string>
+    <string name="computer">الكمبيوتر</string>
+    <string name="two_player">لاعبان</string>
+    <string name="four_player">4 لاعبين</string>
+    <string name="online_player">عبر الإنترنت</string>
+    <string name="happy_purchase">شراء سعيد :)</string>
+    <string name="no_balance">فشل الشراء: الرصيد غير كافٍ</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">اختر</string>
+    <string name="emoji_text">" إيموجي"</string>
+    <string name="go_text">انطلق</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">مبتدئ</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">مناسب للبدء!</string>
+
+    <string name="board_seasoned">متمرس</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">اللاعبون ذوو الذكاء العالي يختارون هذه اللوحة!</string>
+
+    <string name="board_pro">محترف</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">هذا المستوى يتطلب حذر العباقرة لاختيار هذه اللوحة!</string>
+
+    <!-- Game board -->
+    <string name="your_text">أنت</string>
+    <string name="opponent_text">الخصم</string>
+    <string name="ai_text">الذكاء الاصطناعي</string>
+    <string name="player_one">اللاعب 1</string>
+    <string name="player_two">اللاعب 2</string>
+    <string name="player_three">اللاعب 3</string>
+    <string name="player_four">اللاعب 4</string>
+    <string name="play_again">العب مرة أخرى</string>
+    <string name="draw_text">تعادل</string>
+    <string name="lose_text">لقد خسرت!</string>
+    <string name="next_time_text">حظًا أوفر في المرة القادمة!</string>
+    <string name="retry_text">إعادة المحاولة</string>
+    <string name="winner_text">الفائز</string>
+    <string name="best_text">أنت الأفضل!</string>
+    <string name="exit_text">خروج</string>
+    <string name="exit_confirm_text">هل تريد الخروج حقًا؟</string>
+    <string name="agree_text">موافق</string>
+    <string name="wait_load_text">يرجى انتظار خصمك</string>
+    <string name="connect_text">" للاتصال ..."</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">"◈  سيد الفتحات  ◈"</string>
+    <string name="balance_text">الرصيد</string>
+    <string name="spins_text">الدورات</string>
+    <string name="spinning_text">▶▶ قيد الدوران</string>
+    <string name="spin_text">"▶  دوران"</string>
+    <string name="match_text">طابِق 3</string>
+    <string name="paytable_text">جدول الدفع</string>
+
+    <!-- Support page -->
+    <string name="sbest_text">الأفضل</string>
+    <string name="legend_text">الأسطورة</string>
+    <string name="insane_text">مجنون</string>
+    <string name="gold_coins_text">عملات ذهبية</string>
+    <string name="bag_coin_text">حقيبة عملات واحدة بقيمة</string>
+    <string name="many_bag_coin_text">10 حقائب عملات بقيمة</string>
+    <string name="coffee_drop_text">قطرة القهوة</string>
+    <string name="support_text">ادعم الإصدارات الليلية</string>
+    <string name="pizza_text">تحديث البيتزا</string>
+    <string name="fuel_text">موّل الميزات الجديدة</string>
+    <string name="legendary_text">أسطوري</string>
+    <string name="fame_text">انضم إلى قاعة المشاهير</string>
+    <string name="security_text">تتم معالجة المدفوعات بأمان عبر تطبيقات موثوقة والدفع من المتصفح.</string>
+    <string name="no_details_text">لا يتم تخزين أي تفاصيل مصرفية.</string>
+
+    <!-- Settings page -->
+    <string name="setting_text">الإعدادات</string>
+    <string name="game_text">اللعبة</string>
+    <string name="music_text">الموسيقى</string>
+    <string name="sound_text">الصوت</string>
+    <string name="vibration_text">الاهتزاز</string>
+    <string name="notification_text">الإشعارات</string>
+    <string name="display_text">العرض</string>
+    <string name="color_text">اللون</string>
+    <string name="setting_support_text">الدعم</string>
+    <string name="donation_text">التبرع</string>
+    <string name="thank_text">شكرًا لك</string>
+
+    <!-- Settings container page -->
+    <string name="select_background_text">اختر لون الخلفية</string>
+    <string name="select_language_text">اختر اللغة</string>
+    <string name="theme_blue_text">السمة الزرقاء</string>
+    <string name="theme_red_text">الأحمر الداكن</string>
+    <string name="theme_orange_text">برتقالي الخشخاش</string>
+    <string name="theme_green_text">أخضر دراكولا</string>
+
+</resources>

@@ -2,6 +2,117 @@
     <string name="app_name">TicTacToe</string>
     <string name="share">Share</string>
     <string name="internet_not_available">Internet is not available :(</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- user registration-->
+    <string name="register_title">You must register</string>
+    <string name="username">Username</string>
+    <string name="play_online"> to play online</string>
+    <string name="choose_language">Choose your preferred language</string>
+    <string name="no_tracking">No Tracking</string>
+    <string name="no_ads">No Advertisements</string>
+    <string name="privacy_first">Privacy First</string>
+    <string name="offline_support">Offline Support</string>
+    <string name="no_permission">No Permissions</string>
+
+
+    <!-- Home Page -->
+    <string name="choose_your">Choose Your</string>
+    <string name="play_mode">Play Mode</string>
+    <string name="computer">Computer</string>
+    <string name="two_player">2 Player</string>
+    <string name="four_player">4 Player</string>
+    <string name="online_player">Online</string>
+    <string name="happy_purchase">Happpy Purchase :)</string>
+    <string name="no_balance">Purchase Failed : Insufficient Balance</string>
+
+    <!--    Emoji picker-->
+    <string name="choose_text">Choose</string>
+    <string name="emoji_text"> Emoji</string>
+    <string name="go_text">GO</string>
+
+    <!--    Board picker-->
+    <string name="board_rookie">Rookie</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Good to start with!</string>
+
+
+    <string name="board_seasoned">Rookie</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">Players with high IQ chooses this board!</string>
+
+
+    <string name="board_pro">Pro</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">Level requires genius caution to choose this board!</string>
+
+
+    <!--    Game board-->
+    <string name="your_text">Your</string>
+    <string name="opponent_text">Opponent</string>
+    <string name="ai_text">AI</string>
+    <string name="player_one">Player 1</string>
+    <string name="player_two">Player 2</string>
+    <string name="player_three">Player 3</string>
+    <string name="player_four">Player 4</string>
+    <string name="play_again">Play Again</string>
+    <string name="draw_text">DRAW</string>
+    <string name="lose_text">You Lose!</string>
+    <string name="next_time_text">Better Luck Next Time!</string>
+    <string name="retry_text">Retry</string>
+    <string name="winner_text">WINNER</string>
+    <string name="best_text">You Are The Best!</string>
+    <string name="exit_text">EXIT</string>
+    <string name="exit_confirm_text">Do you really want to exit ?</string>
+    <string name="agree_text">Agree</string>
+    <string name="wait_load_text">Please wait for your opponent</string>
+    <string name="connect_text">to connect ...</string>
+
+    <!--    Slot board-->
+    <string name="slot_master_text">◈  SLOT  MASTER  ◈</string>
+    <string name="balance_text">BALANCE</string>
+    <string name="spins_text">SPINS</string>
+    <string name="spinning_text">▶▶ SPINNING</string>
+    <string name="spin_text">▶  SPIN</string>
+    <string name="match_text">MATCH 3</string>
+    <string name="paytable_text">PAYTABLE</string>
+
+
+    <!--    support page-->
+    <string name="sbest_text">Best</string>
+    <string name="legend_text">Legend</string>
+    <string name="insane_text">Insane</string>
+    <string name="gold_coins_text">gold coins</string>
+    <string name="bag_coin_text">1 Bag of coins worth</string>
+    <string name="many_bag_coin_text">10 Bag of coins worth</string>
+    <string name="coffee_drop_text">Coffee Drop</string>
+    <string name="support_text">Support nightly builds</string>
+    <string name="pizza_text">Pizza Patch</string>
+    <string name="fuel_text">Fuel new features</string>
+    <string name="legendary_text">Legendary</string>
+    <string name="fame_text">Become hall of fame</string>
+    <string name="security_text">Payments handled securely via trusted apps and browser checkout.</string>
+    <string name="no_details_text">No banking details stored.</string>
+
+    <!--    setting page-->
+
+    <string name="setting_text">Settings</string>
+    <string name="game_text">Game</string>
+    <string name="music_text">Music</string>
+    <string name="sound_text">Sound</string>
+    <string name="vibration_text">Vibration</string>
+    <string name="notification_text">Notification</string>
+    <string name="display_text">Display</string>
+    <string name="color_text">Color</string>
+    <string name="setting_support_text">Support</string>
+    <string name="donation_text">Donation</string>
+    <string name="thank_text">Thank You</string>
+
+    <!--    setting container page-->
+
+    <string name="select_background_text">Select Background Color</string>
+    <string name="select_language_text">Select Language</string>
+    <string name="theme_blue_text">Theme Blue</string>
+    <string name="theme_red_text">Dark Red</string>
+    <string name="theme_orange_text">Poppy Orange</string>
+    <string name="theme_green_text">Dracula Green</string>
+
 </resources>

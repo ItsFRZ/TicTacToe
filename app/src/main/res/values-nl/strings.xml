@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Boter, kaas en eieren</string>
+    <string name="share">Delen</string>
+    <string name="internet_not_available">Internet is niet beschikbaar :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">Je moet je registreren</string>
+    <string name="username">Gebruikersnaam</string>
+    <string name="play_online">om online te spelen</string>
+    <string name="choose_language">Kies je voorkeurstaal</string>
+    <string name="no_tracking">Geen tracking</string>
+    <string name="no_ads">Geen advertenties</string>
+    <string name="privacy_first">Privacy eerst</string>
+    <string name="offline_support">Offline ondersteuning</string>
+    <string name="no_permission">Geen machtigingen</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">Kies je</string>
+    <string name="play_mode">Speelmodus</string>
+    <string name="computer">Computer</string>
+    <string name="two_player">2 spelers</string>
+    <string name="four_player">4 spelers</string>
+    <string name="online_player">Online</string>
+    <string name="happy_purchase">Veel plezier met je aankoop :)</string>
+    <string name="no_balance">Aankoop mislukt: onvoldoende saldo</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">Kies</string>
+    <string name="emoji_text">een emoji</string>
+    <string name="go_text">GO</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">Beginner</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Ideaal om te beginnen!</string>
+
+    <string name="board_seasoned">Gevorderd</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">Spelers met een hoog IQ kiezen dit bord!</string>
+
+    <string name="board_pro">Pro</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">Dit level vereist geniale voorzichtigheid bij het kiezen van dit bord!</string>
+
+    <!-- Game board -->
+    <string name="your_text">Jouw</string>
+    <string name="opponent_text">Tegenstander</string>
+    <string name="ai_text">AI</string>
+    <string name="player_one">Speler 1</string>
+    <string name="player_two">Speler 2</string>
+    <string name="player_three">Speler 3</string>
+    <string name="player_four">Speler 4</string>
+    <string name="play_again">Speel opnieuw</string>
+    <string name="draw_text">GELIJKSPEL</string>
+    <string name="lose_text">Je verliest!</string>
+    <string name="next_time_text">Volgende keer meer geluk!</string>
+    <string name="retry_text">Opnieuw proberen</string>
+    <string name="winner_text">WINNAAR</string>
+    <string name="best_text">Jij bent de beste!</string>
+    <string name="exit_text">AFSLUITEN</string>
+    <string name="exit_confirm_text">Wil je echt afsluiten?</string>
+    <string name="agree_text">Akkoord</string>
+    <string name="wait_load_text">Wacht op je tegenstander</string>
+    <string name="connect_text">om verbinding te maken ...</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">◈  SLOTMASTER  ◈</string>
+    <string name="balance_text">SALDO</string>
+    <string name="spins_text">DRAAIEN</string>
+    <string name="spinning_text">▶▶ DRAAIT</string>
+    <string name="spin_text">▶  DRAAI</string>
+    <string name="match_text">COMBINEER 3</string>
+    <string name="paytable_text">UITBETALINGSTABEL</string>
+
+    <!-- support page -->
+    <string name="sbest_text">Beste</string>
+    <string name="legend_text">Legende</string>
+    <string name="insane_text">Krankzinnig</string>
+    <string name="gold_coins_text">gouden munten</string>
+    <string name="bag_coin_text">1 zak met munten ter waarde van</string>
+    <string name="many_bag_coin_text">10 zakken met munten ter waarde van</string>
+    <string name="coffee_drop_text">Koffiedruppel</string>
+    <string name="support_text">Ondersteun nightly builds</string>
+    <string name="pizza_text">Pizza-patch</string>
+    <string name="fuel_text">Financier nieuwe functies</string>
+    <string name="legendary_text">Legendarisch</string>
+    <string name="fame_text">Kom in de Hall of Fame</string>
+    <string name="security_text">Betalingen worden veilig afgehandeld via vertrouwde apps en browsercheckout.</string>
+    <string name="no_details_text">Geen bankgegevens opgeslagen.</string>
+
+    <!-- setting page -->
+    <string name="setting_text">Instellingen</string>
+    <string name="game_text">Spel</string>
+    <string name="music_text">Muziek</string>
+    <string name="sound_text">Geluid</string>
+    <string name="vibration_text">Trillen</string>
+    <string name="notification_text">Meldingen</string>
+    <string name="display_text">Weergave</string>
+    <string name="color_text">Kleur</string>
+    <string name="setting_support_text">Ondersteuning</string>
+    <string name="donation_text">Donatie</string>
+    <string name="thank_text">Bedankt</string>
+
+    <!-- setting container page -->
+    <string name="select_background_text">Selecteer achtergrondkleur</string>
+    <string name="select_language_text">Selecteer taal</string>
+    <string name="theme_blue_text">Thema blauw</string>
+    <string name="theme_red_text">Donkerrood</string>
+    <string name="theme_orange_text">Klaproosoranje</string>
+    <string name="theme_green_text">Draculagroen</string>
+
+</resources>

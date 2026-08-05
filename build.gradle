@@ -4,7 +4,7 @@ buildscript {
         kotlin_version = '1.9.22'
         nav_version = '2.7.6'
         agp_version = '8.9.1'
-        app_compat_version = '1.6.1'
+        app_compat_version = '1.7.1'
         core_ktx_version = '1.9.0'
         constraint_layout_version = '2.1.4'
         lifecycle_version = '2.4.0'

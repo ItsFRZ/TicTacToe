@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TicTacToe</string>
+    <string name="share">Sdílet</string>
+    <string name="internet_not_available">Internet není k dispozici :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">Musíš se zaregistrovat</string>
+    <string name="username">Uživatelské jméno</string>
+    <string name="play_online">" pro hraní online"</string>
+    <string name="choose_language">Vyber si preferovaný jazyk</string>
+    <string name="no_tracking">Bez sledování</string>
+    <string name="no_ads">Bez reklam</string>
+    <string name="privacy_first">Soukromí na prvním místě</string>
+    <string name="offline_support">Podpora offline</string>
+    <string name="no_permission">Bez oprávnění</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">Vyber si</string>
+    <string name="play_mode">herní režim</string>
+    <string name="computer">Počítač</string>
+    <string name="two_player">2 hráči</string>
+    <string name="four_player">4 hráči</string>
+    <string name="online_player">Online</string>
+    <string name="happy_purchase">Šťastný nákup :)</string>
+    <string name="no_balance">Nákup se nezdařil: nedostatečný zůstatek</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">Vyber si</string>
+    <string name="emoji_text">" emoji"</string>
+    <string name="go_text">JDEM NA TO</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">Začátečník</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Dobré pro začátek!</string>
+
+    <string name="board_seasoned">Zkušený</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">Hráči s vysokým IQ volí tuto desku!</string>
+
+    <string name="board_pro">Profík</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">Tato úroveň vyžaduje geniální opatrnost při výběru desky!</string>
+
+    <!-- Game board -->
+    <string name="your_text">Ty</string>
+    <string name="opponent_text">Soupeř</string>
+    <string name="ai_text">AI</string>
+    <string name="player_one">Hráč 1</string>
+    <string name="player_two">Hráč 2</string>
+    <string name="player_three">Hráč 3</string>
+    <string name="player_four">Hráč 4</string>
+    <string name="play_again">Hrát znovu</string>
+    <string name="draw_text">REMÍZA</string>
+    <string name="lose_text">Prohrál jsi!</string>
+    <string name="next_time_text">Příště víc štěstí!</string>
+    <string name="retry_text">Zkusit znovu</string>
+    <string name="winner_text">VÍTĚZ</string>
+    <string name="best_text">Jsi nejlepší!</string>
+    <string name="exit_text">UKONČIT</string>
+    <string name="exit_confirm_text">Opravdu chceš odejít?</string>
+    <string name="agree_text">Souhlasím</string>
+    <string name="wait_load_text">Počkej prosím na soupeře</string>
+    <string name="connect_text">" pro připojení ..."</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">"◈  MISTR SLOTŮ  ◈"</string>
+    <string name="balance_text">ZŮSTATEK</string>
+    <string name="spins_text">SPINY</string>
+    <string name="spinning_text">▶▶ TOČÍ SE</string>
+    <string name="spin_text">"▶  TOČIT"</string>
+    <string name="match_text">SROVNEJ 3</string>
+    <string name="paytable_text">TABULKA VÝHER</string>
+
+    <!-- Support page -->
+    <string name="sbest_text">Nejlepší</string>
+    <string name="legend_text">Legenda</string>
+    <string name="insane_text">Šílené</string>
+    <string name="gold_coins_text">zlaté mince</string>
+    <string name="bag_coin_text">1 pytlík mincí v hodnotě</string>
+    <string name="many_bag_coin_text">10 pytlíků mincí v hodnotě</string>
+    <string name="coffee_drop_text">Kapka kávy</string>
+    <string name="support_text">Podpoř noční sestavení</string>
+    <string name="pizza_text">Pizza záplata</string>
+    <string name="fuel_text">Poháněj nové funkce</string>
+    <string name="legendary_text">Legendární</string>
+    <string name="fame_text">Staň se součástí síně slávy</string>
+    <string name="security_text">Platby jsou bezpečně zpracovány přes důvěryhodné aplikace a pokladnu v prohlížeči.</string>
+    <string name="no_details_text">Bankovní údaje se neukládají.</string>
+
+    <!-- Settings page -->
+    <string name="setting_text">Nastavení</string>
+    <string name="game_text">Hra</string>
+    <string name="music_text">Hudba</string>
+    <string name="sound_text">Zvuk</string>
+    <string name="vibration_text">Vibrace</string>
+    <string name="notification_text">Oznámení</string>
+    <string name="display_text">Zobrazení</string>
+    <string name="color_text">Barva</string>
+    <string name="setting_support_text">Podpora</string>
+    <string name="donation_text">Dar</string>
+    <string name="thank_text">Děkujeme</string>
+
+    <!-- Settings container page -->
+    <string name="select_background_text">Vyber barvu pozadí</string>
+    <string name="select_language_text">Vyber jazyk</string>
+    <string name="theme_blue_text">Modrý motiv</string>
+    <string name="theme_red_text">Tmavě červená</string>
+    <string name="theme_orange_text">Maková oranžová</string>
+    <string name="theme_green_text">Drákulovská zelená</string>
+
+</resources>

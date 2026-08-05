@@ -41,6 +41,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -360,7 +361,7 @@ class GameFragment : Fragment() {
                                             context = requireContext(),
                                             isAIMode = gameMode == GameMode.AI,
                                             winnerUsername = getWinnerName(playerTurns),
-                                            dialogueButtonText = "Play Again",
+                                            dialogueButtonText = stringResource(R.string.play_again),
                                             onCloseEvent = {
                                                 findNavController().popBackStack()
                                                 findNavController().navigateUp()

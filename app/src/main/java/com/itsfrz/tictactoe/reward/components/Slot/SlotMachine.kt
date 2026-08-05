@@ -18,19 +18,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.reward.audio.SlotSoundManager
 import com.itsfrz.tictactoe.reward.state.SlotNewSymbol
 import com.itsfrz.tictactoe.reward.viewmodel.SlotNewViewModel
 import kotlinx.coroutines.*
 import kotlin.math.*
-
-// ─────────────────────────────────────────────
-// DESIGN TOKENS
-// ─────────────────────────────────────────────
 
 private val Gold        = Color(0xFFFFD54F)
 private val GoldDark    = Color(0xFFFFB300)
@@ -51,11 +49,7 @@ private val DimText     = Color(0xFF6B7891)
 private val WhiteSoft   = Color(0xFFE8EAF0)
 
 private val CellH       = 64.dp
-private val ReelH       = 192.dp   // 3 × CellH exactly
-
-// ─────────────────────────────────────────────
-// COIN PARTICLE
-// ─────────────────────────────────────────────
+private val ReelH       = 192.dp
 
 private data class CoinParticle(
     val x:        Float,
@@ -65,11 +59,6 @@ private data class CoinParticle(
     val rotSpeed: Float,
     val wobbleAmp: Float
 )
-
-// ─────────────────────────────────────────────
-// ROOT
-// ─────────────────────────────────────────────
-
 @Composable
 fun SlotScreenRefined(
     vm: SlotNewViewModel,
@@ -77,14 +66,6 @@ fun SlotScreenRefined(
 ) {
     val state by vm.uiState.collectAsState()
     val scope = rememberCoroutineScope()
-
-    // Trigger sound whenever a final result message arrives (not "Spinning...")
-//    LaunchedEffect(state.resultMsg) {
-//        if (state.resultMsg.isNotEmpty() && state.resultMsg != "Spinning...") {
-//            am.spin(state.lastWin, state.resultMsg)
-//        }
-//    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -95,9 +76,7 @@ fun SlotScreenRefined(
                 )
             )
     ) {
-        // Ambient scanlines effect
         ScanlineOverlay()
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -138,10 +117,6 @@ fun SlotScreenRefined(
     }
 }
 
-// ─────────────────────────────────────────────
-// SCANLINE AMBIENT
-// ─────────────────────────────────────────────
-
 @Composable
 private fun ScanlineOverlay() {
     val transition = rememberInfiniteTransition(label = "scan")
@@ -171,11 +146,6 @@ private fun ScanlineOverlay() {
             }
     )
 }
-
-// ─────────────────────────────────────────────
-// MACHINE BODY
-// ─────────────────────────────────────────────
-
 @Composable
 private fun SlotMachineBody(
     am: SlotSoundManager,
@@ -187,20 +157,14 @@ private fun SlotMachineBody(
     lastWin: Int
 ) {
     val isWin = lastWin > 0
-
-    // border glow pulse on win
     val winGlow by animateFloatAsState(
         targetValue = if (isWin) 1f else 0f,
         animationSpec = tween(400),
         label = "winGlow"
     )
-
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
         CabinetTitle()
-
         Spacer(Modifier.height(16.dp))
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -219,29 +183,20 @@ private fun SlotMachineBody(
                 .padding(horizontal = 14.dp, vertical = 18.dp)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
                 ReelViewport(reels = reels, spinning = spinning, vm = vm)
-
                 Spacer(Modifier.height(16.dp))
-
                 ResultBanner(
                     msg    = resultMsg,
                     isWin  = isWin,
                     winAmt = lastWin
                 )
             }
-
             if (lastWin >= 500) {
                 CoinRain(scope = scope, am = am)
             }
         }
     }
 }
-
-// ─────────────────────────────────────────────
-// RESULT BANNER
-// ─────────────────────────────────────────────
-
 @Composable
 private fun ResultBanner(msg: String, isWin: Boolean, winAmt: Int) {
     val pulse by rememberInfiniteTransition(label = "banner")
@@ -251,7 +206,6 @@ private fun ResultBanner(msg: String, isWin: Boolean, winAmt: Int) {
             animationSpec = infiniteRepeatable(tween(600), RepeatMode.Reverse),
             label        = "p"
         )
-
     AnimatedContent(targetState = msg, label = "result") { text ->
         Box(
             modifier = Modifier
@@ -284,11 +238,6 @@ private fun ResultBanner(msg: String, isWin: Boolean, winAmt: Int) {
         }
     }
 }
-
-// ─────────────────────────────────────────────
-// COIN RAIN  (fixed: one sound total, not per-particle)
-// ─────────────────────────────────────────────
-
 @Composable
 fun CoinRain(scope: CoroutineScope, am: SlotSoundManager) {
     val density  = LocalDensity.current
@@ -307,10 +256,7 @@ fun CoinRain(scope: CoroutineScope, am: SlotSoundManager) {
             )
         }
     }
-
-    // Single sound trigger
     LaunchedEffect(Unit) { am.coinRain() }
-
     Box(Modifier.fillMaxSize()) {
         particles.forEach { p ->
             key(p) {
@@ -338,10 +284,6 @@ fun CoinRain(scope: CoroutineScope, am: SlotSoundManager) {
         }
     }
 }
-
-// ─────────────────────────────────────────────
-// VIEWPORT
-// ─────────────────────────────────────────────
 
 @Composable
 private fun ReelViewport(
@@ -373,7 +315,6 @@ private fun ReelViewport(
             }
         }
 
-        // Payline
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -386,7 +327,6 @@ private fun ReelViewport(
                 )
         )
 
-        // Top fade
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -410,20 +350,6 @@ private fun ReelViewport(
     }
 }
 
-// ─────────────────────────────────────────────
-// PREMIUM REEL  — CORE FIX
-//
-// Key correctness rules:
-//  1. symbolCount = total symbols in list
-//  2. finalOffset = targetIndex * cellPx  (no random loops in offset;
-//     loops are handled by modulo in render)
-//  3. We add large multiple-of-symbolCount * cellPx to guarantee
-//     the reel travels many full rotations before stopping.
-//  4. After stopping, we snap to exact targetIndex * cellPx.
-//  5. centeredSymbol is derived purely from the snapped final value,
-//     not from a running modulo during spin — prevents wrong symbol display.
-// ─────────────────────────────────────────────
-
 @Composable
 fun PremiumReel(
     target: SlotNewSymbol,
@@ -437,10 +363,8 @@ fun PremiumReel(
     val density = LocalDensity.current
     val cellPx = remember { with(density) { CellH.toPx() } }
 
-    // offset tracks cumulative scroll distance
     val offset = remember { Animatable(0f) }
 
-    // What's shown in the center AFTER stop — only updates when not spinning
     var displayedSymbol by remember { mutableStateOf(target) }
 
     val targetIndex = remember(target) { allSymbols.indexOf(target).coerceAtLeast(0) }
@@ -448,26 +372,17 @@ fun PremiumReel(
     LaunchedEffect(spinning, target) {
         if (!spinning) return@LaunchedEffect
 
-        // Stagger start per reel
         delay(reelIndex * kotlin.random.Random.nextLong(180L, 280L))
 
-        // Current offset mod full-strip-length so we don't accumulate forever
         val stripLen = symbolCount * cellPx
         val normalised = offset.value % stripLen
 
-        // We want to land on targetIndex after N full loops
         val loops = kotlin.random.Random.nextInt(8, 13)   // 8–12 full rotations
         val targetOffsetInStrip = targetIndex * cellPx
-        // Calculate how far ahead the target is from normalised position
         var delta = (targetOffsetInStrip - normalised + loops * stripLen)
-        // Ensure delta is positive and includes requested loops
         if (delta < loops * stripLen) delta += stripLen
-
         val finalOffset = normalised + delta
-
         offset.snapTo(normalised)
-
-        // Phase 1 — fast linear ramp (70% of travel)
         offset.animateTo(
             targetValue   = normalised + delta * 0.70f,
             animationSpec = tween(
@@ -475,8 +390,6 @@ fun PremiumReel(
                 easing         = LinearEasing
             )
         )
-
-        // Phase 2 — deceleration (remaining 30%)
         offset.animateTo(
             targetValue   = finalOffset,
             animationSpec = tween(
@@ -484,29 +397,18 @@ fun PremiumReel(
                 easing         = FastOutSlowInEasing
             )
         )
-
-        // Phase 3 — slight mechanical overshoot
         offset.animateTo(
             targetValue   = finalOffset + cellPx * 0.08f,
             animationSpec = tween(durationMillis = 80, easing = FastOutSlowInEasing)
         )
-
-        // Phase 4 — spring settle back
         offset.animateTo(
             targetValue   = finalOffset,
             animationSpec = spring(dampingRatio = 0.65f, stiffness = 900f)
         )
-
-        // HARD SNAP — guarantees pixel-perfect grid alignment
         offset.snapTo(finalOffset)
-
-        // Notify ViewModel the instant this reel is visually settled
         onStopped()
-
-        // NOW update displayed symbol — only after full stop
         displayedSymbol = target
     }
-
     Box(
         modifier = modifier
             .height(ReelH)
@@ -525,8 +427,6 @@ fun PremiumReel(
             spinning      = spinning,
             stoppedSymbol = displayedSymbol
         )
-
-        // Center highlight window
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -552,13 +452,6 @@ fun PremiumReel(
     }
 }
 
-// ─────────────────────────────────────────────
-// REEL STRIP RENDERER
-//
-// When stopped: renders exactly 3 cells centered on stoppedSymbol.
-// When spinning: renders cells based on scroll offset (circular).
-// ─────────────────────────────────────────────
-
 @Composable
 private fun BoxScope.ReelStrip(
     allSymbols: List<SlotNewSymbol>,
@@ -570,11 +463,9 @@ private fun BoxScope.ReelStrip(
     val symbolCount = allSymbols.size
 
     if (!spinning) {
-        // STOPPED: show exactly 3 aligned symbols — prev, center, next
         val centerIdx = allSymbols.indexOf(stoppedSymbol).coerceAtLeast(0)
         val prevIdx   = (centerIdx - 1 + symbolCount) % symbolCount
         val nextIdx   = (centerIdx + 1) % symbolCount
-
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -585,8 +476,6 @@ private fun BoxScope.ReelStrip(
             SymbolCell(symbol = allSymbols[nextIdx], isCenter = false, spinning = false)
         }
     } else {
-        // SPINNING: scroll-driven rendering with circular index
-        // offset increases → strip moves UP → symbols appear to scroll DOWN (like a real slot reel)
         val baseIndex = (offset / cellPx).toInt()
         val remainder = offset % cellPx
 
@@ -596,11 +485,7 @@ private fun BoxScope.ReelStrip(
                 // Shift strip upward by the fractional part so it scrolls smoothly
                 .offset { IntOffset(x = 0, y = -remainder.roundToInt()) }
         ) {
-            // Render 5 cells: indices baseIndex-1 .. baseIndex+3 so the viewport
-            // (3 cells tall) is always covered during the sub-cell shift above.
-            // Center cell is at position i=1 (second row rendered).
             for (i in -1..3) {
-                // Positive modulo so index never goes negative
                 val idx = ((baseIndex + i) % symbolCount + symbolCount) % symbolCount
                 val isCenter = (i == 1)
                 SymbolCell(
@@ -612,11 +497,6 @@ private fun BoxScope.ReelStrip(
         }
     }
 }
-
-// ─────────────────────────────────────────────
-// SYMBOL CELL
-// ─────────────────────────────────────────────
-
 @Composable
 private fun SymbolCell(
     symbol: SlotNewSymbol,
@@ -633,7 +513,6 @@ private fun SymbolCell(
         animationSpec = tween(180),
         label         = "alpha"
     )
-    // Motion blur stretch during spin
     val stretchY by animateFloatAsState(
         targetValue   = if (spinning) 1.12f else 1f,
         animationSpec = tween(120),
@@ -647,7 +526,6 @@ private fun SymbolCell(
             .graphicsLayer { scaleX = scale; scaleY = scale; this.alpha = alpha },
         contentAlignment = Alignment.Center
     ) {
-        // Glow halo for center symbol
         if (isCenter && !spinning) {
             Box(
                 modifier = Modifier
@@ -656,8 +534,6 @@ private fun SymbolCell(
                     .background(Gold.copy(alpha = 0.28f), CircleShape)
             )
         }
-
-        // Shadow layer
         Text(
             text     = symbol.emoji,
             fontSize = 34.sp,
@@ -665,7 +541,6 @@ private fun SymbolCell(
             modifier = Modifier.offset(y = 2.dp)
         )
 
-        // Main emoji
         Text(
             text     = symbol.emoji,
             fontSize = 33.sp,
@@ -673,10 +548,6 @@ private fun SymbolCell(
         )
     }
 }
-
-// ─────────────────────────────────────────────
-// CABINET TITLE
-// ─────────────────────────────────────────────
 
 @Composable
 private fun CabinetTitle() {
@@ -695,17 +566,13 @@ private fun CabinetTitle() {
     )
 
     Text(
-        text       = "◈  SLOT  MASTER  ◈",
+        text       = stringResource(R.string.slot_master_text),
         style      = TextStyle(brush = brush),
         fontSize   = 22.sp,
         fontWeight = FontWeight.Black,
         letterSpacing = 4.sp
     )
 }
-
-// ─────────────────────────────────────────────
-// TOP BAR
-// ─────────────────────────────────────────────
 
 @Composable
 private fun TopBar(coins: Int, spins: Int) {
@@ -719,14 +586,14 @@ private fun TopBar(coins: Int, spins: Int) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment     = Alignment.CenterVertically
     ) {
-        StatChip(label = "BALANCE", value = "🪙 $coins", valueColor = Gold)
+        StatChip(label = stringResource(R.string.balance_text), value = "🪙 $coins", valueColor = Gold)
         Box(
             modifier = Modifier
                 .height(36.dp)
                 .width(1.dp)
                 .background(ReelBorder)
         )
-        StatChip(label = "SPINS", value = "$spins", valueColor = WhiteSoft, alignEnd = true)
+        StatChip(label =  stringResource(R.string.spins_text), value = "$spins", valueColor = WhiteSoft, alignEnd = true)
     }
 }
 
@@ -744,10 +611,6 @@ private fun StatChip(
     }
 }
 
-// ─────────────────────────────────────────────
-// SPIN CONTROLS
-// ─────────────────────────────────────────────
-
 @Composable
 private fun SpinControls(
     spinning: Boolean,
@@ -764,28 +627,20 @@ private fun SpinControls(
         label         = "p"
     )
     val active = canSpin && !spinning
-
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-        // Bet row
         Row(
             verticalAlignment     = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             BetButton("-") { onBetDown() }
-
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("BET", color = DimText, fontSize = 9.sp, letterSpacing = 1.5.sp)
                 Spacer(Modifier.height(3.dp))
                 Text("🪙 $betAmount", color = Gold, fontSize = 20.sp, fontWeight = FontWeight.Black)
             }
-
             BetButton("+") { onBetUp() }
         }
-
         Spacer(Modifier.height(20.dp))
-
-        // SPIN button
         Box(
             modifier = Modifier
                 .width(220.dp)
@@ -809,7 +664,7 @@ private fun SpinControls(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text          = if (spinning) "▶▶ SPINNING" else "▶  SPIN",
+                text          = if (spinning) stringResource(R.string.spinning_text) else stringResource(R.string.spin_text),
                 color         = if (active) Color.Black else Color(0xFF3A3010),
                 fontWeight    = FontWeight.Black,
                 fontSize      = 20.sp,
@@ -836,19 +691,12 @@ private fun BetButton(label: String, onClick: () -> Unit) {
         Text(label, color = Gold, fontSize = 22.sp, fontWeight = FontWeight.Black)
     }
 }
-
-// ─────────────────────────────────────────────
-// PAYTABLE
-// ─────────────────────────────────────────────
-
 @Composable
 private fun PaytableStrip() {
     val symbols = remember { SlotNewSymbol.entries.toList() }
-
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("PAYTABLE", color = DimText, fontSize = 10.sp, letterSpacing = 2.sp)
+        Text( stringResource(R.string.paytable_text), color = DimText, fontSize = 10.sp, letterSpacing = 2.sp)
         Spacer(Modifier.height(10.dp))
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -871,7 +719,7 @@ private fun PaytableStrip() {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(sym.emoji, fontSize = 26.sp)
                         Spacer(Modifier.width(10.dp))
-                        Text("MATCH 3", color = WhiteSoft, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.match_text), color = WhiteSoft, fontSize = 13.sp, fontWeight = FontWeight.Medium)
                     }
                     Text(
                         text       = "×${sym.multiplier}",

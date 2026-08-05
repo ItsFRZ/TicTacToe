@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">X și 0</string>
+    <string name="share">Distribuie</string>
+    <string name="internet_not_available">Internetul nu este disponibil :(</string>
+
+    <!-- user registration -->
+    <string name="register_title">Trebuie să te înregistrezi</string>
+    <string name="username">Nume de utilizator</string>
+    <string name="play_online">" pentru a juca online"</string>
+    <string name="choose_language">Alege limba preferată</string>
+    <string name="no_tracking">Fără urmărire</string>
+    <string name="no_ads">Fără reclame</string>
+    <string name="privacy_first">Confidențialitate pe primul loc</string>
+    <string name="offline_support">Suport offline</string>
+    <string name="no_permission">Fără permisiuni</string>
+
+    <!-- Home Page -->
+    <string name="choose_your">Alege</string>
+    <string name="play_mode">modul de joc</string>
+    <string name="computer">Calculator</string>
+    <string name="two_player">2 jucători</string>
+    <string name="four_player">4 jucători</string>
+    <string name="online_player">Online</string>
+    <string name="happy_purchase">Cumpărare fericită :)</string>
+    <string name="no_balance">Achiziție eșuată: sold insuficient</string>
+
+    <!-- Emoji picker -->
+    <string name="choose_text">Alege</string>
+    <string name="emoji_text">" emoji"</string>
+    <string name="go_text">START</string>
+
+    <!-- Board picker -->
+    <string name="board_rookie">Începător</string>
+    <string name="board_size_three">3x3</string>
+    <string name="start_ai">Ideal pentru început!</string>
+
+    <string name="board_seasoned">Experimentat</string>
+    <string name="board_size_four">4x4</string>
+    <string name="player_iq_text">Jucătorii cu IQ ridicat aleg această tablă!</string>
+
+    <string name="board_pro">Pro</string>
+    <string name="board_size_five">5x5</string>
+    <string name="player_challenge_text">Nivelul necesită prudență genială pentru alegerea acestei table!</string>
+
+    <!-- Game board -->
+    <string name="your_text">Tu</string>
+    <string name="opponent_text">Adversar</string>
+    <string name="ai_text">AI</string>
+    <string name="player_one">Jucător 1</string>
+    <string name="player_two">Jucător 2</string>
+    <string name="player_three">Jucător 3</string>
+    <string name="player_four">Jucător 4</string>
+    <string name="play_again">Joacă din nou</string>
+    <string name="draw_text">EGAL</string>
+    <string name="lose_text">Ai pierdut!</string>
+    <string name="next_time_text">Mai mult noroc data viitoare!</string>
+    <string name="retry_text">Reîncearcă</string>
+    <string name="winner_text">CÂȘTIGĂTOR</string>
+    <string name="best_text">Ești cel mai bun!</string>
+    <string name="exit_text">IEȘIRE</string>
+    <string name="exit_confirm_text">Chiar vrei să ieși?</string>
+    <string name="agree_text">De acord</string>
+    <string name="wait_load_text">Te rugăm să aștepți adversarul</string>
+    <string name="connect_text">" pentru a se conecta ..."</string>
+
+    <!-- Slot board -->
+    <string name="slot_master_text">"◈  MAESTRUL SLOTURILOR  ◈"</string>
+    <string name="balance_text">SOLD</string>
+    <string name="spins_text">ROTIRI</string>
+    <string name="spinning_text">▶▶ SE ROTEȘTE</string>
+    <string name="spin_text">"▶  ROTEȘTE"</string>
+    <string name="match_text">POTRIVEȘTE 3</string>
+    <string name="paytable_text">TABELĂ DE PLĂȚI</string>
+
+    <!-- Support page -->
+    <string name="sbest_text">Cel mai bun</string>
+    <string name="legend_text">Legendă</string>
+    <string name="insane_text">Nebun</string>
+    <string name="gold_coins_text">monede de aur</string>
+    <string name="bag_coin_text">1 sac de monede în valoare de</string>
+    <string name="many_bag_coin_text">10 saci de monede în valoare de</string>
+    <string name="coffee_drop_text">Strop de cafea</string>
+    <string name="support_text">Susține versiunile nightly</string>
+    <string name="pizza_text">Patch de pizza</string>
+    <string name="fuel_text">Alimentează funcții noi</string>
+    <string name="legendary_text">Legendar</string>
+    <string name="fame_text">Intră în Hall of Fame</string>
+    <string name="security_text">Plățile sunt procesate în siguranță prin aplicații de încredere și plată în browser.</string>
+    <string name="no_details_text">Nu sunt stocate detalii bancare.</string>
+
+    <!-- Settings page -->
+    <string name="setting_text">Setări</string>
+    <string name="game_text">Joc</string>
+    <string name="music_text">Muzică</string>
+    <string name="sound_text">Sunet</string>
+    <string name="vibration_text">Vibrație</string>
+    <string name="notification_text">Notificare</string>
+    <string name="display_text">Afișaj</string>
+    <string name="color_text">Culoare</string>
+    <string name="setting_support_text">Asistență</string>
+    <string name="donation_text">Donație</string>
+    <string name="thank_text">Mulțumim</string>
+
+    <!-- Settings container page -->
+    <string name="select_background_text">Selectează culoarea de fundal</string>
+    <string name="select_language_text">Selectează limba</string>
+    <string name="theme_blue_text">Temă albastră</string>
+    <string name="theme_red_text">Roșu închis</string>
+    <string name="theme_orange_text">Portocaliu mac</string>
+    <string name="theme_green_text">Verde Dracula</string>
+
+</resources>

@@ -8,15 +8,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -66,6 +80,9 @@ class SettingFragment : Fragment() {
                 val systemSound = viewmodel.gameSound.value
                 val systemVibration = viewmodel.systemVibration.value
                 val gameNotification = viewmodel.gameNotification.value
+                val thankText = stringResource(R.string.thank_text)
+                var languageExpanded = viewmodel.languageExpanded.value
+                var selectedLanguage = viewmodel.selectedLanguage.value
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -78,7 +95,7 @@ class SettingFragment : Fragment() {
                             .height(18.dp)
                             .fillMaxWidth()
                     )
-                    SettingHeader(headerTitleText = "Settings") {
+                    SettingHeader(headerTitleText = stringResource(R.string.setting_text)) {
                         gameSound.clickSound()
                         commonViewModel.performHapticVibrate(requireView())
                         findNavController().navigateUp()
@@ -93,7 +110,7 @@ class SettingFragment : Fragment() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         item {
-                            SettingSubHeader(subHeaderTitleText = "Game")
+                            SettingSubHeader(subHeaderTitleText =  stringResource(R.string.game_text))
                             Spacer(
                                 modifier = Modifier
                                     .height(4.dp)
@@ -101,7 +118,7 @@ class SettingFragment : Fragment() {
                             )
                             SettingItem(
                                 icon = R.drawable.ic_music,
-                                title = "Music",
+                                title =  stringResource(R.string.music_text),
                                 isToggled = backgroundMusic,
                                 toggleButtonEvent = {
                                     gameSound.clickSound()
@@ -116,7 +133,7 @@ class SettingFragment : Fragment() {
                             )
                             SettingItem(
                                 icon = R.drawable.ic_volume,
-                                title = "Sound",
+                                title = stringResource(R.string.sound_text),
                                 isToggled = systemSound,
                                 toggleButtonEvent = {
                                     gameSound.clickSound()
@@ -130,7 +147,7 @@ class SettingFragment : Fragment() {
                             )
                             SettingItem(
                                 icon = R.drawable.ic_vibrate,
-                                title = "Vibration",
+                                title = stringResource(R.string.vibration_text),
                                 isToggled = systemVibration,
                                 toggleButtonEvent = {
                                     gameSound.clickSound()
@@ -144,7 +161,7 @@ class SettingFragment : Fragment() {
                             )
                             SettingItem(
                                 icon = R.drawable.ic_notify,
-                                title = "Notification",
+                                title = stringResource(R.string.notification_text),
                                 isToggled = gameNotification,
                                 toggleButtonEvent = {
                                     gameSound.clickSound()
@@ -158,7 +175,7 @@ class SettingFragment : Fragment() {
                                     .height(18.dp)
                                     .fillMaxWidth()
                             )
-                            SettingSubHeader(subHeaderTitleText = "Display")
+                            SettingSubHeader(subHeaderTitleText = stringResource(R.string.display_text))
                             Spacer(
                                 modifier = Modifier
                                     .height(16.dp)
@@ -166,7 +183,7 @@ class SettingFragment : Fragment() {
                             )
                             SettingItem(
                                 icon = R.drawable.ic_pallete,
-                                title = "Color",
+                                title =  stringResource(R.string.color_text),
                                 isToggled = true,
                                 toggleButtonEvent = {},
                                 isAdvance = true,
@@ -196,7 +213,7 @@ class SettingFragment : Fragment() {
                                     .height(18.dp)
                                     .fillMaxWidth()
                             )
-                            SettingSubHeader(subHeaderTitleText = "Support")
+                            SettingSubHeader(subHeaderTitleText =  stringResource(R.string.setting_support_text))
                             Spacer(
                                 modifier = Modifier
                                     .height(16.dp)
@@ -204,7 +221,7 @@ class SettingFragment : Fragment() {
                             )
                             SettingItem(
                                 icon = R.drawable.ic_love,
-                                title = "Donation",
+                                title =  stringResource(R.string.donation_text),
                                 isToggled = false,
                                 toggleButtonEvent = {},
                                 isAdvance = true,
@@ -221,7 +238,7 @@ class SettingFragment : Fragment() {
 
                                     Toast.makeText(
                                         requireActivity(),
-                                        "Thankyou for generosity :)",
+                                        thankText +" :)",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 })
@@ -230,6 +247,71 @@ class SettingFragment : Fragment() {
                                     .height(16.dp)
                                     .fillMaxWidth()
                             )
+                        }
+                        item{
+                            Spacer(
+                                modifier = Modifier
+                                    .height(18.dp)
+                                    .fillMaxWidth()
+                            )
+                            SettingSubHeader(subHeaderTitleText = stringResource(R.string.select_language_text))
+                            Spacer(
+                                modifier = Modifier
+                                    .height(18.dp)
+                                    .fillMaxWidth()
+                            )
+                            Box(
+                                modifier = Modifier.fillMaxWidth(0.86f)
+                            ) {
+                                OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth()
+                                        .clickable { viewmodel.onEvent(SettingUseCase.OnLangToggle(true)) },
+                                    value = selectedLanguage.first,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    enabled = false,
+                                    singleLine = true,
+                                    shape = RoundedCornerShape(14.dp),
+                                    leadingIcon = {
+                                        Icon(imageVector = Icons.Rounded.Language, contentDescription = null, tint = Color.White)
+                                    },
+                                    trailingIcon = {
+                                        Icon(imageVector = Icons.Rounded.KeyboardArrowDown, contentDescription = null, tint = Color.White)
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        disabledBorderColor = Color.White.copy(alpha = .25f),
+                                        disabledTextColor = Color.White,
+                                        disabledLeadingIconColor = Color.White,
+                                        disabledTrailingIconColor = Color.White,
+                                        disabledContainerColor = Color.Transparent,
+                                        focusedBorderColor = ThemePicker.secondaryColor.value,
+                                        unfocusedBorderColor = Color.White.copy(alpha = .25f),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White,
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent
+                                    )
+                                )
+
+                                DropdownMenu (
+                                    expanded = languageExpanded,
+                                    onDismissRequest = {
+                                        viewmodel.onEvent(SettingUseCase.OnLangToggle(false))
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+
+                                    viewmodel.supportedLanguages.forEach { language ->
+                                        DropdownMenuItem(
+                                            text = {  Text("${language.first} (${language.second})") },
+                                            onClick = {
+                                                viewmodel.onEvent(SettingUseCase.OnLanguageChange(language))
+                                                viewmodel.onEvent(SettingUseCase.OnLangToggle(false))
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

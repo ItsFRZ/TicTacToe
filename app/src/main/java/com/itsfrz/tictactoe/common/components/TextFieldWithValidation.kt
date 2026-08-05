@@ -98,9 +98,8 @@ fun TextFieldWithValidation(
         if (isValidationTriggered) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(horizontal = 62.dp),
+                    .fillMaxWidth(0.86f)
+                    .wrapContentHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(

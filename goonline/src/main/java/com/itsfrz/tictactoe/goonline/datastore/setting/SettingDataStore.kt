@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.annotation.Keep
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import com.itsfrz.tictactoe.goonline.common.GameLanguage
 import com.itsfrz.tictactoe.goonline.common.GameTheme
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -17,10 +16,10 @@ data class SettingDataStore(
     @SerialName("vibration")val vibration: Boolean = true,
     @SerialName("notification")val notification: Boolean = true,
     @SerialName("theme")val theme : GameTheme = GameTheme.THEME_BLUE,
-    @SerialName("language")val language : GameLanguage = GameLanguage.ENGLISH,
     @SerialName("coinInfo") val coinInfo : Int = 500,
     @SerialName("gameLevelInfo") val gameLevelInfo : Set<Int> = emptySet<Int>(),
     @SerialName("cashAmount") val cashAmount : Int = 0,
+    @SerialName("language")val language: Pair<String,String>? = null
 
 ){
     @Keep

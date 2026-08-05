@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.itsfrz.tictactoe.R
 import com.itsfrz.tictactoe.common.enums.GameMode
@@ -39,20 +40,20 @@ fun ProgressTimer(
         verticalArrangement = Arrangement.Center
     ) {
         if (gameMode == GameMode.FRIEND || gameMode == GameMode.RANDOM){
-            UserMove(username = if (currentUserId == userId) "Your" else "Opponent")
+            UserMove(username = if (currentUserId == userId) stringResource(R.string.your_text) else stringResource(R.string.opponent_text) )
         }else if(gameMode == GameMode.AI) {
-            UserMove(username = if (playerTurns) "Your" else "AI")
+            UserMove(username = if (playerTurns) stringResource(R.string.your_text) else stringResource(R.string.ai_text))
         }else if(gameMode == GameMode.FOUR_PLAYER){
             val username = when(playerTurn){
-                PlayerTurn.ONE -> "Player 1"
-                PlayerTurn.TWO -> "Player 2"
-                PlayerTurn.THREE -> "Player 3"
-                PlayerTurn.FOUR -> "Player 4"
-                else -> "Player 1"
+                PlayerTurn.ONE -> stringResource(R.string.player_one)
+                PlayerTurn.TWO -> stringResource(R.string.player_two)
+                PlayerTurn.THREE -> stringResource(R.string.player_three)
+                PlayerTurn.FOUR -> stringResource(R.string.player_four)
+                else ->  stringResource(R.string.player_one)
             }
             UserMove(username = username)
         } else{
-            UserMove(username = if (playerTurns) "Player 2" else "Player 1")
+            UserMove(username = if (playerTurns)  stringResource(R.string.player_two) else  stringResource(R.string.player_one) )
         }
         Spacer(modifier = Modifier
             .fillMaxWidth()
