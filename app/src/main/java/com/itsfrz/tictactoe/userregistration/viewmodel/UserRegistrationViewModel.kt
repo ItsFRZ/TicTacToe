@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itsfrz.tictactoe.common.functionality.Generate
+import com.itsfrz.tictactoe.common.functionality.LocaleManager
 import com.itsfrz.tictactoe.goonline.data.models.Playground
 import com.itsfrz.tictactoe.goonline.data.models.UserProfile
 import com.itsfrz.tictactoe.goonline.data.repositories.CloudRepository
@@ -66,6 +67,7 @@ class UserRegistrationViewModel(
             }
             is UserRegistrationUseCase.OnLanguageChange -> {
                 _selectedLanguage.value = event.lang
+                updateLangLocale()
             }
             is UserRegistrationUseCase.OnLangToggle -> {
                 _languageExpanded.value = event.state
@@ -73,6 +75,16 @@ class UserRegistrationViewModel(
             is UserRegistrationUseCase.OnSubmitButtonClick -> {
                 if (!_isUsernameEmpty.value)
                     setupUser()
+            }
+        }
+    }
+
+    private fun updateLangLocale() {
+        LocaleManager.updateLocale( _selectedLanguage.value.second)
+        viewModelScope.launch(Dispatchers.IO) {
+            val settingData = settingRepository.getGameSetting()?.firstOrNull()
+            settingData?.let {
+                settingRepository.updateGameSetting(settingData.copy(language = _selectedLanguage.value))
             }
         }
     }
