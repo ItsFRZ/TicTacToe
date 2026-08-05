@@ -51,19 +51,19 @@ fun SupportScreen(
                     best,
                     11,
                     "🪙",
-                    "${1*1100} "+goldCoin
+                    "${1*1100} \n"+goldCoin
                 ),
                 SupportTier(
                     legend,
                     25,
                     "💰",
-                    bagCoin+" ${1*2500}"
+                    bagCoin+"\n ${1*2500}"
                 ),
                 SupportTier(
                     insane,
                     49,
                     "🌟",
-                    manyBagCoin+" ${1*4900}"
+                    manyBagCoin+"\n ${1*4900}"
                 )
             )
         }else{
